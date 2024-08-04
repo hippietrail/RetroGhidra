@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="src/main/help"/>
+	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="src/main/resources"/>
 	<classpathentry kind="src" path="src/test/java"/>
-	<classpathentry kind="src" path="ghidra_scripts"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.launching.macosx.MacOSXType/Java SE 19.0.1 [19.0.1]"/>
 	<classpathentry kind="lib" path="/Users/hippietrail/Downloads/ghidra_11.1.2_PUBLIC/Ghidra/Processors/68000/lib/68000.jar" sourcepath="/Users/hippietrail/Downloads/ghidra_11.1.2_PUBLIC/Ghidra/Processors/68000/lib/68000-src.zip">

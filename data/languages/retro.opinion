@@ -1,0 +1,8 @@
+<opinions>
+    <constraint loader="Arm Image Format (AIF)" compilerSpecID="default">
+        <constraint primary="arm" processor="ARM" endian="little" size="32" />
+    </constraint>
+    <constraint loader="Sinclair ZX Spectrum Snapshot (SNA)" compilerSpecID="default">
+        <constraint primary="z80" processor="Z80" endian="little" size="16" />
+    </constraint>
+</opinions>

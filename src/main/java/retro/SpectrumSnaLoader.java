@@ -19,35 +19,63 @@ import java.io.IOException;
 import java.util.*;
 
 import ghidra.app.util.Option;
+import ghidra.app.util.bin.BinaryReader;
 import ghidra.app.util.bin.ByteProvider;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.app.util.opinion.AbstractProgramWrapperLoader;
 import ghidra.app.util.opinion.LoadSpec;
+import ghidra.app.util.opinion.QueryOpinionService;
+import ghidra.app.util.opinion.QueryResult;
 import ghidra.framework.model.DomainObject;
 import ghidra.program.model.listing.Program;
 import ghidra.util.exception.CancelledException;
+import ghidra.util.Msg;
 import ghidra.util.task.TaskMonitor;
 
 /**
- * TODO: Provide class-level documentation that describes what this loader does.
+ * A {@link Loader} for loading Sinclair ZX Spectrum Snapshot (SNA) files.
  */
-public class RetroLoader extends AbstractProgramWrapperLoader {
+public class SpectrumSnaLoader extends AbstractProgramWrapperLoader {
+
+	public static final String ZX_SNA_NAME = "Sinclair ZX Spectrum Snapshot (SNA)";
+	public static final Long[] ZX_SNA_LENGTHS = {
+		(long) (27 + 48 * 1024),
+		(long) (27 + 48 * 1024 + 4 + 5 * 16 * 1024),
+		(long) (27 + 48 * 1024 + 4 + 6 * 16 * 1024)
+	};
 
 	@Override
 	public String getName() {
-
-		// TODO: Name the loader.  This name must match the name of the loader in the .opinion 
-		// files.
-
-		return "My loader";
+		return ZX_SNA_NAME;
 	}
 
 	@Override
 	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
 		List<LoadSpec> loadSpecs = new ArrayList<>();
 
-		// TODO: Examine the bytes in 'provider' to determine if this loader can load it.  If it 
-		// can load it, return the appropriate load specifications.
+		BinaryReader reader = new BinaryReader(provider, true);
+		Long fileLength = reader.length();
+		if (!Arrays.stream(ZX_SNA_LENGTHS).anyMatch(length -> length.equals(fileLength))) {
+			return loadSpecs;
+		}
+
+		int iff2Byte = reader.readUnsignedByte(0x13);
+		if ((iff2Byte & ~0x04) != 0) {
+			return loadSpecs;
+		}
+
+		int interruptMode = reader.readUnsignedByte(0x19);
+		if (interruptMode > 2) {
+			return loadSpecs;
+		}
+
+		int borderColorOrInt1Byte = reader.readUnsignedByte(0x1A);
+		if (borderColorOrInt1Byte > 7 && borderColorOrInt1Byte != 0x71 && borderColorOrInt1Byte != 0xC9) {
+			return loadSpecs;
+		}
+
+		List<QueryResult> queryResults = QueryOpinionService.query(getName(), "z80", null);
+		queryResults.stream().map(result -> new LoadSpec(this, 0, result)).forEach(loadSpecs::add);
 
 		return loadSpecs;
 	}
