@@ -1,15 +1,15 @@
 Ghidra Loaders and FileSystems for various retrocomputing platforms.
 
 # In progress
+- Atari ST: Executable format loader - identifies but does not load yet
 - Commodore Amiga: "Hunk" executable and object file loader - identifies but does not load yet
-- Sinclair QL: Executable format - identifies but does not load yet
+- Sinclair QL: Executable format loader - identifies but does not load yet
 - Sinclair ZX Spectrum .SNA snapshot loader - identifies but does not yet load
 - RISC OS AIF (Arm Image Format) loader - identifies but does not yet load
 
 # Planned
 ## Loaders
 - Apple Macintosh: Classic Mac Motorola 680x0 applications with `CODE` resources in the resource fork
-- Atari ST: Executable format
 - Sharp X68000: .R, .X, and .Z executable formats
 - Sinclair QL: SROFF object file format
 - Sinclair Spectrum: More snapshot and emulator formats
