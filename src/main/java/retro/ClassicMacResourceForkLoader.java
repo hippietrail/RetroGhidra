@@ -55,7 +55,7 @@ public class ClassicMacResourceForkLoader extends AbstractProgramWrapperLoader {
         BinaryReader reader = new BinaryReader(provider, true);
 		reader.setLittleEndian(false);
 
-        int[] header = reader.readIntArray(0, RSRC_HEADER_SIZE);
+        int[] header = reader.readIntArray(0, 4);
         // no u32 in java, reinterpret as u32
         long dataOffset = header[0] & 0xFFFFFFFFL;
         long mapOffset = header[1] & 0xFFFFFFFFL;
