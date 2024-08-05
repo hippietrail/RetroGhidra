@@ -22,3 +22,21 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - Sinclair Spectrum disk formats
 - Tandy TRS-80 Model 1 and Model 3 disk formats
 - Tandy Coco disk format
+
+# To investigate
+- Acorn Electron
+- Amstad CPC
+- Apple IIgs
+- Atari 8-bit
+- BBC Micro
+- Commodore VIC-20
+- Commodore PET
+- CP/M
+- Dragon 32/64
+- Jupiter Ace
+- Oric
+- MSX
+- SAM Coupé
+- Sinclair ZX81
+- TI-99/4 and TI-99/4A
+- Timex Sinclair
