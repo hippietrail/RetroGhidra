@@ -49,8 +49,7 @@ public class X68KZLoader extends AbstractProgramWrapperLoader {
 	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
 		List<LoadSpec> loadSpecs = new ArrayList<>();
 
-		BinaryReader reader = new BinaryReader(provider, true);
-		reader.setLittleEndian(false);
+		BinaryReader reader = new BinaryReader(provider, false);
 
         int magic1 = reader.readUnsignedShort(0x00);
         if (magic1 != X68KZ_MAGIC_1) return loadSpecs;

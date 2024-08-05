@@ -52,8 +52,7 @@ public class ClassicMacResourceForkLoader extends AbstractProgramWrapperLoader {
         long fileSize = provider.length();
         if (fileSize < RSRC_HEADER_SIZE) return loadSpecs;
 
-        BinaryReader reader = new BinaryReader(provider, true);
-		reader.setLittleEndian(false);
+        BinaryReader reader = new BinaryReader(provider, false);
 
         int[] header = reader.readIntArray(0, 4);
         // no u32 in java, reinterpret as u32

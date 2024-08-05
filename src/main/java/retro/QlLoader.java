@@ -47,8 +47,7 @@ public class QlLoader extends AbstractProgramWrapperLoader {
 	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
 		List<LoadSpec> loadSpecs = new ArrayList<>();
 
-		BinaryReader reader = new BinaryReader(provider, true);
-		reader.setLittleEndian(false);
+		BinaryReader reader = new BinaryReader(provider, false);
 
 		if (reader.length() < 64) return loadSpecs;
 		int signature = reader.readUnsignedShort(6);

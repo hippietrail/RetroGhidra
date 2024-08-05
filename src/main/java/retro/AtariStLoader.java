@@ -47,8 +47,7 @@ public class AtariStLoader extends AbstractProgramWrapperLoader {
 	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
 		List<LoadSpec> loadSpecs = new ArrayList<>();
 
-		BinaryReader reader = new BinaryReader(provider, true);
-		reader.setLittleEndian(false);
+		BinaryReader reader = new BinaryReader(provider, false);
 
         long magic = reader.readUnsignedShort(0);
         if (magic != 0x601a && magic != 0x601b) return loadSpecs;

@@ -50,8 +50,7 @@ public class X68KXLoader extends AbstractProgramWrapperLoader {
 	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
 		List<LoadSpec> loadSpecs = new ArrayList<>();
 
-		BinaryReader reader = new BinaryReader(provider, true);
-		reader.setLittleEndian(false);
+		BinaryReader reader = new BinaryReader(provider, false);
 
         long magic = reader.readUnsignedInt(0);
 		if (magic != X68KX_MAGIC_NORMAL && magic != X68KX_MAGIC_SMALLEST && magic != X68KX_MAGIC_HIGH) return loadSpecs; 

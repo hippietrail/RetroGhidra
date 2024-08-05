@@ -48,8 +48,7 @@ public class AmigaLoader extends AbstractProgramWrapperLoader {
 	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
 		List<LoadSpec> loadSpecs = new ArrayList<>();
 
-		BinaryReader reader = new BinaryReader(provider, true);
-		reader.setLittleEndian(false);
+		BinaryReader reader = new BinaryReader(provider, false);
 
         long firstHunkType = reader.readUnsignedInt(0);
         if (firstHunkType != 0x000003f3 && firstHunkType != 0x000003e7) return loadSpecs;
