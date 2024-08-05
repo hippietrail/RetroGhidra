@@ -18,6 +18,7 @@ package retro;
 import java.io.IOException;
 import java.util.*;
 
+import ghidra.app.util.MemoryBlockUtils;
 import ghidra.app.util.Option;
 import ghidra.app.util.bin.BinaryReader;
 import ghidra.app.util.bin.ByteProvider;
@@ -27,6 +28,7 @@ import ghidra.app.util.opinion.LoadSpec;
 import ghidra.app.util.opinion.QueryOpinionService;
 import ghidra.app.util.opinion.QueryResult;
 import ghidra.framework.model.DomainObject;
+import ghidra.program.database.mem.FileBytes;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryBlock;
@@ -51,6 +53,20 @@ public class SpectrumSnaLoader extends AbstractProgramWrapperLoader {
 		ZX_SNA_LENGTH_128K_L, // long: has repeated 16k bank
 	};
 	public static final int ZX_SNA_OFF_IFF2 = 0x13;
+	public static final int ZX_SNA_OFF_SP = 0x17;
+	public static final int ZX_SNA_OFF_INT_MODE = 0x19;
+	public static final int ZX_SNA_OFF_BORDER = 0x1a;
+	public static final int ZX_SNA_HEADER_LEN = 0x1b;
+
+	public static final int ZX_SNA_ROM_PAGED_SPEC = 0x71;
+	public static final int ZX_SNA_ROM_PAGED_INT1 = 0xc9;
+
+	public static final int ZX_SNA_RAM_START = 0x4000; // 16384
+	public static final int ZX_SNA_DISPLAY_START = ZX_SNA_RAM_START;
+	public static final int ZX_SNA_DISPLAY_SIZE = 32 * 192;
+	public static final int ZX_SNA_ATTR_START = ZX_SNA_DISPLAY_START + ZX_SNA_DISPLAY_SIZE;
+	public static final int ZX_SNA_ATTR_SIZE = 32 * 24;
+	public static final int ZX_SNA_RAM_END = 0x10000;
 
 	@Override
 	public String getName() {
@@ -72,18 +88,19 @@ public class SpectrumSnaLoader extends AbstractProgramWrapperLoader {
 		if ((iff2 & ~0b0000_0100) != 0) return loadSpecs;
 
 		// stack pointer can't be in ROM, probably a false positive
-		int sp = reader.readUnsignedShort(0x17);
-		if (sp < 16384) Msg.warn(this, "Stack pointer in ROM");
+		int sp = reader.readUnsignedShort(ZX_SNA_OFF_SP);
+		if (sp < ZX_SNA_RAM_START) Msg.warn(this, "Stack pointer in ROM");
 
 		// only 0 to 2 are valid, anything else probably a false positive
-		int interruptMode = reader.readUnsignedByte(0x19);
+		int interruptMode = reader.readUnsignedByte(ZX_SNA_OFF_INT_MODE);
 		if (interruptMode > 2) return loadSpecs;
 
 		// .SNA was originally used by a hardware device. This field indicated Sinclair Interface 1 presence
 		// As an emulator format, this field indicates border colour, only 0 to 7
 		// Anything besides these 8 values probably a false positive
-		int borderColourOrInt1 = reader.readUnsignedByte(0x1A);
-		if (borderColourOrInt1 > 7 && borderColourOrInt1 != 0x71 && borderColourOrInt1 != 0xC9)
+		int borderColourOrInt1 = reader.readUnsignedByte(ZX_SNA_OFF_BORDER);
+		if (borderColourOrInt1 > 7
+				&& borderColourOrInt1 != ZX_SNA_ROM_PAGED_SPEC && borderColourOrInt1 != ZX_SNA_ROM_PAGED_INT1)
 			return loadSpecs;
 
 		List<QueryResult> queryResults = QueryOpinionService.query(getName(), "z80", null);
@@ -106,48 +123,41 @@ public class SpectrumSnaLoader extends AbstractProgramWrapperLoader {
 
 		// in 48k snapshots, pc is on the stack
 		// TODO use optionals?
-		int sp = reader.readUnsignedShort(0x17);
-		boolean spOK = sp >= 16384;
+		int sp = reader.readUnsignedShort(ZX_SNA_OFF_SP);
+		boolean spOK = sp >= ZX_SNA_RAM_START;
 		boolean pcOK = false;
 		int pc = -1;
 		if (spOK) {
-			pc = reader.readUnsignedShort(0x1b + sp - 16384);
+			pc = reader.readUnsignedShort(ZX_SNA_HEADER_LEN + sp - ZX_SNA_RAM_START);
 			sp = (sp + 2) & 0xffff;
 		}
-		pcOK = pc >= 16384;
+		pcOK = pc >= ZX_SNA_RAM_START;
 
-		if (pcOK) Msg.info(this, "SP = " + Integer.toHexString(sp) + ", PC = " + Integer.toHexString(pc));
-		else Msg.warn(this, "SP = " + Integer.toHexString(sp) + ", PC = ?");
+		if (pcOK) Msg.info(this, program.getName() + ": SP = " + Integer.toHexString(sp) + ", PC = " + Integer.toHexString(pc));
+		else Msg.warn(this, program.getName() + ": SP = " + Integer.toHexString(sp) + ", PC = ?");
 
 		try {
-			int bitmapStart = 16384; // 0x4000
-			int bitmapLen = 32 * 192;
-			int attributeStart = 16384 + bitmapLen;
-			int attributeLen = 32 * 24;
-			int attributeEnd = attributeStart + attributeLen;
-			int restart = attributeEnd;
-			int restEnd = 0x10000;
-			int restLen = restEnd - restart;
-
-			// TODO doesn't need to be initialized to all 0xff, not sure all the APIs available
-
-			Address bitmapAdd = program.getAddressFactory().getDefaultAddressSpace().getAddress(bitmapStart);
-			MemoryBlock bitmapBlock = program.getMemory().createInitializedBlock("bitmap", bitmapAdd, bitmapLen, (byte) 0x0f, monitor, false);
-			bitmapBlock.setWrite(true);
-
-			Address attrAdd = program.getAddressFactory().getDefaultAddressSpace().getAddress(attributeStart);
-			MemoryBlock attrBlock = program.getMemory().createInitializedBlock("attributes", attrAdd, attributeLen, (byte) 0xf0, monitor, false);
-			attrBlock.setWrite(true);
-
-			Address restAdd = program.getAddressFactory().getDefaultAddressSpace().getAddress(restart);
-			MemoryBlock restBlock = program.getMemory().createInitializedBlock("rest", restAdd, restLen, (byte) 0xaa, monitor, false);
-			restBlock.setWrite(true);
-
-			Address ramAdd = bitmapAdd;
+			Address ramAdd = program.getAddressFactory().getDefaultAddressSpace().getAddress(ZX_SNA_DISPLAY_START);
+			FileBytes fileBytes = MemoryBlockUtils.createFileBytes(program, provider, monitor);
 			
-			reader.setPointerIndex(0x1b);
-			byte[] codeBytes = reader.readByteArray(0x1b, 48 * 1024);
-			program.getMemory().setBytes(ramAdd, codeBytes);
+			MemoryBlock block = program.getMemory().createInitializedBlock(
+				"display",							// name
+				ramAdd, 							// start
+				fileBytes,							// filebytes
+				ZX_SNA_HEADER_LEN,                  // offset
+				ZX_SNA_RAM_END - ZX_SNA_RAM_START,	// size
+				false);								// overlay
+			block.setWrite(true);
+
+			Address attrEnd = program.getAddressFactory().getDefaultAddressSpace().getAddress(ZX_SNA_DISPLAY_START + ZX_SNA_DISPLAY_SIZE + ZX_SNA_ATTR_SIZE);
+			program.getMemory().split(block, attrEnd);
+
+			Address displayEnd = program.getAddressFactory().getDefaultAddressSpace().getAddress(ZX_SNA_DISPLAY_START + ZX_SNA_DISPLAY_SIZE);
+			program.getMemory().split(block, displayEnd);
+
+			MemoryBlock[] blocks = program.getMemory().getBlocks();
+			blocks[1].setName("attributes");
+			blocks[2].setName("rest");
 
 			if (pcOK) {
 				Address ep = program.getAddressFactory().getDefaultAddressSpace().getAddress(pc);	
