@@ -5,7 +5,7 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - Commodore Amiga: "Hunk" executable and object file loader - identifies but does not load yet
 - Sharp X68000: .X and .Z executable formats - identifies but does not load yet
 - Sinclair QL: Executable format loader - identifies but does not load yet
-- Sinclair ZX Spectrum .SNA snapshot loader - identifies but does not yet load
+- Sinclair ZX Spectrum .SNA snapshot loader - loads 48K but not 128K yet
 - RISC OS AIF (Arm Image Format) loader - identifies but does not yet load
 
 # Planned
