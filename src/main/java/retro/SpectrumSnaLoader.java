@@ -122,19 +122,19 @@ public class SpectrumSnaLoader extends AbstractProgramWrapperLoader {
 		BinaryReader reader = new BinaryReader(provider, true);
 
 		// in 48k snapshots, pc is on the stack
-		// TODO use optionals?
+		// if sp is in rom, we can't get the pc from the stack since we don't include the rom
 		int sp = reader.readUnsignedShort(ZX_SNA_OFF_SP);
-		boolean spOK = sp >= ZX_SNA_RAM_START;
-		boolean pcOK = false;
-		int pc = -1;
-		if (spOK) {
-			pc = reader.readUnsignedShort(ZX_SNA_HEADER_LEN + sp - ZX_SNA_RAM_START);
+		OptionalInt pc = OptionalInt.empty();
+		if (sp >= ZX_SNA_RAM_START) {
+			pc = OptionalInt.of(reader.readUnsignedShort(ZX_SNA_HEADER_LEN + sp - ZX_SNA_RAM_START));
 			sp = (sp + 2) & 0xffff;
 		}
-		pcOK = pc >= ZX_SNA_RAM_START;
 
-		if (pcOK) Msg.info(this, program.getName() + ": SP = " + Integer.toHexString(sp) + ", PC = " + Integer.toHexString(pc));
-		else Msg.warn(this, program.getName() + ": SP = " + Integer.toHexString(sp) + ", PC = ?");
+		Msg.info(this, program.getName() + ": SP = " +
+			Integer.toHexString(sp)
+			+ ", PC = " +
+			(pc.isPresent() ? "0x" + Integer.toHexString(pc.getAsInt()) : "?")
+		);
 
 		try {
 			Address ramAdd = program.getAddressFactory().getDefaultAddressSpace().getAddress(ZX_SNA_DISPLAY_START);
@@ -159,20 +159,20 @@ public class SpectrumSnaLoader extends AbstractProgramWrapperLoader {
 			blocks[1].setName("attributes");
 			blocks[2].setName("rest");
 
-			if (pcOK) {
-				Address ep = program.getAddressFactory().getDefaultAddressSpace().getAddress(pc);	
-				SymbolTable st = program.getSymbolTable();
-				st.createLabel(ep, "entry", SourceType.ANALYSIS);
-				st.addExternalEntryPoint(ep);
-			}
+		if (pc.isPresent() && pc.getAsInt() >= ZX_SNA_RAM_START) {
+			Address ep = program.getAddressFactory().getDefaultAddressSpace().getAddress(pc.getAsInt());	
+			SymbolTable st = program.getSymbolTable();
+			st.createLabel(ep, "entry", SourceType.ANALYSIS);
+			st.addExternalEntryPoint(ep);
+		}
 
-			if (spOK) {
-				Address spAdd = program.getAddressFactory().getDefaultAddressSpace().getAddress(sp);
-				SymbolTable st = program.getSymbolTable();
-				st.createLabel(spAdd, "stack", SourceType.ANALYSIS);
-			}
-		} catch (Exception e) {
-			log.appendException( e );
+		if (sp >= ZX_SNA_RAM_START) {
+			Address spAdd = program.getAddressFactory().getDefaultAddressSpace().getAddress(sp);
+			SymbolTable st = program.getSymbolTable();
+			st.createLabel(spAdd, "stack", SourceType.ANALYSIS);
+		}
+	} catch (Exception e) {
+			log.appendException(e);
 		}
 	}
 
