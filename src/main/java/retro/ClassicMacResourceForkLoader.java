@@ -70,8 +70,22 @@ public class ClassicMacResourceForkLoader extends AbstractProgramWrapperLoader {
         // header matches dupe header at offset mapOffset, otherwise false positive
         if (!Arrays.equals(header, reader.readIntArray(mapOffset, 4))) return loadSpecs;
 
-        List<QueryResult> queryResults = QueryOpinionService.query(getName(), "68000", null);
-        queryResults.stream().map(result -> new LoadSpec(this, 0, result)).forEach(loadSpecs::add);
+        reader.setPointerIndex(mapOffset + RSRC_HEADER_SIZE + 8);
+        int typeListOffset = reader.readNextUnsignedShort();
+        reader.setPointerIndex(mapOffset + typeListOffset);
+        int typeCount = reader.readNextUnsignedShort();
+        typeCount = (typeCount == 0xffff) ? 0 : typeCount + 1;
+
+        reader.setPointerIndex(mapOffset + typeListOffset + 2);
+
+        for (int i = 0; i < typeCount; i++) {
+            reader.setPointerIndex(mapOffset + typeListOffset + 2 + i * 8);
+            if (reader.readNextAsciiString(4).equals("CODE")) {
+                List<QueryResult> queryResults = QueryOpinionService.query(getName(), "68000", null);
+                queryResults.stream().map(result -> new LoadSpec(this, 0, result)).forEach(loadSpecs::add);
+                break;
+            }
+        }
 
         return loadSpecs;
 	}

@@ -2,7 +2,7 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 
 # In progress
 - Atari ST: Executable format loader - identifies but does not load yet
-- Classic 680x0 Mac: applications - identifies resource fork but doesn't check for `CODE` resource, does not load yet
+- Classic 680x0 Mac: applications - identifies but does not load yet
 - Commodore Amiga: "Hunk" executable and object file loader - identifies but does not load yet
 - Sharp X68000: .X and .Z executable formats - identifies but does not load yet
 - Sinclair QL: Executable format loader - identifies but does not load yet
