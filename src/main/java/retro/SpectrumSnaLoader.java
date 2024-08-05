@@ -68,9 +68,7 @@ public class SpectrumSnaLoader extends AbstractProgramWrapperLoader {
 		if (!Arrays.stream(ZX_SNA_LENGTHS).anyMatch(length -> length.equals(fileLength))) return loadSpecs;
 
 		// only 1 bit of this field is defined, anything else probably a false positive
-		// int iff2 = reader.readUnsignedByte(0x13);
 		int iff2 = reader.readUnsignedByte(ZX_SNA_OFF_IFF2);
-		// if ((iff2 & ~0x04) != 0) return loadSpecs;
 		if ((iff2 & ~0b0000_0100) != 0) return loadSpecs;
 
 		// stack pointer can't be in ROM, probably a false positive

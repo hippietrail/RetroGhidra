@@ -55,7 +55,7 @@ public class AifLoader extends AbstractProgramWrapperLoader {
 		int imageDebugType = reader.readInt(0x24); // just sanity check for now
 		int flagsAndAddressSize = reader.readInt(0x30); // just sanity check for now but if 64 could change length
 		boolean isStrongArm = (flagsAndAddressSize & 0x80000000) != 0;
-		int addressSize = (int) (flagsAndAddressSize & 0x7fffffff);
+		int addressSize = flagsAndAddressSize & 0x7fffffff;
 
 		// arm opcode 'swi OS_Exit' serves as a magic number in *nix 'file'
 		if (exitCode != 0xef000011) return loadSpecs;
