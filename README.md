@@ -2,7 +2,7 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 
 # In progress
 - Atari ST: Executable format loader - identifies but does not load yet
-- Classic 680x0 Mac: applications - identifies but does not load yet
+- Classic 680x0 Mac: application loader - loads but does not mark exported functions yet
 - Commodore Amiga: "Hunk" executable and object file loader - identifies but does not load yet
 - Sharp X68000: .X and .Z executable formats - identifies but does not load yet
 - Sinclair QL: Executable format loader - identifies but does not load yet
@@ -29,11 +29,13 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - Apple IIgs
 - Atari 8-bit
 - BBC Micro
+- BeOS
 - Commodore VIC-20
 - Commodore PET
 - CP/M
 - Dragon 32/64
 - Jupiter Ace
+- NeXT
 - Oric
 - MSX
 - SAM Coupé

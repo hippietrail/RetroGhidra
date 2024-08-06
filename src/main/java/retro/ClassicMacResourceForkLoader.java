@@ -18,6 +18,7 @@ package retro;
 import java.io.IOException;
 import java.util.*;
 
+import ghidra.app.util.MemoryBlockUtils;
 import ghidra.app.util.Option;
 import ghidra.app.util.bin.BinaryReader;
 import ghidra.app.util.bin.ByteProvider;
@@ -27,7 +28,10 @@ import ghidra.app.util.opinion.LoadSpec;
 import ghidra.app.util.opinion.QueryOpinionService;
 import ghidra.app.util.opinion.QueryResult;
 import ghidra.framework.model.DomainObject;
+import ghidra.program.database.mem.FileBytes;
+import ghidra.program.model.address.Address;
 import ghidra.program.model.listing.Program;
+import ghidra.program.model.mem.MemoryBlock;
 import ghidra.util.Msg;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
@@ -49,17 +53,17 @@ public class ClassicMacResourceForkLoader extends AbstractProgramWrapperLoader {
 	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
 		List<LoadSpec> loadSpecs = new ArrayList<>();
 
-        long fileSize = provider.length();
+        final long fileSize = provider.length();
         if (fileSize < RSRC_HEADER_SIZE) return loadSpecs;
 
-        BinaryReader reader = new BinaryReader(provider, false);
+        final BinaryReader reader = new BinaryReader(provider, false);
 
         int[] header = reader.readIntArray(0, 4);
         // no u32 in java, reinterpret as u32
-        long dataOffset = header[0] & 0xFFFFFFFFL;
-        long mapOffset = header[1] & 0xFFFFFFFFL;
-        long dataLen = header[2] & 0xFFFFFFFFL;
-        long mapLen = header[3] & 0xFFFFFFFFL;
+        final long dataOffset = header[0] & 0xFFFFFFFFL;
+        final long mapOffset = header[1] & 0xFFFFFFFFL;
+        final long dataLen = header[2] & 0xFFFFFFFFL;
+        final long mapLen = header[3] & 0xFFFFFFFFL;
 
         // header fields within the bounds of the file, otherwise false positive
         if (fileSize < dataOffset + dataLen
@@ -71,7 +75,7 @@ public class ClassicMacResourceForkLoader extends AbstractProgramWrapperLoader {
         if (!Arrays.equals(header, reader.readIntArray(mapOffset, 4))) return loadSpecs;
 
         reader.setPointerIndex(mapOffset + RSRC_HEADER_SIZE + 8);
-        int typeListOffset = reader.readNextUnsignedShort();
+        final int typeListOffset = reader.readNextUnsignedShort();
         reader.setPointerIndex(mapOffset + typeListOffset);
         int typeCount = reader.readNextUnsignedShort();
         typeCount = (typeCount == 0xffff) ? 0 : typeCount + 1;
@@ -95,8 +99,93 @@ public class ClassicMacResourceForkLoader extends AbstractProgramWrapperLoader {
 			Program program, TaskMonitor monitor, MessageLog log)
 			throws CancelledException, IOException {
 
-		// TODO: Load the bytes from 'provider' into the 'program'.
-	}
+        int nextLoadAddress = 0x0000;
+
+        final BinaryReader reader = new BinaryReader(provider, false);
+
+        final int[] header = reader.readIntArray(0, 4);
+        // no u32 in java, this is how to reinterpret as u32
+        final long dataOffset = header[0] & 0xFFFFFFFFL;
+        final long mapOffset = header[1] & 0xFFFFFFFFL;
+        // final long dataLen = header[2] & 0xFFFFFFFFL;
+        // final long mapLen = header[3] & 0xFFFFFFFFL;
+
+        reader.setPointerIndex(mapOffset + RSRC_HEADER_SIZE + 8);
+        final int typeListOffset = reader.readNextUnsignedShort();
+
+        final long resourceTypeListOffset = mapOffset + typeListOffset;
+
+        reader.setPointerIndex(resourceTypeListOffset);
+        int typeCount = reader.readNextUnsignedShort();
+        typeCount = (typeCount == 0xffff) ? 0 : typeCount + 1;
+
+        reader.setPointerIndex(resourceTypeListOffset + 2);
+
+        // each different resource type
+        for (int i = 0; i < typeCount; i++) {
+            final long typeListEntryOffset = resourceTypeListOffset + 2 + i * 8;
+            reader.setPointerIndex(typeListEntryOffset);
+            final String typeCode = reader.readNextAsciiString(4);
+            if (typeCode.equals("CODE")) {
+
+                final int count = reader.readNextUnsignedShort();
+                final int resListOffset = reader.readNextUnsignedShort();
+
+                // each resource of that type. note <= since the count field is one less than the number of resources
+                // but will never be 0xffff to indicate that there are no resources
+                for (int j = 0; j <= count; j++) {
+                    final long resListEntryOffset = resourceTypeListOffset + resListOffset + j * 12;
+                    reader.setPointerIndex(resListEntryOffset);
+                    final int id = reader.readNextUnsignedShort();
+
+                    reader.setPointerIndex(resListEntryOffset + 5);
+                    final int offsetToResDataHi16 = reader.readNextUnsignedShort();
+                    final int offsetToResDataLo8 = reader.readNextUnsignedByte();
+                    final int offsetToResData = (offsetToResDataHi16 << 8) | offsetToResDataLo8;
+
+                    reader.setPointerIndex(dataOffset + offsetToResData);
+                    final long resourceLen = reader.readNextUnsignedInt();
+
+                    final int offsetOf1stJumpTableEntry = reader.readNextUnsignedShort();
+
+                    if (offsetOf1stJumpTableEntry == 0xffff) {
+                        Msg.error(this, "Far model not supported yet.");
+                        continue;
+                    }
+
+                    // this does not include the 32-bit length field, which already omits itself
+                    // CODE0 is special and is the jumptable. it has a 32 byte header we do include
+                    // because the jump table mixes data and code. each entry has a data field
+                    // indicating the offset to the code address it refers to followed by
+                    // the code to PUSH the CODE id followed by the A-line trap to LoadSeg
+                    final int headerSize = id == 0 ? 0 : 4;
+                    final int footerSize = 0;
+
+                    final long codeOffset = dataOffset + offsetToResData + 4 + headerSize;
+                    final long codeLen = resourceLen - headerSize - footerSize;
+
+                    try {
+                        final Address ramAdd = program.getAddressFactory().getDefaultAddressSpace().getAddress(nextLoadAddress);
+                        final FileBytes fileBytes = MemoryBlockUtils.createFileBytes(program, provider, monitor);
+                        
+                        final MemoryBlock block = program.getMemory().createInitializedBlock(
+                            "CODE " + id,   					// name
+                            ramAdd, 							// start
+                            fileBytes,							// filebytes
+                            codeOffset,                         // offset
+                            codeLen,	                        // size
+                            false);								// overlay
+                        block.setWrite(true);
+                    } catch (Exception e) {
+                        log.appendException(e);
+                    }
+        
+                    // I could round up to the next 1k. I don't know what's usual in Ghidra
+                    nextLoadAddress += codeLen;
+                }
+            }
+        }
+    }
 
 	@Override
 	public List<Option> getDefaultOptions(ByteProvider provider, LoadSpec loadSpec,
