@@ -4,10 +4,10 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - Atari ST: Executable format loader - identifies but does not load yet
 - Classic 680x0 Mac: application loader - loads but does not mark exported functions yet
 - Commodore Amiga: "Hunk" executable and object file loader - identifies but does not load yet
+- RISC OS AIF (Arm Image Format) loader - identifies but does not yet load
 - Sharp X68000: .X and .Z executable formats - identifies but does not load yet
 - Sinclair QL: Executable format loader - identifies but does not load yet
 - Sinclair ZX Spectrum .SNA snapshot loader - loads 48K but not 128K yet
-- RISC OS AIF (Arm Image Format) loader - identifies but does not yet load
 
 # Planned
 ## Loaders
@@ -38,6 +38,7 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - NeXT
 - Oric
 - MSX
+- RISC OS AOF (ARM Object Format) and ALF (Acorn Library Format)
 - SAM Coupé
 - Sinclair ZX81
 - TI-99/4 and TI-99/4A
