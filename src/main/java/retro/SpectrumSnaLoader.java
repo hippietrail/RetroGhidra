@@ -159,19 +159,19 @@ public class SpectrumSnaLoader extends AbstractProgramWrapperLoader {
 			blocks[1].setName("attributes");
 			blocks[2].setName("rest");
 
-		if (pc.isPresent() && pc.getAsInt() >= ZX_SNA_RAM_START) {
-			Address ep = program.getAddressFactory().getDefaultAddressSpace().getAddress(pc.getAsInt());	
-			SymbolTable st = program.getSymbolTable();
-			st.createLabel(ep, "entry", SourceType.ANALYSIS);
-			st.addExternalEntryPoint(ep);
-		}
+			if (pc.isPresent() && pc.getAsInt() >= ZX_SNA_RAM_START) {
+				Address ep = program.getAddressFactory().getDefaultAddressSpace().getAddress(pc.getAsInt());	
+				SymbolTable st = program.getSymbolTable();
+				st.createLabel(ep, "entry", SourceType.ANALYSIS);
+				st.addExternalEntryPoint(ep);
+			}
 
-		if (sp >= ZX_SNA_RAM_START) {
-			Address spAdd = program.getAddressFactory().getDefaultAddressSpace().getAddress(sp);
-			SymbolTable st = program.getSymbolTable();
-			st.createLabel(spAdd, "stack", SourceType.ANALYSIS);
-		}
-	} catch (Exception e) {
+			if (sp >= ZX_SNA_RAM_START) {
+				Address spAdd = program.getAddressFactory().getDefaultAddressSpace().getAddress(sp);
+				SymbolTable st = program.getSymbolTable();
+				st.createLabel(spAdd, "stack", SourceType.ANALYSIS);
+			}
+		} catch (Exception e) {
 			log.appendException(e);
 		}
 	}
