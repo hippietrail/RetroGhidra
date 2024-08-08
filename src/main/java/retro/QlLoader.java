@@ -52,6 +52,11 @@ public class QlLoader extends AbstractProgramWrapperLoader {
 		if (reader.length() < 64) return loadSpecs;
 		int signature = reader.readUnsignedShort(6);
 		if (signature != 0x4afb) return loadSpecs;
+		// filename field is apparently optional and doesn't prevent files being loaded and ran
+		//   but QL filenames are max 36 chars long
+		// if we still get false positives we can check that each char is 7-bit ASCII [0x20-0x80)
+		int filename_len = reader.readUnsignedShort(8);
+		if (filename_len > 36) return loadSpecs;
 
 		List<QueryResult> queryResults = QueryOpinionService.query(getName(), "68000", null);
 		queryResults.stream().map(result -> new LoadSpec(this, 0, result)).forEach(loadSpecs::add);
