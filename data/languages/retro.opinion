@@ -23,4 +23,7 @@
     <constraint loader="Sinclair ZX Spectrum Snapshot (SNA)" compilerSpecID="default">
         <constraint primary="z80" processor="Z80" endian="little" size="16" />
     </constraint>
+    <constraint loader="TRS-80 /CMD" compilerSpecID="default">
+        <constraint primary="z80" processor="Z80" endian="little" size="16" />
+    </constraint>
 </opinions>
