@@ -7,9 +7,10 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 # In progress
 - Atari ST: Executable format loader - identifies but does not load yet
 - Commodore Amiga: "Hunk" executable and object file loader - identifies but does not load yet
-- RISC OS AIF (Arm Image Format) loader - identifies but does not yet load
+- RISC OS: AIF (Arm Image Format) loader - identifies but does not yet load
 - Sharp X68000: .X and .Z executable formats - identifies but does not load yet
 - Sinclair QL: Executable format loader - identifies but does not load yet
+- TRS-80: /CMD command file loader
 
 # Planned
 ## Loaders
