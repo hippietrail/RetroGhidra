@@ -3,6 +3,7 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 # Done
 - Classic 680x0 Mac: application loader
 - Sinclair ZX Spectrum .SNA snapshot loader - 48K snapshots
+- Tandy TRS-80: /CMD command file loader
 
 # In progress
 - Atari ST: Executable format loader - identifies but does not load yet
@@ -10,7 +11,6 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - RISC OS: AIF (Arm Image Format) loader - identifies but does not yet load
 - Sharp X68000: .X and .Z executable formats - identifies but does not load yet
 - Sinclair QL: Executable format loader - identifies but does not load yet
-- TRS-80: /CMD command file loader
 
 # Planned
 ## Loaders
