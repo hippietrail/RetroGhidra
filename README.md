@@ -6,6 +6,7 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - Tandy TRS-80: /CMD command file loader
 
 # In progress
+- Atari 2600: Rom file loader - identifies but does not load yet
 - Atari ST: Executable format loader - identifies but does not load yet
 - Commodore Amiga: "Hunk" executable and object file loader - identifies but does not load yet
 - RISC OS: AIF (Arm Image Format) loader - identifies but does not yet load
