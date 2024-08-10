@@ -1,6 +1,7 @@
 Ghidra Loaders and FileSystems for various retrocomputing platforms.
 
 # Done
+- Atari 2600: Rom file loader - only 2K and 4K are possible
 - Classic 680x0 Mac: application loader
 - Sinclair ZX Spectrum .SNA snapshot loader - 48K snapshots
 - Tandy TRS-80: /CMD command file loader
