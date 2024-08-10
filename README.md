@@ -8,6 +8,8 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 
 # In progress
 - Atari ST: Executable format loader - identifies but does not load yet
+- Commodore 64: .CRT cartridge loader - identifies but does not load yet
+- Commodore VIC-20: .PRG cartridge loader - identifies but does not load yet
 - Commodore Amiga: "Hunk" executable and object file loader - identifies but does not load yet
 - RISC OS: AIF (Arm Image Format) loader - identifies but does not yet load
 - Sharp X68000: .X and .Z executable formats - identifies but does not load yet
@@ -35,7 +37,6 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - Atari 8-bit
 - BBC Micro
 - BeOS
-- Commodore VIC-20
 - Commodore PET
 - CP/M
 - Dragon 32/64

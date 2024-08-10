@@ -14,6 +14,12 @@
     <constraint loader="Classic Macintosh Resource Fork" compilerSpecID="default">
         <constraint primary="68000" processor="68000" endian="big" size="32" />
     </constraint>
+    <constraint loader="Commodore 64 Cartridge (CRT)" compilerSpecID="default">
+        <constraint primary="6502" processor="6502" endian="little" size="16" />
+    </constraint>
+    <constraint loader="Commodore VIC-20 Cartridge (PRG)" compilerSpecID="default">
+        <constraint primary="6502" processor="6502" endian="little" size="16" />
+    </constraint>
     <constraint loader="Sharp X68000 .X" compilerSpecID="default">
         <constraint primary="68000" processor="68000" endian="big" size="32" />
     </constraint>
