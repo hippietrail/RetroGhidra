@@ -44,18 +44,18 @@ import ghidra.util.task.TaskMonitor;
 public class Trs80Loader extends AbstractProgramWrapperLoader {
 
     public final static String TRS_NAME = "TRS-80 /CMD";
-    public static final int TRS_TYPE_DATA = 0x01;       // "object code" (load block) - aka "data"
-    public static final int TRS_TYPE_JUMP = 0x02;       // "transfer address" - aka "jump address"
-    public static final int TRS_TYPE_END = 0x04;        // "end of partitioned data set member"
-    public static final int TRS_TYPE_HEADER = 0x05;     // "load module header" - aka "header"
-    public static final int TRS_TYPE_MEMBER = 0x06;     // "partitioned data set member"
-    public static final int TRS_TYPE_PATCH = 0x07;      // "patch name header"
-    public static final int TRS_TYPE_ISAM = 0x08;       // "ISAM directory entry"
-    public static final int TRS_TYPE_END_ISAM = 0x0a;   // "end of ISAM directory"
-    public static final int TRS_TYPE_PDS = 0x0c;        // "PDS directory entry"
-    public static final int TRS_TYPE_END_PDS = 0x0e;    // "end of PDS directory"
-    public static final int TRS_TYPE_YANK = 0x10;       // "yanked load block"
-    public static final int TRS_TYPE_COPYRIGHT = 0x1f;  // "copyright block"
+    public final static int TRS_TYPE_DATA = 0x01;       // "object code" (load block) - aka "data"
+    public final static int TRS_TYPE_JUMP = 0x02;       // "transfer address" - aka "jump address"
+    public final static int TRS_TYPE_END = 0x04;        // "end of partitioned data set member"
+    public final static int TRS_TYPE_HEADER = 0x05;     // "load module header" - aka "header"
+    public final static int TRS_TYPE_MEMBER = 0x06;     // "partitioned data set member"
+    public final static int TRS_TYPE_PATCH = 0x07;      // "patch name header"
+    public final static int TRS_TYPE_ISAM = 0x08;       // "ISAM directory entry"
+    public final static int TRS_TYPE_END_ISAM = 0x0a;   // "end of ISAM directory"
+    public final static int TRS_TYPE_PDS = 0x0c;        // "PDS directory entry"
+    public final static int TRS_TYPE_END_PDS = 0x0e;    // "end of PDS directory"
+    public final static int TRS_TYPE_YANK = 0x10;       // "yanked load block"
+    public final static int TRS_TYPE_COPYRIGHT = 0x1f;  // "copyright block"
 
     // TODO make optional, how to add as comment / program name in Ghidra?
     String filename = "";
