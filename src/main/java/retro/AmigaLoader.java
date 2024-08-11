@@ -37,7 +37,7 @@ import ghidra.util.task.TaskMonitor;
  */
 public class AmigaLoader extends AbstractProgramWrapperLoader {
 
-    public final static String AMIGA_NAME = "Amiga Hunk";
+    public static final String AMIGA_NAME = "Amiga Hunk";
 
 	@Override
 	public String getName() {

@@ -43,8 +43,8 @@ import ghidra.util.task.TaskMonitor;
  */
 public class Atari2600Loader extends AbstractProgramWrapperLoader {
 
-    public final static String VCS_NAME = "Atari 2600";
-    public final static int VCS_RESET_VECTOR = 0xfffc;
+    public static final String VCS_NAME = "Atari 2600";
+    public static final int VCS_RESET_VECTOR = 0xfffc;
 
 	@Override
 	public String getName() {

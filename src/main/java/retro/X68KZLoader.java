@@ -36,9 +36,9 @@ import ghidra.util.task.TaskMonitor;
  */
 public class X68KZLoader extends AbstractProgramWrapperLoader {
 
-	public final static String X68KZ_NAME = "Sharp X68000 .Z";
-	public final static int X68KZ_MAGIC_1 = 0x601a;
-	public final static int X68KZ_MAGIC_2 = 0xffff;
+	public static final String X68KZ_NAME = "Sharp X68000 .Z";
+	public static final int X68KZ_MAGIC_1 = 0x601a;
+	public static final int X68KZ_MAGIC_2 = 0xffff;
 
 	@Override
 	public String getName() {

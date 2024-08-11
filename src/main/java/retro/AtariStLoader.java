@@ -36,9 +36,9 @@ import ghidra.util.task.TaskMonitor;
  */
 public class AtariStLoader extends AbstractProgramWrapperLoader {
 
-    public final static String ST_NAME = "Atari ST";
-	public final static int ST_MAGIC = 0x601a;
-	public final static int ST_MAGIC_2 = 0x601b;
+    public static final String ST_NAME = "Atari ST";
+	public static final int ST_MAGIC = 0x601a;
+	public static final int ST_MAGIC_2 = 0x601b;
 
 	@Override
 	public String getName() {

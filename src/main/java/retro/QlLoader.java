@@ -36,7 +36,7 @@ import ghidra.util.task.TaskMonitor;
  */
 public class QlLoader extends AbstractProgramWrapperLoader {
 
-    public final static String QDOS_EXE_NAME = "Sinclair QL QDOS";
+    public static final String QDOS_EXE_NAME = "Sinclair QL QDOS";
 
 	@Override
 	public String getName() {

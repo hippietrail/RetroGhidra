@@ -44,19 +44,24 @@ import ghidra.util.task.TaskMonitor;
  */
 public class Trs80Loader extends AbstractProgramWrapperLoader {
 
-    public final static String TRS_NAME = "TRS-80 /CMD";
-    public final static int TRS_TYPE_DATA = 0x01;       // "object code" (load block) - aka "data"
-    public final static int TRS_TYPE_TRANSFER = 0x02;   // "transfer address" - aka "jump address"
-    public final static int TRS_TYPE_END = 0x04;        // "end of partitioned data set member"
-    public final static int TRS_TYPE_HEADER = 0x05;     // "load module header" - aka "header"
-    public final static int TRS_TYPE_MEMBER = 0x06;     // "partitioned data set member"
-    public final static int TRS_TYPE_PATCH = 0x07;      // "patch name header" (LDOS)
-    public final static int TRS_TYPE_ISAM = 0x08;       // "ISAM directory entry"
-    public final static int TRS_TYPE_END_ISAM = 0x0a;   // "end of ISAM directory"
-    public final static int TRS_TYPE_PDS = 0x0c;        // "PDS directory entry"
-    public final static int TRS_TYPE_END_PDS = 0x0e;    // "end of PDS directory"
-    public final static int TRS_TYPE_YANK = 0x10;       // "yanked load block"
-    public final static int TRS_TYPE_COPYRIGHT = 0x1f;  // "copyright block" (LDOS and DOSPLUS)
+    public static final String TRS_NAME = "TRS-80 /CMD";
+    public static final int TRS_TYPE_DATA = 0x01;       // "object code" (load block) - aka "data"
+    public static final int TRS_TYPE_TRANSFER = 0x02;   // "transfer address" - aka "jump address"
+    public static final int TRS_TYPE_END = 0x04;        // "end of partitioned data set member"
+    public static final int TRS_TYPE_HEADER = 0x05;     // "load module header" - aka "header"
+    public static final int TRS_TYPE_MEMBER = 0x06;     // "partitioned data set member"
+    public static final int TRS_TYPE_PATCH = 0x07;      // "patch name header" (LDOS)
+    public static final int TRS_TYPE_ISAM = 0x08;       // "ISAM directory entry"
+    public static final int TRS_TYPE_END_ISAM = 0x0a;   // "end of ISAM directory"
+    public static final int TRS_TYPE_PDS = 0x0c;        // "PDS directory entry"
+    public static final int TRS_TYPE_END_PDS = 0x0e;    // "end of PDS directory"
+    public static final int TRS_TYPE_YANK = 0x10;       // "yanked load block"
+    public static final int TRS_TYPE_COPYRIGHT = 0x1f;  // "copyright block" (LDOS and DOSPLUS)
+    public static final int[] TRS_TYPE_CODES = {
+        TRS_TYPE_DATA, TRS_TYPE_TRANSFER, TRS_TYPE_END, TRS_TYPE_HEADER, TRS_TYPE_MEMBER,
+        TRS_TYPE_PATCH, TRS_TYPE_ISAM, TRS_TYPE_END_ISAM, TRS_TYPE_PDS, TRS_TYPE_END_PDS, 
+        TRS_TYPE_YANK, TRS_TYPE_COPYRIGHT,
+    };
 
     // TODO make this an optional, how to add as comment / program name in Ghidra?
     String filename = "";
@@ -73,7 +78,6 @@ public class Trs80Loader extends AbstractProgramWrapperLoader {
         BinaryReader reader = new BinaryReader(provider, true);
 
         int offset = 0; // byte index
-        int recordIndex = 0;
         boolean seenTransferAddress = false;
         loop: while (true) {
             if (offset + 1 > reader.length()) {
@@ -84,45 +88,35 @@ public class Trs80Loader extends AbstractProgramWrapperLoader {
             }
             byte typeCode = (byte) reader.readNextUnsignedByte();
             offset++;
-            recordIndex++;
             // Any code above X'1F' is invalid as a record type. In addition, any code
             // not listed in the above table is reserved for future use
-            switch (typeCode) {
-                // this is basically 'if record not known type'
-                case TRS_TYPE_DATA, TRS_TYPE_TRANSFER, TRS_TYPE_END, TRS_TYPE_HEADER,
-                    TRS_TYPE_MEMBER, TRS_TYPE_PATCH, TRS_TYPE_ISAM,
-                    TRS_TYPE_END_ISAM, TRS_TYPE_PDS, TRS_TYPE_END_PDS, 
-                    TRS_TYPE_YANK, TRS_TYPE_COPYRIGHT -> { break; }
-                default -> {
-                    // hit garbage after processing load records, all went well
-                    if (seenTransferAddress) break loop;
-                    // unknown record - not a /CMD file
-                    return loadSpecs;
-                }
+            if (!Arrays.stream(TRS_TYPE_CODES).anyMatch(x -> x == typeCode)) {
+                // hit garbage after processing load records, all went well
+                if (seenTransferAddress) break loop;
+                // unknown record - not a /CMD file
+                return loadSpecs;
             }
 
-            // this is the real switch
             switch (typeCode) {
-                case TRS_TYPE_DATA -> { /* 1 : data / object code / load block */
+                case TRS_TYPE_DATA -> { /* 1 */
+                    // data / object code / load block
                     if (offset + 2 > reader.length()) return loadSpecs;
                     int lengthByte = reader.readNextUnsignedByte() & 0xFF;
                     int len = lengthByte < 3 ? 256 + lengthByte : lengthByte;
                     offset++;
                     // first 2 bytes of the len bytes following are the load address
                     if (offset + len > reader.length()) return loadSpecs;
-                    int address = reader.readNextUnsignedShort();
-                    reader.readNextByteArray(len - 2);
+                    reader.readNextByteArray(len);
                     offset += len;
                     break;
                 }
                 case TRS_TYPE_TRANSFER -> { /* 2 */
+                    // transfer address does not use the special length values, should always be '2'
                     if (offset + 2 > reader.length()) return loadSpecs;
                     final int len = reader.readNextUnsignedByte() & 0xFF;
                     offset += 1;
                     if (offset + len > reader.length()) return loadSpecs;
-                    int address = reader.readNextUnsignedShort();
-                    // shouldn't happen, but in case the address length is not 2 bytes
-                    if (len != 2) reader.readNextByteArray(len - 2);
+                    reader.readNextByteArray(len);
                     offset += len;
                     seenTransferAddress = true;
                     break;
@@ -134,6 +128,7 @@ public class Trs80Loader extends AbstractProgramWrapperLoader {
                     offset += 1;
                     if (offset + len > reader.length()) return loadSpecs;
                     this.filename = reader.readNextAsciiString(len);
+                    // TODO use this filename as a comment / program name in Ghidra?
                     offset += len;
                     break;
                 }
@@ -171,20 +166,16 @@ public class Trs80Loader extends AbstractProgramWrapperLoader {
             int typeCode = reader.readNextUnsignedByte();
             offset++;
 
-            switch (typeCode) {
-                case TRS_TYPE_DATA, TRS_TYPE_TRANSFER, TRS_TYPE_END, TRS_TYPE_HEADER,
-                    TRS_TYPE_MEMBER, TRS_TYPE_PATCH, TRS_TYPE_ISAM,
-                    TRS_TYPE_END_ISAM, TRS_TYPE_PDS, TRS_TYPE_END_PDS, 
-                    TRS_TYPE_YANK, TRS_TYPE_COPYRIGHT -> { break; }
-                default -> {
-                    // trailing garbage but we've seen a transfer address, all went well
-                    if (seenTransferAddress) break loop;
-                    return;
-                }
+
+            if (!Arrays.stream(TRS_TYPE_CODES).anyMatch(x -> x == typeCode)) {
+                // trailing garbage but we've seen a transfer address, all went well
+                if (seenTransferAddress) break loop;
+                return;
             }
 
             switch (typeCode) {
                 case TRS_TYPE_DATA -> { /* 1 */
+                    // data / object code / load block
                     final int rawLen = reader.readNextUnsignedByte() & 0xFF;
                     final int len = rawLen < 3 ? 256 + rawLen : rawLen;
                     offset++;
@@ -230,7 +221,8 @@ public class Trs80Loader extends AbstractProgramWrapperLoader {
 
                     break;
                 }
-                default -> { /* known type, but not implemented */
+                default -> {
+                    // known type, but not implemented, ignore and continue
                     final int rawLen = reader.readNextUnsignedByte() & 0xFF;
                     final int len = rawLen < 3 ? 256 + rawLen : rawLen;
                     offset += 1;

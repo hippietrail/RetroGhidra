@@ -37,11 +37,11 @@ import ghidra.util.task.TaskMonitor;
  */
 public class AifLoader extends AbstractProgramWrapperLoader {
 
-	public final static String AIF_NAME = "Arm Image Format (AIF)";
-	private final static int AIF_OFF_EXIT_CODE = 0x10;
-	private final static int AIF_OFF_IMAGE_DEBUG_TYPE = 0x24;
-	private final static int AIF_OFF_FLAGS_AND_ADDRESS_SIZE = 0x30;
-	private final static int AIF_EXIT_CODE = 0xef000011;
+	public static final String AIF_NAME = "Arm Image Format (AIF)";
+	private static final int AIF_OFF_EXIT_CODE = 0x10;
+	private static final int AIF_OFF_IMAGE_DEBUG_TYPE = 0x24;
+	private static final int AIF_OFF_FLAGS_AND_ADDRESS_SIZE = 0x30;
+	private static final int AIF_EXIT_CODE = 0xef000011;
 
 	@Override
 	public String getName() {

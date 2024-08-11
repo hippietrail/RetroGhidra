@@ -36,7 +36,7 @@ import ghidra.util.task.TaskMonitor;
  */
 public class C64CrtLoader extends AbstractProgramWrapperLoader {
 
-    public final static String CRT_NAME = "Commodore 64 Cartridge (CRT)";
+    public static final String CRT_NAME = "Commodore 64 Cartridge (CRT)";
 
 	@Override
 	public String getName() {

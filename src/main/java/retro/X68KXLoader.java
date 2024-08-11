@@ -36,10 +36,10 @@ import ghidra.util.task.TaskMonitor;
  */
 public class X68KXLoader extends AbstractProgramWrapperLoader {
 
-	public final static String X68KX_NAME = "Sharp X68000 .X";
-	public final static int X68KX_MAGIC_NORMAL = 0x48550000; // HU\0\0
-	public final static int X68KX_MAGIC_SMALLEST = 0x48550001; // HU\0\1
-	public final static int X68KX_MAGIC_HIGH = 0x48550002; // HU\0\2
+	public static final String X68KX_NAME = "Sharp X68000 .X";
+	public static final int X68KX_MAGIC_NORMAL = 0x48550000; // HU\0\0
+	public static final int X68KX_MAGIC_SMALLEST = 0x48550001; // HU\0\1
+	public static final int X68KX_MAGIC_HIGH = 0x48550002; // HU\0\2
 
 	@Override
 	public String getName() {

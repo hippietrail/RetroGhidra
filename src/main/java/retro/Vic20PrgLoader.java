@@ -35,7 +35,7 @@ import ghidra.util.task.TaskMonitor;
  */
 public class Vic20PrgLoader extends AbstractProgramWrapperLoader {
 
-    public final static String PRG_NAME = "Commodore VIC-20 Cartridge (PRG)";
+    public static final String PRG_NAME = "Commodore VIC-20 Cartridge (PRG)";
 
 	@Override
 	public String getName() {
