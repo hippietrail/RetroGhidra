@@ -38,6 +38,10 @@ import ghidra.util.task.TaskMonitor;
 public class AifLoader extends AbstractProgramWrapperLoader {
 
 	public final static String AIF_NAME = "Arm Image Format (AIF)";
+	private final static int AIF_OFF_EXIT_CODE = 0x10;
+	private final static int AIF_OFF_IMAGE_DEBUG_TYPE = 0x24;
+	private final static int AIF_OFF_FLAGS_AND_ADDRESS_SIZE = 0x30;
+	private final static int AIF_EXIT_CODE = 0xef000011;
 
 	@Override
 	public String getName() {
@@ -51,14 +55,14 @@ public class AifLoader extends AbstractProgramWrapperLoader {
 		BinaryReader reader = new BinaryReader(provider, true);
 
 		if (reader.length() < 64) return loadSpecs;
-		int exitCode = reader.readInt(0x10); // serves as magic number
-		int imageDebugType = reader.readInt(0x24); // just sanity check for now
-		int flagsAndAddressSize = reader.readInt(0x30); // just sanity check for now but if 64 could change length
-		boolean isStrongArm = (flagsAndAddressSize & 0x80000000) != 0;
+		int exitCode = reader.readInt(AIF_OFF_EXIT_CODE); // serves as magic number
+		int imageDebugType = reader.readInt(AIF_OFF_IMAGE_DEBUG_TYPE); // just sanity check for now
+		int flagsAndAddressSize = reader.readInt(AIF_OFF_FLAGS_AND_ADDRESS_SIZE); // just sanity check for now but if 64 could change length
+		// boolean isStrongArm = (flagsAndAddressSize & 0x80000000) != 0;
 		int addressSize = flagsAndAddressSize & 0x7fffffff;
 
 		// arm opcode 'swi OS_Exit' serves as a magic number in *nix 'file'
-		if (exitCode != 0xef000011) return loadSpecs;
+		if (exitCode != AIF_EXIT_CODE) return loadSpecs;
 		// sanity: imageDebugType is 0, 1, 2, or 3; otherwise treat as false positive, not really an AIF
 		if (imageDebugType < 0 || imageDebugType > 3) return loadSpecs;
 		// sanity: addressSize is 0, 16, 32, or 64; otherwise treat as false positive, not really an AIF

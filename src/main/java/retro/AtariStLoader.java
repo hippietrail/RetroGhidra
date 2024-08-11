@@ -36,11 +36,13 @@ import ghidra.util.task.TaskMonitor;
  */
 public class AtariStLoader extends AbstractProgramWrapperLoader {
 
-    public final static String ATARI_ST_NAME = "Atari ST";
+    public final static String ST_NAME = "Atari ST";
+	public final static int ST_MAGIC = 0x601a;
+	public final static int ST_MAGIC_2 = 0x601b;
 
 	@Override
 	public String getName() {
-        return ATARI_ST_NAME;		
+        return ST_NAME;		
 	}
 
 	@Override
@@ -50,7 +52,7 @@ public class AtariStLoader extends AbstractProgramWrapperLoader {
 		BinaryReader reader = new BinaryReader(provider, false);
 
         long magic = reader.readUnsignedShort(0);
-        if (magic != 0x601a && magic != 0x601b) return loadSpecs;
+        if (magic != ST_MAGIC && magic != ST_MAGIC_2) return loadSpecs;
 
 		List<QueryResult> queryResults = QueryOpinionService.query(getName(), "68000", null);
 		queryResults.stream().map(result -> new LoadSpec(this, 0, result)).forEach(loadSpecs::add);
