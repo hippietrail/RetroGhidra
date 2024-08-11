@@ -124,12 +124,12 @@ public class Atari2600Loader extends AbstractProgramWrapperLoader {
                 );
             }
 
-            Address reset_vec = addrSpace.getAddress(VCS_RESET_VECTOR);
-            symTab.createLabel(reset_vec, "RESET", SourceType.ANALYSIS);
+            Address resetVec = addrSpace.getAddress(VCS_RESET_VECTOR);
+            symTab.createLabel(resetVec, "RESET", SourceType.ANALYSIS);
 
-            Address entry_point = addrSpace.getAddress(mem.getShort(addrSpace.getAddress(VCS_RESET_VECTOR)));
-            symTab.createLabel(entry_point, "entry", SourceType.ANALYSIS);
-            symTab.addExternalEntryPoint(entry_point);
+            Address entryPoint = addrSpace.getAddress(mem.getShort(addrSpace.getAddress(VCS_RESET_VECTOR)));
+            symTab.createLabel(entryPoint, "entry", SourceType.ANALYSIS);
+            symTab.addExternalEntryPoint(entryPoint);
 
         } catch (Exception e) {
             log.appendException(e);
