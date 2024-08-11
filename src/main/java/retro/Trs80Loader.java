@@ -39,25 +39,26 @@ import ghidra.util.Msg;
 import ghidra.util.task.TaskMonitor;
 
 /**
- * A {@link Loader} for loading TRS-80 /CMD files, /REL files too?
+ * A {@link Loader} for loading TRS-80 /CMD files (load modules).
+ * TODO: /REL files too?
  */
 public class Trs80Loader extends AbstractProgramWrapperLoader {
 
     public final static String TRS_NAME = "TRS-80 /CMD";
     public final static int TRS_TYPE_DATA = 0x01;       // "object code" (load block) - aka "data"
-    public final static int TRS_TYPE_JUMP = 0x02;       // "transfer address" - aka "jump address"
+    public final static int TRS_TYPE_TRANSFER = 0x02;   // "transfer address" - aka "jump address"
     public final static int TRS_TYPE_END = 0x04;        // "end of partitioned data set member"
     public final static int TRS_TYPE_HEADER = 0x05;     // "load module header" - aka "header"
     public final static int TRS_TYPE_MEMBER = 0x06;     // "partitioned data set member"
-    public final static int TRS_TYPE_PATCH = 0x07;      // "patch name header"
+    public final static int TRS_TYPE_PATCH = 0x07;      // "patch name header" (LDOS)
     public final static int TRS_TYPE_ISAM = 0x08;       // "ISAM directory entry"
     public final static int TRS_TYPE_END_ISAM = 0x0a;   // "end of ISAM directory"
     public final static int TRS_TYPE_PDS = 0x0c;        // "PDS directory entry"
     public final static int TRS_TYPE_END_PDS = 0x0e;    // "end of PDS directory"
     public final static int TRS_TYPE_YANK = 0x10;       // "yanked load block"
-    public final static int TRS_TYPE_COPYRIGHT = 0x1f;  // "copyright block"
+    public final static int TRS_TYPE_COPYRIGHT = 0x1f;  // "copyright block" (LDOS and DOSPLUS)
 
-    // TODO make optional, how to add as comment / program name in Ghidra?
+    // TODO make this an optional, how to add as comment / program name in Ghidra?
     String filename = "";
 
 	@Override
@@ -71,87 +72,73 @@ public class Trs80Loader extends AbstractProgramWrapperLoader {
 
         BinaryReader reader = new BinaryReader(provider, true);
 
-        int byte_index = 0;
-        int tag_index = 0;
-        boolean seen_jump = false;
+        int offset = 0; // byte index
+        int recordIndex = 0;
+        boolean seenTransferAddress = false;
         loop: while (true) {
-            if (byte_index + 1 > reader.length()) {
-                if (seen_jump) {
-                    Msg.info(this, "hit EOF after processing load records, all went well");
-                    break loop;
-                }
-				Msg.info(this, "hit EOF before processing a 'jump' record, maybe not a TRS-80 file");
+            if (offset + 1 > reader.length()) {
+                // hit EOF after processing load records, all went well
+                if (seenTransferAddress) break loop;
+                // hit EOF before processing a 'transfer address' record, probably not a TRS-80 file
 				return loadSpecs;
             }
-            byte record_type = (byte) reader.readNextUnsignedByte();
-            Msg.info(this, "0x" + HexFormat.of().toHexDigits(byte_index) + " record_type[" + tag_index + "] = 0x" + HexFormat.of().toHexDigits(record_type));
-            byte_index++;
-            tag_index++;
-            // Any code above X'1F' is invalid as a record type.  In addition, any  code
-            // not listed in the above table is reserved for  future  use
-            switch (record_type) {
+            byte typeCode = (byte) reader.readNextUnsignedByte();
+            offset++;
+            recordIndex++;
+            // Any code above X'1F' is invalid as a record type. In addition, any code
+            // not listed in the above table is reserved for future use
+            switch (typeCode) {
                 // this is basically 'if record not known type'
-                case TRS_TYPE_DATA, TRS_TYPE_JUMP, TRS_TYPE_END, TRS_TYPE_HEADER,
+                case TRS_TYPE_DATA, TRS_TYPE_TRANSFER, TRS_TYPE_END, TRS_TYPE_HEADER,
                     TRS_TYPE_MEMBER, TRS_TYPE_PATCH, TRS_TYPE_ISAM,
                     TRS_TYPE_END_ISAM, TRS_TYPE_PDS, TRS_TYPE_END_PDS, 
                     TRS_TYPE_YANK, TRS_TYPE_COPYRIGHT -> { break; }
                 default -> {
-                    if (seen_jump) {
-                        Msg.info(this, "  hit garbage after processing load records, all went well");
-                        break loop;
-                    }
-					Msg.info(this, "  unknown record - not a TRS-80 file");
+                    // hit garbage after processing load records, all went well
+                    if (seenTransferAddress) break loop;
+                    // unknown record - not a /CMD file
                     return loadSpecs;
                 }
             }
 
             // this is the real switch
-            switch (record_type) {
-                case TRS_TYPE_DATA -> { /* 1 */
-                    Msg.info(this, "  data / object code / load block");
-                    if (byte_index + 2 > reader.length()) return loadSpecs;
-                    int rawLen = reader.readNextUnsignedByte() & 0xFF;
-                    int len = rawLen < 3 ? 256 + rawLen : rawLen;
-                    Msg.info(this, "    len = " + rawLen + " -> " + len);
-                    byte_index++;
+            switch (typeCode) {
+                case TRS_TYPE_DATA -> { /* 1 : data / object code / load block */
+                    if (offset + 2 > reader.length()) return loadSpecs;
+                    int lengthByte = reader.readNextUnsignedByte() & 0xFF;
+                    int len = lengthByte < 3 ? 256 + lengthByte : lengthByte;
+                    offset++;
                     // first 2 bytes of the len bytes following are the load address
-                    if (byte_index + len > reader.length()) return loadSpecs;
+                    if (offset + len > reader.length()) return loadSpecs;
                     int address = reader.readNextUnsignedShort();
                     reader.readNextByteArray(len - 2);
-                    Msg.info(this, "    load address = 0x" + Integer.toHexString(address));
-                    byte_index += len;
+                    offset += len;
                     break;
                 }
-                case TRS_TYPE_JUMP -> { /* 2 */
-                    if (byte_index + 2 > reader.length()) return loadSpecs;
+                case TRS_TYPE_TRANSFER -> { /* 2 */
+                    if (offset + 2 > reader.length()) return loadSpecs;
                     final int len = reader.readNextUnsignedByte() & 0xFF;
-                    Msg.info(this, "  jump [" + len + "]");
-                    byte_index += 1;
-                    if (byte_index + len > reader.length()) return loadSpecs;
+                    offset += 1;
+                    if (offset + len > reader.length()) return loadSpecs;
                     int address = reader.readNextUnsignedShort();
-                    Msg.info(this, "    address = 0x" + Integer.toHexString(address));
-                    if (len != 2) {
-                        Msg.info(this, "  warning - jump length is not 2 bytes");
-                        reader.readNextByteArray(len - 2);
-                    }
-                    byte_index += len;
-                    seen_jump = true;
+                    // shouldn't happen, but in case the address length is not 2 bytes
+                    if (len != 2) reader.readNextByteArray(len - 2);
+                    offset += len;
+                    seenTransferAddress = true;
                     break;
                 }
                 case TRS_TYPE_HEADER -> { /* 5 */
-                    if (byte_index + 1 > reader.length()) return loadSpecs;
-                    final int rawLen = reader.readNextUnsignedByte() & 0xFF;
-                    final int len = rawLen < 3 ? 256 + rawLen : rawLen;
-                    Msg.info(this, "  header [" + rawLen + " -> " + len + "]");
-                    byte_index += 1;
-                    if (byte_index + len > reader.length()) return loadSpecs;
+                    if (offset + 1 > reader.length()) return loadSpecs;
+                    final int lengthByte = reader.readNextUnsignedByte() & 0xFF;
+                    final int len = lengthByte < 3 ? 256 + lengthByte : lengthByte;
+                    offset += 1;
+                    if (offset + len > reader.length()) return loadSpecs;
                     this.filename = reader.readNextAsciiString(len);
-                    Msg.info(this, "   filename = '" + this.filename + "'");
-                    byte_index += len;
+                    offset += len;
                     break;
                 }
                 default -> {
-                    Msg.info(this, "  known type, but not implemented, ignore and continue");
+                    // known type, but not implemented, ignore and continue
                     break loop;
                 }
             }
@@ -172,37 +159,37 @@ public class Trs80Loader extends AbstractProgramWrapperLoader {
 
         int ramNum = 0;
         
-        int byte_index = 0;
-        boolean seen_jump = false;
+        int offset = 0;
+        boolean seenTransferAddress = false;
         loop: while (true) {
-            if (byte_index + 1 > reader.length()) {
-                // EOF and we've seen a jump, all went well
-                if (seen_jump) break loop;
+            if (offset + 1 > reader.length()) {
+                // EOF and we've seen a transfer address, all went well
+                if (seenTransferAddress) break loop;
                 return;
             }
 
-            int record_type = reader.readNextUnsignedByte();
-            byte_index++;
+            int typeCode = reader.readNextUnsignedByte();
+            offset++;
 
-            switch (record_type) {
-                case TRS_TYPE_DATA, TRS_TYPE_JUMP, TRS_TYPE_END, TRS_TYPE_HEADER,
+            switch (typeCode) {
+                case TRS_TYPE_DATA, TRS_TYPE_TRANSFER, TRS_TYPE_END, TRS_TYPE_HEADER,
                     TRS_TYPE_MEMBER, TRS_TYPE_PATCH, TRS_TYPE_ISAM,
                     TRS_TYPE_END_ISAM, TRS_TYPE_PDS, TRS_TYPE_END_PDS, 
                     TRS_TYPE_YANK, TRS_TYPE_COPYRIGHT -> { break; }
                 default -> {
-                    // trailing garbage but we've seen a jump, all went well
-                    if (seen_jump) break loop;
+                    // trailing garbage but we've seen a transfer address, all went well
+                    if (seenTransferAddress) break loop;
                     return;
                 }
             }
 
-            switch (record_type) {
+            switch (typeCode) {
                 case TRS_TYPE_DATA -> { /* 1 */
                     final int rawLen = reader.readNextUnsignedByte() & 0xFF;
                     final int len = rawLen < 3 ? 256 + rawLen : rawLen;
-                    byte_index++;
+                    offset++;
                     final int address = reader.readNextUnsignedShort();
-                    byte_index += 2;
+                    offset += 2;
 
                     try {
                         Address start = program.getAddressFactory().getDefaultAddressSpace().getAddress(address);
@@ -212,7 +199,7 @@ public class Trs80Loader extends AbstractProgramWrapperLoader {
                             "RAM " + ramNum++,  // name
                             start,              // start
                             bytes,              // filebytes
-                            byte_index,         // offset
+                            offset,             // offset
                             len - 2,            // size
                             false);             // overlay
                         block.setWrite(true);
@@ -221,22 +208,22 @@ public class Trs80Loader extends AbstractProgramWrapperLoader {
                     }
 
                     reader.readNextByteArray(len - 2);
-                    byte_index += len - 2;
+                    offset += len - 2;
                     break;
                 }
-                case TRS_TYPE_JUMP -> { /* 2 */
-                    // jump does not use the special values, it should always be '2'
+                case TRS_TYPE_TRANSFER -> { /* 2 */
+                    // transfer address does not use the special length values, should always be '2'
                     final int len = reader.readNextUnsignedByte() & 0xFF;
-                    byte_index += 1;
+                    offset += 1;
                     final int address = reader.readNextUnsignedShort();
-                    byte_index += len;
-                    seen_jump = true;
+                    offset += len;
+                    seenTransferAddress = true;
 
                     try {
-	                    Address entry_point = program.getAddressFactory().getDefaultAddressSpace().getAddress(address);
+	                    Address entryPoint = program.getAddressFactory().getDefaultAddressSpace().getAddress(address);
 	                    SymbolTable st = program.getSymbolTable();
-	                    st.createLabel(entry_point, "entry", SourceType.ANALYSIS);
-	                    st.addExternalEntryPoint(entry_point);
+	                    st.createLabel(entryPoint, "entry", SourceType.ANALYSIS);
+	                    st.addExternalEntryPoint(entryPoint);
                     } catch (Exception e) {
                         log.appendException(e);
                     }
@@ -246,9 +233,9 @@ public class Trs80Loader extends AbstractProgramWrapperLoader {
                 default -> { /* known type, but not implemented */
                     final int rawLen = reader.readNextUnsignedByte() & 0xFF;
                     final int len = rawLen < 3 ? 256 + rawLen : rawLen;
-                    byte_index += 1;
+                    offset += 1;
                     reader.readNextByteArray(len);
-                    byte_index += len;
+                    offset += len;
                     break;
                 }
             }
