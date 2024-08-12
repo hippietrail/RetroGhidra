@@ -173,7 +173,6 @@ public class Trs80Loader extends AbstractProgramWrapperLoader {
             int typeCode = reader.readNextUnsignedByte();
             offset++;
 
-
             if (!Arrays.stream(TRS_TYPE_CODES).anyMatch(x -> x == typeCode)) {
                 // trailing garbage but we've seen a transfer address, all went well
                 if (seenTransferAddress) break loop;

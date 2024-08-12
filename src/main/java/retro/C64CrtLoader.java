@@ -37,6 +37,7 @@ import ghidra.util.task.TaskMonitor;
 public class C64CrtLoader extends AbstractProgramWrapperLoader {
 
     public static final String CRT_NAME = "Commodore 64 Cartridge (CRT)";
+    public static final String CRT_MAGIC = "C64 CARTRIDGE   ";
 
 	@Override
 	public String getName() {
@@ -51,7 +52,7 @@ public class C64CrtLoader extends AbstractProgramWrapperLoader {
 
 		if (reader.length() < 64) return loadSpecs;
         String magic = reader.readNextAsciiString(16);
-        if (!magic.equals("C64 CARTRIDGE   ")) return loadSpecs;
+        if (!magic.equals(CRT_MAGIC)) return loadSpecs;
         
 		List<QueryResult> queryResults = QueryOpinionService.query(getName(), "6502", null);
 		queryResults.forEach(result -> loadSpecs.add(new LoadSpec(this, 0, result)));
