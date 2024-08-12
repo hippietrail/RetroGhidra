@@ -1,13 +1,13 @@
 Ghidra Loaders and FileSystems for various retrocomputing platforms.
 
 # Done
+- Apple II: Binary II archive loader - only first binary is loaded
 - Atari 2600: Rom file loader - only 2K and 4K are possible
 - Classic 680x0 Mac: application loader
 - Sinclair ZX Spectrum .SNA snapshot loader - 48K snapshots
 - Tandy TRS-80: /CMD command file loader
 
 # In progress
-- Apple II: Binary II archive loader for single-file archives - identifies but does not load yet
 - Atari ST: Executable format loader - identifies but does not load yet
 - Commodore 64: .CRT cartridge loader - identifies but does not load yet
 - Commodore VIC-20: .PRG cartridge loader - identifies but does not load yet
