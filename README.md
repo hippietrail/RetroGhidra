@@ -4,6 +4,7 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - Apple II: Binary II archive loader - only first binary is loaded
 - Atari 2600: Rom file loader - only 2K and 4K are possible
 - Classic 680x0 Mac: application loader
+- RISC OS: AIF (Arm Image Format) loader
 - Sinclair ZX Spectrum .SNA snapshot loader - 48K snapshots
 - Tandy TRS-80: /CMD command file loader
 
@@ -12,7 +13,6 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - Commodore 64: .CRT cartridge loader - identifies but does not load yet
 - Commodore VIC-20: .PRG cartridge loader - identifies but does not load yet
 - Commodore Amiga: "Hunk" executable and object file loader - identifies but does not load yet
-- RISC OS: AIF (Arm Image Format) loader - identifies but does not yet load
 - Sharp X68000: .X and .Z executable formats - identifies but does not load yet
 - Sinclair QL: Executable format loader - identifies but does not load yet
 

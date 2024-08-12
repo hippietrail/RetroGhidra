@@ -18,6 +18,7 @@ package retro;
 import java.io.IOException;
 import java.util.*;
 
+import ghidra.app.util.MemoryBlockUtils;
 import ghidra.app.util.Option;
 import ghidra.app.util.bin.BinaryReader;
 import ghidra.app.util.bin.ByteProvider;
@@ -27,7 +28,11 @@ import ghidra.app.util.opinion.LoadSpec;
 import ghidra.app.util.opinion.QueryOpinionService;
 import ghidra.app.util.opinion.QueryResult;
 import ghidra.framework.model.DomainObject;
+import ghidra.program.model.address.Address;
+import ghidra.program.model.address.AddressSpace;
 import ghidra.program.model.listing.Program;
+import ghidra.program.model.symbol.SourceType;
+import ghidra.program.model.symbol.SymbolTable;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.Msg;
 import ghidra.util.task.TaskMonitor;
@@ -38,8 +43,10 @@ import ghidra.util.task.TaskMonitor;
 public class AifLoader extends AbstractProgramWrapperLoader {
 
 	public static final String AIF_NAME = "Arm Image Format (AIF)";
+	private static final int AIF_HEADER_LEN = 0x40; // 64
 	private static final int AIF_OFF_EXIT_CODE = 0x10;
 	private static final int AIF_OFF_IMAGE_DEBUG_TYPE = 0x24;
+	private static final int AIF_OFF_IMAGE_BASE_ADDRESS = 0x28;
 	private static final int AIF_OFF_FLAGS_AND_ADDRESS_SIZE = 0x30;
 	private static final int AIF_EXIT_CODE = 0xef000011;
 
@@ -54,7 +61,7 @@ public class AifLoader extends AbstractProgramWrapperLoader {
 
 		BinaryReader reader = new BinaryReader(provider, true);
 
-		if (reader.length() < 64) return loadSpecs;
+		if (reader.length() < AIF_HEADER_LEN) return loadSpecs;
 		int exitCode = reader.readInt(AIF_OFF_EXIT_CODE); // serves as magic number
 		int imageDebugType = reader.readInt(AIF_OFF_IMAGE_DEBUG_TYPE); // just sanity check for now
 		int flagsAndAddressSize = reader.readInt(AIF_OFF_FLAGS_AND_ADDRESS_SIZE); // just sanity check for now but if 64 could change length
@@ -83,7 +90,35 @@ public class AifLoader extends AbstractProgramWrapperLoader {
 			Program program, TaskMonitor monitor, MessageLog log)
 			throws CancelledException, IOException {
 
-		// TODO: Load the bytes from 'provider' into the 'program'.
+		BinaryReader reader = new BinaryReader(provider, true);
+
+		// we load the whole file, including the header at the image_base_address
+		// and the entry point at image_base_address + 8
+
+		final long imageBaseAddress = reader.readLong(AIF_OFF_IMAGE_BASE_ADDRESS);
+
+		AddressSpace addressSpace = program.getAddressFactory().getDefaultAddressSpace();
+
+		try {
+			Address start = addressSpace.getAddress(imageBaseAddress);
+			program.getMemory().createInitializedBlock(
+				"CODE",
+				start,
+				MemoryBlockUtils.createFileBytes(program, provider, monitor),
+				0,
+				provider.length(),
+				false
+			);
+			// TODO i'm assuming the code is under memory protection?
+			// TODO if not, .setWrite(true)
+
+			Address entry = addressSpace.getAddress(imageBaseAddress + 8);
+			SymbolTable st = program.getSymbolTable();
+			st.createLabel(entry, "entry", SourceType.ANALYSIS);
+			st.addExternalEntryPoint(entry);
+		} catch (Exception e) {
+			log.appendException(e);
+		}
 	}
 
 	@Override
