@@ -7,6 +7,7 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - Tandy TRS-80: /CMD command file loader
 
 # In progress
+- Apple II: Binary II archive loader for single-file archives - identifies but does not load yet
 - Atari ST: Executable format loader - identifies but does not load yet
 - Commodore 64: .CRT cartridge loader - identifies but does not load yet
 - Commodore VIC-20: .PRG cartridge loader - identifies but does not load yet
@@ -23,7 +24,8 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - Sinclair Spectrum: More snapshot and emulator formats
 
 ## Filesystems
-- Apple ][ disk image formats
+- Appple II Binary II archives
+- Apple II disk image formats
 - Commodore 64 disk image format
 - Sinclair QL Zip file format with headers in extra fields
 - Sinclair Spectrum disk formats
