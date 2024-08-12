@@ -45,20 +45,20 @@ import ghidra.util.task.TaskMonitor;
 public class Trs80Loader extends AbstractProgramWrapperLoader {
 
     public static final String TRS_NAME = "TRS-80 /CMD";
-    public static final int TRS_TYPE_DATA = 0x01;       // "object code" (load block) - aka "data"
-    public static final int TRS_TYPE_TRANSFER = 0x02;   // "transfer address" - aka "jump address"
-    public static final int TRS_TYPE_END = 0x04;        // "end of partitioned data set member"
-    public static final int TRS_TYPE_HEADER = 0x05;     // "load module header" - aka "header"
-    public static final int TRS_TYPE_MEMBER = 0x06;     // "partitioned data set member"
-    public static final int TRS_TYPE_PATCH = 0x07;      // "patch name header" (LDOS)
-    public static final int TRS_TYPE_ISAM = 0x08;       // "ISAM directory entry"
-    public static final int TRS_TYPE_END_ISAM = 0x0a;   // "end of ISAM directory"
-    public static final int TRS_TYPE_PDS = 0x0c;        // "PDS directory entry"
-    public static final int TRS_TYPE_END_PDS = 0x0e;    // "end of PDS directory"
-    public static final int TRS_TYPE_YANK = 0x10;       // "yanked load block"
-    public static final int TRS_TYPE_COPYRIGHT = 0x1f;  // "copyright block" (LDOS and DOSPLUS)
+    public static final int TRS_TYPE_OBJECT_CODE = 0x01;    // "object code" (load block) - aka "data"
+    public static final int TRS_TYPE_TRANSFER = 0x02;       // "transfer address" - aka "jump address"
+    public static final int TRS_TYPE_END = 0x04;            // "end of partitioned data set member"
+    public static final int TRS_TYPE_HEADER = 0x05;         // "load module header" - aka "header"
+    public static final int TRS_TYPE_MEMBER = 0x06;         // "partitioned data set member"
+    public static final int TRS_TYPE_PATCH = 0x07;          // "patch name header" (LDOS)
+    public static final int TRS_TYPE_ISAM = 0x08;           // "ISAM directory entry"
+    public static final int TRS_TYPE_END_ISAM = 0x0a;       // "end of ISAM directory"
+    public static final int TRS_TYPE_PDS = 0x0c;            // "PDS directory entry"
+    public static final int TRS_TYPE_END_PDS = 0x0e;        // "end of PDS directory"
+    public static final int TRS_TYPE_YANK = 0x10;           // "yanked load block"
+    public static final int TRS_TYPE_COPYRIGHT = 0x1f;      // "copyright block" (LDOS and DOSPLUS)
     public static final int[] TRS_TYPE_CODES = {
-        TRS_TYPE_DATA, TRS_TYPE_TRANSFER, TRS_TYPE_END, TRS_TYPE_HEADER, TRS_TYPE_MEMBER,
+        TRS_TYPE_OBJECT_CODE, TRS_TYPE_TRANSFER, TRS_TYPE_END, TRS_TYPE_HEADER, TRS_TYPE_MEMBER,
         TRS_TYPE_PATCH, TRS_TYPE_ISAM, TRS_TYPE_END_ISAM, TRS_TYPE_PDS, TRS_TYPE_END_PDS, 
         TRS_TYPE_YANK, TRS_TYPE_COPYRIGHT,
     };
@@ -98,7 +98,7 @@ public class Trs80Loader extends AbstractProgramWrapperLoader {
             }
 
             switch (typeCode) {
-                case TRS_TYPE_DATA -> { /* 1 */
+                case TRS_TYPE_OBJECT_CODE -> { /* 1 */
                     // data / object code / load block
                     if (offset + 2 > reader.length()) return loadSpecs;
                     int lengthByte = reader.readNextUnsignedByte() & 0xFF;
@@ -134,7 +134,14 @@ public class Trs80Loader extends AbstractProgramWrapperLoader {
                 }
                 default -> {
                     // known type, but not implemented, ignore and continue
-                    break loop;
+                    if (offset + 1 > reader.length()) return loadSpecs;
+                    final int lengthByte = reader.readNextUnsignedByte() & 0xFF;
+                    final int len = lengthByte < 3 ? 256 + lengthByte : lengthByte;
+                    offset += 1;
+                    if (offset + len > reader.length()) return loadSpecs;
+                    reader.readNextByteArray(len);
+                    offset += len;
+                    break;
                 }
             }
         }
@@ -174,7 +181,7 @@ public class Trs80Loader extends AbstractProgramWrapperLoader {
             }
 
             switch (typeCode) {
-                case TRS_TYPE_DATA -> { /* 1 */
+                case TRS_TYPE_OBJECT_CODE -> { /* 1 */
                     // data / object code / load block
                     final int rawLen = reader.readNextUnsignedByte() & 0xFF;
                     final int len = rawLen < 3 ? 256 + rawLen : rawLen;
