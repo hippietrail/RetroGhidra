@@ -10,11 +10,12 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - Tandy TRS-80: /CMD command file loader
 
 # In progress
-- Amstrad CPC .SNA snapshot format - 64K snapshots might be usable
+- Amstrad CPC .SNA snapshot format - some 64K snapshots might be usable
 - Atari ST: Executable format loader - identifies but does not load yet
 - Commodore 64: .CRT cartridge loader - identifies but does not load yet
 - Commodore Amiga: "Hunk" executable and object file loader - identifies but does not load yet
 - Commodore VIC-20: .PRG cartridge loader - identifies but does not load yet
+- CP/M .CMD command file loader
 - Sharp X68000: .X and .Z executable formats - identifies but does not load yet
 - Sinclair QL: Executable format loader - identifies but does not load yet
 
@@ -38,10 +39,10 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - Acorn: UEF (Unified Emulator Format) for BBC Micro and Electron
 - Amstad CPC
 - Apple IIgs
+- Apple Lisa
 - Atari 8-bit
 - BeOS
 - Commodore PET
-- CP/M
 - Dragon 32/64
 - Jupiter Ace
 - NeXT
@@ -50,5 +51,6 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - RISC OS AOF (ARM Object Format) and ALF (Acorn Library Format)
 - SAM Coupé
 - Sinclair ZX81
+- Thomson MO, TO
 - TI-99/4 and TI-99/4A
 - Timex Sinclair

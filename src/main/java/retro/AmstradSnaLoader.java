@@ -51,10 +51,12 @@ public class AmstradSnaLoader extends AbstractProgramWrapperLoader {
 		AMS_SNA_LENGTH_128K,
 	};
 	public static final String AMS_SNA_MAGIC = "MV - SNA";
+    public static final int AMS_SNA_OFF_VERSION = 0x10;
 	public static final int AMS_SNA_OFF_SP = 0x21; // 16-bit
 	public static final int AMS_SNA_OFF_PC = 0x23; // 16-bit
+    public static final int AMS_SNA_OFF_CURR_RAM_CONFIG = 0x41;
 	public static final int AMS_SNA_OFF_DUMP_SIZE = 0x6b; // 16-bit
-	public static final int AMS_SNA_OFF_CPC_TYPE = 0x6d; // 8-bit
+	public static final int AMS_SNA_OFF_CPC_TYPE = 0x6d;
 	public static final String[] AMS_SNA_CPC_TYPES = {
 		"CPC 464", "CPC 664", "CPC 6128"
 	};
@@ -71,24 +73,32 @@ public class AmstradSnaLoader extends AbstractProgramWrapperLoader {
 		BinaryReader reader = new BinaryReader(provider, true);
 
 		final long fileLength = reader.length();
-		if (!Arrays.stream(AMS_SNA_LENGTHS).anyMatch(length -> length.equals(fileLength))) return loadSpecs;
+        if (fileLength < AMS_SNA_HEADER_LEN) return loadSpecs;
 
 		String magic = reader.readNextAsciiString(AMS_SNA_MAGIC.length());
 		if (!magic.equals(AMS_SNA_MAGIC)) return loadSpecs;
 
+        // prior to version 3, only two file lengths were possible
+        // v3 introduced a variable number of optional 'chunks' at the end
+        final int version = reader.readUnsignedByte(AMS_SNA_OFF_VERSION) & 0xff;
+        if (version < 3 && !Arrays.stream(AMS_SNA_LENGTHS).anyMatch(length -> length.equals(fileLength))) return loadSpecs;
+
 		final int sp = reader.readUnsignedShort(AMS_SNA_OFF_SP);
 		final int pc = reader.readUnsignedShort(AMS_SNA_OFF_PC);
+        final int currRamConfig = reader.readUnsignedByte(AMS_SNA_OFF_CURR_RAM_CONFIG) & 0xff;
 		final int dumpSize = reader.readUnsignedShort(AMS_SNA_OFF_DUMP_SIZE); // in kb: 64 or 128
-		final int cpcType = reader.readUnsignedByte(AMS_SNA_OFF_CPC_TYPE);
+		final int cpcType = reader.readUnsignedByte(AMS_SNA_OFF_CPC_TYPE) & 0xff;
 
-		Msg.info(this, "CPC SP: 0x" + Integer.toHexString(sp)
+		Msg.info(this, "CPC: SNA version " + version
+            + ", SP: 0x" + Integer.toHexString(sp)
 			+ ", PC: 0x" + Integer.toHexString(pc)
+            + ", RAM config: 0x" + Integer.toHexString(currRamConfig)
 			+ ", dump size: 0x" + Integer.toHexString(dumpSize)
 			+ " (" + dumpSize
 			+ " bytes), CPC type: " + cpcType
 			+ " (" + AMS_SNA_CPC_TYPES[cpcType] + ")");
 
-        // z80:LE:16:default
+		// z80:LE:16:default
 
 		List<QueryResult> queryResults = QueryOpinionService.query(getName(), "z80", null);
 		queryResults.stream().map(result -> new LoadSpec(this, 0, result)).forEach(loadSpecs::add);
@@ -111,7 +121,13 @@ public class AmstradSnaLoader extends AbstractProgramWrapperLoader {
 		// I don't know how the paging works, or the mapping from the snapshot's memory dump to physical RAM
 		// the CPC has 64k of RAM so there must be paging of ROM and/or RAM even ignoring 128k snapshots for now
 
+        // in version 3 the dump size can be 0, indicating MEM chunks will follow instead
+
 		// let's try if it's a 64k snapshot
+        if (dumpSize == 0) {
+            Msg.info(this, "MEM chunks are not supported so far.");
+            return;
+        }
 		if (dumpSize != 64) {
 			Msg.info(this, "128k snapshots are not supported so far.");
 			return;
