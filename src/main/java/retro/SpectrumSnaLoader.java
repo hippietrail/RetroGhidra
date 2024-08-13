@@ -80,25 +80,25 @@ public class SpectrumSnaLoader extends AbstractProgramWrapperLoader {
 		BinaryReader reader = new BinaryReader(provider, true);
 		
 		// use a temp since .length() can throw and .anyMatch() is a lambda (no 'throws' clause)
-		Long fileLength = reader.length();
+		final Long fileLength = reader.length();
 		if (!Arrays.stream(ZX_SNA_LENGTHS).anyMatch(length -> length.equals(fileLength))) return loadSpecs;
 
 		// only 1 bit of this field is defined, anything else probably a false positive
-		int iff2 = reader.readUnsignedByte(ZX_SNA_OFF_IFF2);
+		final int iff2 = reader.readUnsignedByte(ZX_SNA_OFF_IFF2);
 		if ((iff2 & ~0b0000_0100) != 0) return loadSpecs;
 
 		// stack pointer can't be in ROM, probably a false positive
-		int sp = reader.readUnsignedShort(ZX_SNA_OFF_SP);
+		final int sp = reader.readUnsignedShort(ZX_SNA_OFF_SP);
 		if (sp < ZX_SNA_RAM_START) Msg.warn(this, "Stack pointer in ROM");
 
 		// only 0 to 2 are valid, anything else probably a false positive
-		int interruptMode = reader.readUnsignedByte(ZX_SNA_OFF_INT_MODE);
+		final int interruptMode = reader.readUnsignedByte(ZX_SNA_OFF_INT_MODE);
 		if (interruptMode > 2) return loadSpecs;
 
 		// .SNA was originally used by a hardware device. This field indicated Sinclair Interface 1 presence
 		// As an emulator format, this field indicates border colour, only 0 to 7
 		// Anything besides these 8 values probably a false positive
-		int borderColourOrInt1 = reader.readUnsignedByte(ZX_SNA_OFF_BORDER);
+		final int borderColourOrInt1 = reader.readUnsignedByte(ZX_SNA_OFF_BORDER);
 		if (borderColourOrInt1 > 7
 				&& borderColourOrInt1 != ZX_SNA_ROM_PAGED_SPEC && borderColourOrInt1 != ZX_SNA_ROM_PAGED_INT1)
 			return loadSpecs;
