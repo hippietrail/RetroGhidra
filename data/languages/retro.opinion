@@ -2,6 +2,9 @@
     <constraint loader="Amiga Hunk" compilerSpecID="default">
         <constraint primary="68000" processor="68000" endian="big" size="32" />
     </constraint>
+    <constraint loader="Amstrad CPC Snapshot (SNA)" compilerSpecID="default">
+        <constraint primary="z80" processor="Z80" endian="little" size="16" />
+    </constraint>
     <constraint loader="Apple II Binary II" compilerSpecID="default">
         <constraint primary="6502" processor="6502" endian="little" size="16" />
     </constraint>

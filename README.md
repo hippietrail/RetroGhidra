@@ -10,6 +10,7 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - Tandy TRS-80: /CMD command file loader
 
 # In progress
+- Amstrad CPC .SNA snapshot format - 64K snapshots might be usable
 - Atari ST: Executable format loader - identifies but does not load yet
 - Commodore 64: .CRT cartridge loader - identifies but does not load yet
 - Commodore Amiga: "Hunk" executable and object file loader - identifies but does not load yet
@@ -21,7 +22,7 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 ## Loaders
 - Sharp X68000: .R executable format
 - Sinclair QL: SROFF object file format
-- Sinclair ZX Spectrum: .SNA snapshot loader - 128K snapshots
+- Sinclair ZX Spectrum: .SNA snapshot format - 128K variant
 - Sinclair ZX Spectrum: More snapshot and emulator formats
 
 ## Filesystems
@@ -34,11 +35,10 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - Tandy TRS-80 Model 1 and Model 3 disk formats
 
 # To investigate
-- Acorn Electron
+- Acorn: UEF (Unified Emulator Format) for BBC Micro and Electron
 - Amstad CPC
 - Apple IIgs
 - Atari 8-bit
-- BBC Micro
 - BeOS
 - Commodore PET
 - CP/M
