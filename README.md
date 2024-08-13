@@ -2,6 +2,7 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 
 # Done
 - Apple II: Binary II archive loader - only first binary is loaded
+- Apple II: NAPS (NuLib2 Attribute Preservation String) loader
 - Atari 2600: Rom file loader - only 2K and 4K are possible
 - Classic 680x0 Mac: application loader
 - RISC OS: AIF (Arm Image Format) loader

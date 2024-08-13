@@ -5,6 +5,9 @@
     <constraint loader="Apple II Binary II" compilerSpecID="default">
         <constraint primary="6502" processor="6502" endian="little" size="16" />
     </constraint>
+    <constraint loader="Apple II binary with NAPS" compilerSpecID="default">
+        <constraint primary="6502" processor="6502" endian="little" size="16" />
+    </constraint>
     <constraint loader="Arm Image Format (AIF)" compilerSpecID="default">
         <constraint primary="arm" processor="ARM" endian="little" size="32" />
     </constraint>
