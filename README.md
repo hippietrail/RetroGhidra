@@ -12,8 +12,8 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 # In progress
 - Atari ST: Executable format loader - identifies but does not load yet
 - Commodore 64: .CRT cartridge loader - identifies but does not load yet
-- Commodore VIC-20: .PRG cartridge loader - identifies but does not load yet
 - Commodore Amiga: "Hunk" executable and object file loader - identifies but does not load yet
+- Commodore VIC-20: .PRG cartridge loader - identifies but does not load yet
 - Sharp X68000: .X and .Z executable formats - identifies but does not load yet
 - Sinclair QL: Executable format loader - identifies but does not load yet
 
@@ -21,17 +21,17 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 ## Loaders
 - Sharp X68000: .R executable format
 - Sinclair QL: SROFF object file format
-- Sinclair ZX Spectrum .SNA snapshot loader - 128K snapshots
-- Sinclair Spectrum: More snapshot and emulator formats
+- Sinclair ZX Spectrum: .SNA snapshot loader - 128K snapshots
+- Sinclair ZX Spectrum: More snapshot and emulator formats
 
 ## Filesystems
-- Appple II Binary II archives
+- Apple II Binary II archives
 - Apple II disk image formats
 - Commodore 64 disk image format
 - Sinclair QL Zip file format with headers in extra fields
 - Sinclair Spectrum disk formats
-- Tandy TRS-80 Model 1 and Model 3 disk formats
 - Tandy Coco disk format
+- Tandy TRS-80 Model 1 and Model 3 disk formats
 
 # To investigate
 - Acorn Electron
