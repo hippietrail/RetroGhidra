@@ -115,6 +115,7 @@ public class Trs80Loader extends AbstractProgramWrapperLoader {
                     if (offset + 2 > reader.length()) return loadSpecs;
                     final int len = reader.readNextUnsignedByte() & 0xFF;
                     offset += 1;
+                    if (len != 2) return loadSpecs;
                     if (offset + len > reader.length()) return loadSpecs;
                     reader.readNextByteArray(len);
                     offset += len;
