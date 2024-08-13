@@ -38,7 +38,7 @@ import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 
 /**
- * A @{link Loader} for loading single-file Apple II Binary II files.
+ * A {@link Loader} for loading Apple II Binary II files.
  */
 public class Apple2Binary2Loader extends AbstractProgramWrapperLoader {
 
