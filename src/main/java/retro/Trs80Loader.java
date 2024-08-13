@@ -147,6 +147,8 @@ public class Trs80Loader extends AbstractProgramWrapperLoader {
             }
         }
 
+        // z80:LE:16:default
+
         List<QueryResult> queryResults = QueryOpinionService.query(getName(), "z80", null);
 		queryResults.stream().map(result -> new LoadSpec(this, 0, result)).forEach(loadSpecs::add);
 

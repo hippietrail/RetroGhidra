@@ -35,7 +35,7 @@ import ghidra.util.task.TaskMonitor;
  */
 public class Vic20PrgLoader extends AbstractProgramWrapperLoader {
 
-    public static final String PRG_NAME = "Commodore VIC-20 Cartridge (PRG)";
+    public final static String PRG_NAME = "Commodore VIC-20 Cartridge (PRG)";
 
 	@Override
 	public String getName() {
@@ -54,6 +54,8 @@ public class Vic20PrgLoader extends AbstractProgramWrapperLoader {
         // we can only handle two sizes of rom, larger roms have proprietary layouts
         final long romLen = provider.length();
         if (romLen != 4 * 1024 + 2 && romLen != 8 * 1024 + 2) return loadSpecs;
+
+        // 6502:LE:16:default
 
         List<QueryResult> queryResults = QueryOpinionService.query(getName(), "6502", null);
 		queryResults.forEach(result -> loadSpecs.add(new LoadSpec(this, 0, result)));

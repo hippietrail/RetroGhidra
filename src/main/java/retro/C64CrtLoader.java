@@ -53,10 +53,11 @@ public class C64CrtLoader extends AbstractProgramWrapperLoader {
 		if (reader.length() < 64) return loadSpecs;
         String magic = reader.readNextAsciiString(16);
         if (!magic.equals(CRT_MAGIC)) return loadSpecs;
-        
+
+        // 6502:LE:16:default
+
 		List<QueryResult> queryResults = QueryOpinionService.query(getName(), "6502", null);
 		queryResults.forEach(result -> loadSpecs.add(new LoadSpec(this, 0, result)));
-		// queryResults.stream().map(result -> new LoadSpec(this, 0, result)).forEach(loadSpecs::add);
 
         return loadSpecs;
 	}

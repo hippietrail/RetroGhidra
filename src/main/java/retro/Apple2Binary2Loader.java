@@ -116,6 +116,8 @@ public class Apple2Binary2Loader extends AbstractProgramWrapperLoader {
 		int off = 0;
 		while (true) {
 			if (reader.readUnsignedByte(off + BIN2_OFF_FILETYPE_CODE) == BIN2_FILETYPE_BIN) {
+				// 6502:LE:16:default
+
 				List<QueryResult> queryResults = QueryOpinionService.query(getName(), "6502", null);
 				queryResults.forEach(result -> loadSpecs.add(new LoadSpec(this, 0, result)));
 				break;

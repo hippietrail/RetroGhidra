@@ -54,6 +54,8 @@ public class AtariStLoader extends AbstractProgramWrapperLoader {
         long magic = reader.readUnsignedShort(0);
         if (magic != ST_MAGIC && magic != ST_MAGIC_2) return loadSpecs;
 
+        // 68000:BE:32:default (68020 etc are treated as 'variants')
+
 		List<QueryResult> queryResults = QueryOpinionService.query(getName(), "68000", null);
 		queryResults.stream().map(result -> new LoadSpec(this, 0, result)).forEach(loadSpecs::add);
 

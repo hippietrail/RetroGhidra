@@ -77,9 +77,10 @@ public class AifLoader extends AbstractProgramWrapperLoader {
 			case 0, 26, 32, 64 -> { break; }
 			default -> { return loadSpecs; }
 		}
-		List<QueryResult> queryResults =
-			QueryOpinionService.query(getName(), "arm", null);
 
+        // arm:LE:32:default
+
+		List<QueryResult> queryResults = QueryOpinionService.query(getName(), "arm", null);
 		queryResults.forEach(result -> loadSpecs.add(new LoadSpec(this, 0, result)));
 
 		return loadSpecs;

@@ -103,6 +103,8 @@ public class SpectrumSnaLoader extends AbstractProgramWrapperLoader {
 				&& borderColourOrInt1 != ZX_SNA_ROM_PAGED_SPEC && borderColourOrInt1 != ZX_SNA_ROM_PAGED_INT1)
 			return loadSpecs;
 
+        // z80:LE:16:default
+
 		List<QueryResult> queryResults = QueryOpinionService.query(getName(), "z80", null);
 		queryResults.stream().map(result -> new LoadSpec(this, 0, result)).forEach(loadSpecs::add);
 
