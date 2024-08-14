@@ -28,12 +28,16 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 
 ## Filesystems
 - Apple II Binary II archives
-- Apple II disk image formats
+- Apple II .do and .po disk image formats
 - Commodore 64 disk image format
 - Sinclair QL Zip file format with headers in extra fields
-- Sinclair Spectrum disk formats
-- Tandy Coco disk format
-- Tandy TRS-80 Model 1 and Model 3 disk formats
+- Sinclair Spectrum: .DSK +3DOS disk image format
+- Sinclair Spectrum: .SCL disk format
+- Sinclair Spectrum: .TRD Beta Disk TR-DOS disk iamge format
+- Tandy Coco disk formats
+- Tandy TRS-80 Model I/III: .DMK disk image format
+- Tandy TRS-80 Model I/III: .JV1 disk image format
+- Tandy TRS-80 Model I/III: .JV3 disk image format
 
 # To investigate
 - Acorn: UEF (Unified Emulator Format) for BBC Micro and Electron
