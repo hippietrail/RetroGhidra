@@ -26,7 +26,7 @@
     <constraint loader="Commodore 64 Cartridge (CRT)" compilerSpecID="default">
         <constraint primary="6502" processor="6502" endian="little" size="16" />
     </constraint>
-    <constraint loader="Commodore VIC-20 Cartridge (PRG)" compilerSpecID="default">
+    <constraint loader="Commodore 8-bit program (PRG)" compilerSpecID="default">
         <constraint primary="6502" processor="6502" endian="little" size="16" />
     </constraint>
     <constraint loader="Sharp X68000 .X" compilerSpecID="default">
