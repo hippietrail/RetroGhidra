@@ -55,6 +55,8 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - RISC OS AOF (ARM Object Format) and ALF (Acorn Library Format)
 - SAM Coupé
 - Sinclair ZX81
+- Tandy Coco: .cas tape images
+- Tandy Coco: cartridges (.ccc, .rom)
 - Thomson MO, TO
 - TI-99/4 and TI-99/4A
 - Timex Sinclair
