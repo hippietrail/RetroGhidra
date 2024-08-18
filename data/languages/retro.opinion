@@ -29,6 +29,9 @@
     <constraint loader="Commodore 8-bit program (PRG)" compilerSpecID="default">
         <constraint primary="6502" processor="6502" endian="little" size="16" />
     </constraint>
+    <constraint loader="Exidy Sorcerer Snapshot (SNP)" compilerSpecID="default">
+        <constraint primary="z80" processor="Z80" endian="little" size="16" />
+    </constraint>
     <constraint loader="Sharp X68000 .X" compilerSpecID="default">
         <constraint primary="68000" processor="68000" endian="big" size="32" />
     </constraint>
