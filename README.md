@@ -5,6 +5,7 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - Apple II: NAPS (NuLib2 Attribute Preservation String) loader
 - Atari 2600: Rom file loader - only 2K and 4K are possible
 - Classic 680x0 Mac: application loader
+- Exidy Sorcerer: .SNP snapshot loader
 - RISC OS: AIF (Arm Image Format) loader
 - Sinclair ZX Spectrum .SNA snapshot loader - 48K snapshots
 - Tandy TRS-80: /CMD command file loader
