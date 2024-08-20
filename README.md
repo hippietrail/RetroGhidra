@@ -15,6 +15,7 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 
 # In progress
 - Amstrad CPC .SNA snapshot format - some 64K snapshots might be usable
+- Atari 8-bit .XEX file loader
 - Atari ST: Executable format loader - identifies but does not load yet
 - Commodore Amiga: "Hunk" executable and object file loader - identifies but does not load yet
 - CP/M .CMD command file loader
@@ -45,7 +46,7 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - Acorn: UEF (Unified Emulator Format) for BBC Micro and Electron
 - Apple IIgs
 - Apple Lisa
-- Atari 8-bit
+- Atari 8-bit cartride, disk, and tape formats
 - BeOS (Ghidra natively supports PEF)
 - Commodore PET
 - Dragon 32/64
