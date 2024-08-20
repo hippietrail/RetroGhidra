@@ -31,7 +31,6 @@ import ghidra.framework.model.DomainObject;
 import ghidra.program.database.mem.FileBytes;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.listing.Program;
-import ghidra.program.model.mem.MemoryBlock;
 import ghidra.program.model.symbol.SourceType;
 import ghidra.program.model.symbol.SymbolTable;
 import ghidra.util.exception.CancelledException;
@@ -51,7 +50,7 @@ public class ExidySnpLoader extends AbstractProgramWrapperLoader {
 	public static final int SNP_OFF_PC = 26; // 0x1a
 	public static final int SNP_HEADER_LEN = 0x1c;
 
-    public static final int SNP_DISPLAY_START = 0xf080;;
+    public static final int SNP_DISPLAY_START = 0xf080;
 	public static final int SNP_DISPLAY_END = 0xf800;
 
 	@Override
@@ -99,14 +98,13 @@ public class ExidySnpLoader extends AbstractProgramWrapperLoader {
 			Address memoryAdd = program.getAddressFactory().getDefaultAddressSpace().getAddress(0x0000);
 			FileBytes fileBytes = MemoryBlockUtils.createFileBytes(program, provider, monitor);
 			
-			MemoryBlock block = program.getMemory().createInitializedBlock(
+			program.getMemory().createInitializedBlock(
 				"memory",						// name
 				memoryAdd, 						// start
 				fileBytes,			            // filebytes
 				SNP_HEADER_LEN,                 // offset
                 SNP_LENGTH - SNP_HEADER_LEN,    // size
 				false);							// overlay
-			//block.setWrite(true);
 
             SymbolTable st = program.getSymbolTable();
 
