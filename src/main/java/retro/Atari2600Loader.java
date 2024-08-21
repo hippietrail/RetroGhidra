@@ -69,13 +69,7 @@ public class Atari2600Loader extends AbstractProgramWrapperLoader {
             return loadSpecs;
         }
 
-        // TODO when can we do this in one line as below and when do we need the loop I usually use?
-        // loadSpecs.add(new LoadSpec(this, 0, false));
-
-        // 6502:LE:16:default
-
-        List<QueryResult> queryResults = QueryOpinionService.query(getName(), "6502", null);
-		queryResults.stream().map(result -> new LoadSpec(this, 0, result)).forEach(loadSpecs::add);
+        loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("6502:LE:16:default", "default"), true));
 
 		return loadSpecs;
 	}

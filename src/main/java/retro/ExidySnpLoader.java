@@ -76,10 +76,7 @@ public class ExidySnpLoader extends AbstractProgramWrapperLoader {
 		final int interruptMode = reader.readUnsignedByte(SNP_OFF_INT_MODE);
 		if (interruptMode > 2) return loadSpecs;
 
-        // z80:LE:16:default
-
-		List<QueryResult> queryResults = QueryOpinionService.query(getName(), "z80", null);
-		queryResults.stream().map(result -> new LoadSpec(this, 0, result)).forEach(loadSpecs::add);
+        loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("z80:LE:16:default", "default"), true));
 
 		return loadSpecs;
 	}

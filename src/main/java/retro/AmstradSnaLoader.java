@@ -98,10 +98,7 @@ public class AmstradSnaLoader extends AbstractProgramWrapperLoader {
 			+ " bytes), CPC type: " + cpcType
 			+ " (" + AMS_SNA_CPC_TYPES[cpcType] + ")");
 
-		// z80:LE:16:default
-
-		List<QueryResult> queryResults = QueryOpinionService.query(getName(), "z80", null);
-		queryResults.stream().map(result -> new LoadSpec(this, 0, result)).forEach(loadSpecs::add);
+		loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("z80:LE:16:default", "default"), true));
 
 		return loadSpecs;
 	}

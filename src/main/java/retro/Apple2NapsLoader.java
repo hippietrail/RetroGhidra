@@ -58,10 +58,7 @@ public class Apple2NapsLoader extends AbstractProgramWrapperLoader {
         if (!naps.matches("[0-9a-fA-F]{6}")) return loadSpecs;
         if (!naps.substring(0, 2).equals("06")) return loadSpecs;
 
-        // 6502:LE:16:default
-
-        List<QueryResult> queryResults = QueryOpinionService.query(getName(), "6502", null);
-        queryResults.forEach(result -> loadSpecs.add(new LoadSpec(this, 0, result)));
+        loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("6502:LE:16:default", "default"), true));
 
 		return loadSpecs;
 	}

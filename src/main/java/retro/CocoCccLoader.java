@@ -68,10 +68,7 @@ public class CocoCccLoader extends AbstractProgramWrapperLoader {
 			&& reader.length() != 8 * 1024)
 			return loadSpecs;
 
-        // 6809:LE:16:default
-
-		List<QueryResult> queryResults = QueryOpinionService.query(getName(), "6809", null);
-		queryResults.forEach(result -> loadSpecs.add(new LoadSpec(this, 0, result)));
+		loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("6809:LE:16:default", "default"), true));
 
         return loadSpecs;
 	}

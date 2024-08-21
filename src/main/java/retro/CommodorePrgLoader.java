@@ -102,10 +102,7 @@ public class CommodorePrgLoader extends AbstractProgramWrapperLoader {
 			if (Arrays.equals(magic, PRG_VIC20_MAGIC)) maybeWarmStart = Optional.of(next);
 		}
 
-		// 6502:LE:16:default
-
-        List<QueryResult> queryResults = QueryOpinionService.query(getName(), "6502", null);
-		queryResults.forEach(result -> loadSpecs.add(new LoadSpec(this, 0, result)));
+		loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("6502:LE:16:default", "default"), true));
 
 		return loadSpecs;
 	}
