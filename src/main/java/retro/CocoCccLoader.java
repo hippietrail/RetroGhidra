@@ -67,7 +67,7 @@ public class CocoCccLoader extends AbstractProgramWrapperLoader {
 			&& reader.length() != 8 * 1024)
 			return loadSpecs;
 
-		loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("6809:LE:16:default", "default"), true));
+		loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("6809:BE:16:default", "default"), true));
 
         return loadSpecs;
 	}

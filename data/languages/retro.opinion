@@ -2,35 +2,14 @@
     <constraint loader="Amiga Hunk" compilerSpecID="default">
         <constraint primary="68000" processor="68000" endian="big" size="32" />
     </constraint>
-    <constraint loader="Amstrad CPC Snapshot (SNA)" compilerSpecID="default">
-        <constraint primary="z80" processor="Z80" endian="little" size="16" />
-    </constraint>
-    <constraint loader="Apple II Binary II" compilerSpecID="default">
-        <constraint primary="6502" processor="6502" endian="little" size="16" />
-    </constraint>
-    <constraint loader="Apple II binary with NAPS" compilerSpecID="default">
-        <constraint primary="6502" processor="6502" endian="little" size="16" />
-    </constraint>
     <constraint loader="Arm Image Format (AIF)" compilerSpecID="default">
         <constraint primary="arm" processor="ARM" endian="little" size="32" />
-    </constraint>
-    <constraint loader="Atari 2600" compilerSpecID="default">
-        <constraint primary="6502" processor="6502" endian="little" size="16" />
     </constraint>
     <constraint loader="Atari ST" compilerSpecID="default">
         <constraint primary="68000" processor="68000" endian="big" size="32" />
     </constraint>
     <constraint loader="Classic Macintosh Resource Fork" compilerSpecID="default">
         <constraint primary="68000" processor="68000" endian="big" size="32" />
-    </constraint>
-    <constraint loader="Commodore 64 Cartridge (CRT)" compilerSpecID="default">
-        <constraint primary="6502" processor="6502" endian="little" size="16" />
-    </constraint>
-    <constraint loader="Commodore 8-bit program (PRG)" compilerSpecID="default">
-        <constraint primary="6502" processor="6502" endian="little" size="16" />
-    </constraint>
-    <constraint loader="Exidy Sorcerer Snapshot (SNP)" compilerSpecID="default">
-        <constraint primary="z80" processor="Z80" endian="little" size="16" />
     </constraint>
     <constraint loader="Sharp X68000 .X" compilerSpecID="default">
         <constraint primary="68000" processor="68000" endian="big" size="32" />
@@ -40,14 +19,5 @@
     </constraint>
     <constraint loader="Sinclair QL QDOS" compilerSpecID="default">
         <constraint primary="68000" processor="68000" endian="big" size="32" />
-    </constraint>
-    <constraint loader="Sinclair ZX Spectrum Snapshot (SNA)" compilerSpecID="default">
-        <constraint primary="z80" processor="Z80" endian="little" size="16" />
-    </constraint>
-    <constraint loader="Tandy Coco Cartridge (CCC)" compilerSpecID="default">
-        <constraint primary="6809" processor="6809" endian="big" size="16" />
-    </constraint>
-    <constraint loader="TRS-80 /CMD" compilerSpecID="default">
-        <constraint primary="z80" processor="Z80" endian="little" size="16" />
     </constraint>
 </opinions>
