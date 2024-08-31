@@ -5,6 +5,7 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - Apple II NAPS (NuLib2 Attribute Preservation String) loader
 - Atari 2600 .a26/.bin cartridge file loader - only 2K and 4K are possible
 - Atari 8-bit .XEX file loader
+- Atari ST: Executable format loader
 - Classic 680x0 Mac application loader
 - Commodore 64 .CRT cartridge loader - loads straightforward cartridges
 - Commodore VIC-20 .PRG cartridge loader - not other types of .PRG
@@ -16,7 +17,6 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 
 # In progress
 - Amstrad CPC .SNA snapshot format - some 64K snapshots might be usable
-- Atari ST: Executable format loader - identifies but does not load yet
 - Commodore Amiga: "Hunk" executable and object file loader - identifies but does not load yet
 - CP/M .CMD command file loader
 - Sharp X68000: .X and .Z executable formats - identifies but does not load yet
