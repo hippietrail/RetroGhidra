@@ -25,6 +25,8 @@ import ghidra.app.util.bin.ByteProvider;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.app.util.opinion.AbstractProgramWrapperLoader;
 import ghidra.app.util.opinion.LoadSpec;
+import ghidra.app.util.opinion.QueryOpinionService;
+import ghidra.app.util.opinion.QueryResult;
 import ghidra.framework.model.DomainObject;
 import ghidra.program.database.mem.FileBytes;
 import ghidra.program.model.address.Address;
@@ -53,7 +55,7 @@ public class AtariStLoader extends AbstractProgramWrapperLoader {
 	public static final int ST_OFF_DSIZE = 0x06; // size of data segment
 	public static final int ST_OFF_BSIZE = 0x0a; // size of bss segment
 	public static final int ST_OFF_SSIZE = 0x0e; // size of symbol table
-	public static final int ST_OFF_RES1 = 0x12; // reserved
+	public static final int ST_OFF_RESRV = 0x12; // reserved
 	public static final int ST_OFF_FLAGS = 0x16; // flags
 	// ST_OFF_ABSFLAGS = 0x1a; // absolute flags
 	public static final int ST_HEADER_LEN = 0x1c;
@@ -78,11 +80,12 @@ public class AtariStLoader extends AbstractProgramWrapperLoader {
 
         final long magic = reader.readUnsignedShort(0);
         if (magic != ST_MAGIC && magic != ST_MAGIC_2) return loadSpecs;
-		if (reader.readUnsignedInt(ST_OFF_RES1) != 0) return loadSpecs;
+		if (reader.readUnsignedInt(ST_OFF_RESRV) != 0) return loadSpecs;
 		if ((reader.readUnsignedInt(ST_OFF_FLAGS) & ~0b00000000_00110111) != 0) return loadSpecs;
 
         // 68020 etc are treated as 'variants'
-		loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("68000:BE:32:default", "default"), true));
+		List<QueryResult> queryResults = QueryOpinionService.query(getName(), "68000", null);
+		queryResults.stream().map(result -> new LoadSpec(this, 0, result)).forEach(loadSpecs::add);
 
 		return loadSpecs;
 	}
