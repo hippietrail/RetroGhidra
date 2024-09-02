@@ -32,14 +32,17 @@ import ghidra.program.database.mem.FileBytes;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressSpace;
 import ghidra.program.model.data.ArrayDataType;
+import ghidra.program.model.data.ByteDataType;
 import ghidra.program.model.data.StringDataType;
 import ghidra.program.model.data.UnsignedIntegerDataType;
 import ghidra.program.model.data.UnsignedShortDataType;
+import ghidra.program.model.listing.CodeUnit;
 import ghidra.program.model.listing.Listing;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.Memory;
 import ghidra.program.model.symbol.SourceType;
 import ghidra.program.model.symbol.SymbolTable;
+import ghidra.program.model.util.CodeUnitInsertionException;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 
@@ -112,21 +115,7 @@ public class X68KXLoader extends AbstractProgramWrapperLoader {
 				false
 			);
 
-			Listing listing = program.getListing();
-			listing.createData(headerAddress, new StringDataType(), 2);
-			listing.createData(headerAddress.add(0x02), UnsignedShortDataType.dataType);
-			listing.createData(headerAddress.add(0x04), UnsignedIntegerDataType.dataType);
-			listing.createData(headerAddress.add(0x08), UnsignedIntegerDataType.dataType);
-			listing.createData(headerAddress.add(0x0c), UnsignedIntegerDataType.dataType);
-			listing.createData(headerAddress.add(0x10), UnsignedIntegerDataType.dataType);
-			listing.createData(headerAddress.add(0x14), UnsignedIntegerDataType.dataType);
-			listing.createData(headerAddress.add(0x18), UnsignedIntegerDataType.dataType);
-			listing.createData(headerAddress.add(0x1c), UnsignedIntegerDataType.dataType);
-			listing.createData(headerAddress.add(0x20), UnsignedIntegerDataType.dataType);
-			listing.createData(headerAddress.add(0x24), UnsignedIntegerDataType.dataType);
-			listing.createData(headerAddress.add(0x28), UnsignedIntegerDataType.dataType);
-			listing.createData(headerAddress.add(0x2c), new ArrayDataType(UnsignedIntegerDataType.dataType, 4));
-			listing.createData(headerAddress.add(0x3c), UnsignedIntegerDataType.dataType);
+			commentHeader(program, headerAddress);
 
 			Address baseAddress = addresssSpace.getAddress(reader.readUnsignedInt(XX_OFF_BASE_ADDR));
 			Address runAddress = addresssSpace.getAddress(reader.readUnsignedInt(XX_OFF_RUN_ADDR));
@@ -168,6 +157,55 @@ public class X68KXLoader extends AbstractProgramWrapperLoader {
 		} catch (Exception e) {
 			log.appendException(e);
 		}
+	}
+
+	void commentHeader(Program program, Address headerAddress) throws CodeUnitInsertionException {
+		Listing listing = program.getListing();
+		Address ha = headerAddress;
+		listing.createData(ha, new StringDataType(), 2);
+		listing.setComment(ha, CodeUnit.EOL_COMMENT, "magic");
+		ha = ha.add(2);
+		listing.createData(ha, ByteDataType.dataType);
+		listing.setComment(ha, CodeUnit.EOL_COMMENT, "reserved");
+		ha = ha.add(1);
+		listing.createData(ha, ByteDataType.dataType);
+		listing.setComment(ha, CodeUnit.EOL_COMMENT, "load mode");
+		ha = ha.add(1);			
+		listing.createData(ha, UnsignedIntegerDataType.dataType);
+		listing.setComment(ha, CodeUnit.EOL_COMMENT, "base address");
+		ha = ha.add(4);
+		listing.createData(ha, UnsignedIntegerDataType.dataType);
+		listing.setComment(ha, CodeUnit.EOL_COMMENT, "run (execute) address");
+		ha = ha.add(4);
+		listing.createData(ha, UnsignedIntegerDataType.dataType);
+		listing.setComment(ha, CodeUnit.EOL_COMMENT, "text section size");
+		ha = ha.add(4);
+		listing.createData(ha, UnsignedIntegerDataType.dataType);
+		listing.setComment(ha, CodeUnit.EOL_COMMENT, "data section size");
+		ha = ha.add(4);
+		listing.createData(ha, UnsignedIntegerDataType.dataType);
+		listing.setComment(ha, CodeUnit.EOL_COMMENT, "block storage section size (contains .comm, .stack)");
+		ha = ha.add(4);
+		listing.createData(ha, UnsignedIntegerDataType.dataType);
+		listing.setComment(ha, CodeUnit.EOL_COMMENT, "reallocation (relocation?) info size");
+		ha = ha.add(4);
+		listing.createData(ha, UnsignedIntegerDataType.dataType);
+		listing.setComment(ha, CodeUnit.EOL_COMMENT, "symbol table size");
+		ha = ha.add(4);
+		listing.createData(ha, UnsignedIntegerDataType.dataType);
+		listing.setComment(ha, CodeUnit.EOL_COMMENT, "SCD line number table size");
+		ha = ha.add(4);
+		listing.createData(ha, UnsignedIntegerDataType.dataType);
+		listing.setComment(ha, CodeUnit.EOL_COMMENT, "SCD symbol table size");
+		ha = ha.add(4);
+		listing.createData(ha, UnsignedIntegerDataType.dataType);
+		listing.setComment(ha, CodeUnit.EOL_COMMENT, "SCD character string table size");
+		ha = ha.add(4);
+		listing.createData(ha, new ArrayDataType(UnsignedIntegerDataType.dataType, 4));
+		listing.setComment(ha, CodeUnit.EOL_COMMENT, "reserved");
+		ha = ha.add(4 * 4);
+		listing.createData(ha, UnsignedIntegerDataType.dataType);
+		listing.setComment(ha, CodeUnit.EOL_COMMENT, "position from bound module list top-of-file");
 	}
 
 	@Override
