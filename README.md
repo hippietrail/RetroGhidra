@@ -47,7 +47,7 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - Acorn: UEF (Unified Emulator Format) for BBC Micro and Electron
 - Apple IIgs
 - Apple Lisa
-- Atari 8-bit cartride, disk, and tape formats
+- Atari 8-bit cartridge, disk, and tape formats
 - BeOS (Ghidra natively supports PEF)
 - Commodore PET
 - Dragon 32/64
