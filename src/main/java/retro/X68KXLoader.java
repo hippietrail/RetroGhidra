@@ -18,6 +18,7 @@ package retro;
 import java.io.IOException;
 import java.util.*;
 
+import ghidra.app.util.MemoryBlockUtils;
 import ghidra.app.util.Option;
 import ghidra.app.util.bin.BinaryReader;
 import ghidra.app.util.bin.ByteProvider;
@@ -27,7 +28,18 @@ import ghidra.app.util.opinion.LoadSpec;
 import ghidra.app.util.opinion.QueryOpinionService;
 import ghidra.app.util.opinion.QueryResult;
 import ghidra.framework.model.DomainObject;
+import ghidra.program.database.mem.FileBytes;
+import ghidra.program.model.address.Address;
+import ghidra.program.model.address.AddressSpace;
+import ghidra.program.model.data.ArrayDataType;
+import ghidra.program.model.data.StringDataType;
+import ghidra.program.model.data.UnsignedIntegerDataType;
+import ghidra.program.model.data.UnsignedShortDataType;
+import ghidra.program.model.listing.Listing;
 import ghidra.program.model.listing.Program;
+import ghidra.program.model.mem.Memory;
+import ghidra.program.model.symbol.SourceType;
+import ghidra.program.model.symbol.SymbolTable;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 
@@ -36,24 +48,41 @@ import ghidra.util.task.TaskMonitor;
  */
 public class X68KXLoader extends AbstractProgramWrapperLoader {
 
-	public static final String X68KX_NAME = "Sharp X68000 .X";
-	public static final int X68KX_MAGIC_NORMAL = 0x48550000; // HU\0\0
-	public static final int X68KX_MAGIC_SMALLEST = 0x48550001; // HU\0\1
-	public static final int X68KX_MAGIC_HIGH = 0x48550002; // HU\0\2
+	public static final String XX_NAME = "Sharp X68000 .X";
+	
+	public static final int XX_OFF_BASE_ADDR = 0x04;
+	public static final int XX_OFF_RUN_ADDR = 0x08;
+	public static final int XX_OFF_TEXT_SIZE = 0x0C;
+	public static final int XX_OFF_DATA_SIZE = 0x10;
+	public static final int XX_OFF_BLOCK_SIZE = 0x14; // Block storage section size (Contains .comm .stack)
+	public static final int XX_OFF_REALLOC_SIZE = 0x18;
+	public static final int XX_OFF_SYMTAB_SIZE = 0x1C;
+	public static final int XX_OFF_SCD_LINE_NO_TAB_SIZE = 0x20;
+	public static final int XX_OFF_SCD_SYMTAB_SIZE = 0x24;
+	public static final int XX_OFF_SCD_STR_TAB_SIZE = 0x28;
+	// 16 bytes reserved 0x2c
+	// Position from bound module list top-of-file 0x3c
+	public static final int XX_HEADER_LEN = 0x40;
+
+	public static final int XX_MAGIC_NORMAL = 0x48550000; // HU\0\0
+	public static final int XX_MAGIC_SMALLEST = 0x48550001; // HU\0\1
+	public static final int XX_MAGIC_HIGH = 0x48550002; // HU\0\2
 
 	@Override
 	public String getName() {
-		return X68KX_NAME;
+		return XX_NAME;
 	}
 
 	@Override
 	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
 		List<LoadSpec> loadSpecs = new ArrayList<>();
 
+		if (provider.length() < XX_HEADER_LEN) return loadSpecs;
+
 		BinaryReader reader = new BinaryReader(provider, false);
 
         long magic = reader.readUnsignedInt(0);
-		if (magic != X68KX_MAGIC_NORMAL && magic != X68KX_MAGIC_SMALLEST && magic != X68KX_MAGIC_HIGH) return loadSpecs; 
+		if (magic != XX_MAGIC_NORMAL && magic != XX_MAGIC_SMALLEST && magic != XX_MAGIC_HIGH) return loadSpecs; 
 
 		List<QueryResult> queryResults = QueryOpinionService.query(getName(), "68000", null);
 		queryResults.stream().map(result -> new LoadSpec(this, 0, result)).forEach(loadSpecs::add);
@@ -66,7 +95,79 @@ public class X68KXLoader extends AbstractProgramWrapperLoader {
 			Program program, TaskMonitor monitor, MessageLog log)
 			throws CancelledException, IOException {
 
-		// TODO: Load the bytes from 'provider' into the 'program'.
+		Memory memory = program.getMemory();
+		FileBytes fileBytes = MemoryBlockUtils.createFileBytes(program, provider, monitor);
+		AddressSpace addresssSpace = program.getAddressFactory().getDefaultAddressSpace();
+		BinaryReader reader = new BinaryReader(provider, false);
+
+		try {
+			Address headerAddress = AddressSpace.OTHER_SPACE.getAddress(0x0000);
+
+			memory.createInitializedBlock(
+				"HEADER",
+				headerAddress,
+				fileBytes,
+				0,
+				XX_HEADER_LEN,
+				false
+			);
+
+			Listing listing = program.getListing();
+			listing.createData(headerAddress, new StringDataType(), 2);
+			listing.createData(headerAddress.add(0x02), UnsignedShortDataType.dataType);
+			listing.createData(headerAddress.add(0x04), UnsignedIntegerDataType.dataType);
+			listing.createData(headerAddress.add(0x08), UnsignedIntegerDataType.dataType);
+			listing.createData(headerAddress.add(0x0c), UnsignedIntegerDataType.dataType);
+			listing.createData(headerAddress.add(0x10), UnsignedIntegerDataType.dataType);
+			listing.createData(headerAddress.add(0x14), UnsignedIntegerDataType.dataType);
+			listing.createData(headerAddress.add(0x18), UnsignedIntegerDataType.dataType);
+			listing.createData(headerAddress.add(0x1c), UnsignedIntegerDataType.dataType);
+			listing.createData(headerAddress.add(0x20), UnsignedIntegerDataType.dataType);
+			listing.createData(headerAddress.add(0x24), UnsignedIntegerDataType.dataType);
+			listing.createData(headerAddress.add(0x28), UnsignedIntegerDataType.dataType);
+			listing.createData(headerAddress.add(0x2c), new ArrayDataType(UnsignedIntegerDataType.dataType, 4));
+			listing.createData(headerAddress.add(0x3c), UnsignedIntegerDataType.dataType);
+
+			Address baseAddress = addresssSpace.getAddress(reader.readUnsignedInt(XX_OFF_BASE_ADDR));
+			Address runAddress = addresssSpace.getAddress(reader.readUnsignedInt(XX_OFF_RUN_ADDR));
+			Address dataAddress = baseAddress.add(reader.readUnsignedInt(XX_OFF_TEXT_SIZE));
+
+			final long textSize = reader.readUnsignedInt(XX_OFF_TEXT_SIZE);
+			final long dataSize = reader.readUnsignedInt(XX_OFF_DATA_SIZE);
+			
+			memory.createInitializedBlock(
+				"TEXT",
+				baseAddress,
+				fileBytes,
+				XX_HEADER_LEN,
+				textSize,
+				false
+			);
+
+			SymbolTable st = program.getSymbolTable();
+			st.createLabel(runAddress, "entry", SourceType.ANALYSIS);
+			st.addExternalEntryPoint(runAddress);
+
+			memory.createInitializedBlock(
+				"DATA",
+				dataAddress,
+				fileBytes,
+				XX_HEADER_LEN + textSize,
+				dataSize,
+				false
+			);
+
+			memory.createInitializedBlock(
+				"REST",
+				dataAddress.add(dataSize),
+				fileBytes,
+				XX_HEADER_LEN + textSize + dataSize,
+				reader.length() - XX_HEADER_LEN - textSize - dataSize,
+				false
+			);
+		} catch (Exception e) {
+			log.appendException(e);
+		}
 	}
 
 	@Override

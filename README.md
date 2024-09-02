@@ -11,6 +11,7 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - Commodore VIC-20 .PRG cartridge loader - not other types of .PRG
 - Exidy Sorcerer .SNP snapshot loader
 - RISC OS AIF (Arm Image Format) loader
+- Sharp X68000 .X executable format loader
 - Sinclair QL executable format loader
 - Sinclair ZX Spectrum .SNA snapshot loader - 48K snapshots
 - Tandy TRS-80 Model I/III /CMD command file loader
@@ -20,7 +21,7 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - Amstrad CPC .SNA snapshot format - some 64K snapshots might be usable
 - Commodore Amiga: "Hunk" executable and object file loader - identifies but does not load yet
 - CP/M .CMD command file loader
-- Sharp X68000: .X and .Z executable formats - identifies but does not load yet
+- Sharp X68000 .Z executable format - identifies but does not load yet
 
 # Planned
 ## Loaders
