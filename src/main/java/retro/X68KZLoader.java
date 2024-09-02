@@ -36,13 +36,13 @@ import ghidra.util.task.TaskMonitor;
  */
 public class X68KZLoader extends AbstractProgramWrapperLoader {
 
-	public static final String X68KZ_NAME = "Sharp X68000 .Z";
-	public static final int X68KZ_MAGIC_1 = 0x601a;
-	public static final int X68KZ_MAGIC_2 = 0xffff;
+	public static final String XZ_NAME = "Sharp X68000 .Z";
+	public static final int XZ_MAGIC_1 = 0x601a;
+	public static final int XZ_MAGIC_2 = 0xffff;
 
 	@Override
 	public String getName() {
-		return X68KZ_NAME;
+		return XZ_NAME;
 	}
 
 	@Override
@@ -52,10 +52,10 @@ public class X68KZLoader extends AbstractProgramWrapperLoader {
 		BinaryReader reader = new BinaryReader(provider, false);
 
         int magic1 = reader.readUnsignedShort(0x00);
-        if (magic1 != X68KZ_MAGIC_1) return loadSpecs;
+        if (magic1 != XZ_MAGIC_1) return loadSpecs;
 
 		int magic2 = reader.readUnsignedShort(0x1a);
-		if (magic2 != X68KZ_MAGIC_2) return loadSpecs;
+		if (magic2 != XZ_MAGIC_2) return loadSpecs;
 
 		List<QueryResult> queryResults = QueryOpinionService.query(getName(), "68000", null);
 		queryResults.stream().map(result -> new LoadSpec(this, 0, result)).forEach(loadSpecs::add);

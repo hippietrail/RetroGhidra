@@ -154,12 +154,12 @@ public class Atari8BitXexLoader extends AbstractProgramWrapperLoader {
 
             try {
                 memory.createInitializedBlock(
-                    "Block " + blockNum,            // name
-                    addressSpace.getAddress(thisStart),    // start
-                    fileBytes,                             // filebytes
-                    reader.getPointerIndex(),       // offset
-                    numBytes,                       // size
-                    isOverlay);                     // overlay
+                    "Block " + blockNum,                // name
+                    addressSpace.getAddress(thisStart), // start
+                    fileBytes,                          // filebytes
+                    reader.getPointerIndex(),           // offset
+                    numBytes,                           // size
+                    isOverlay);                         // overlay
                 reader.setPointerIndex(reader.getPointerIndex() + numBytes);
 
                 SymbolTable st = program.getSymbolTable();
