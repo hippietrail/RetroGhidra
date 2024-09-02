@@ -22,6 +22,7 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - Commodore Amiga: "Hunk" executable and object file loader - identifies but does not load yet
 - CP/M .CMD command file loader
 - Sharp X68000 .Z executable format - identifies but does not load yet
+- Sinclair QL Zip file system that handles the QDOS headers in zip extra fields
 
 # Planned
 ## Loaders
@@ -30,11 +31,10 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - Sinclair ZX Spectrum: .SNA snapshot format - 128K variant
 - Sinclair ZX Spectrum: More snapshot and emulator formats
 
-## Filesystems
+## FileSystems
 - Apple II Binary II archives
 - Apple II .do and .po disk image formats
 - Commodore 64 disk image format
-- Sinclair QL Zip file format with headers in extra fields
 - Sinclair Spectrum: .DSK +3DOS disk image format
 - Sinclair Spectrum: .SCL disk format
 - Sinclair Spectrum: .TRD Beta Disk TR-DOS disk iamge format
