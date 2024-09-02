@@ -16,8 +16,10 @@
 package retro;
 
 import java.io.IOException;
+import java.lang.foreign.MemoryAddress;
 import java.util.*;
 
+import ghidra.app.util.MemoryBlockUtils;
 import ghidra.app.util.Option;
 import ghidra.app.util.bin.BinaryReader;
 import ghidra.app.util.bin.ByteProvider;
@@ -27,7 +29,17 @@ import ghidra.app.util.opinion.LoadSpec;
 import ghidra.app.util.opinion.QueryOpinionService;
 import ghidra.app.util.opinion.QueryResult;
 import ghidra.framework.model.DomainObject;
+import ghidra.program.database.mem.FileBytes;
+import ghidra.program.model.address.Address;
+import ghidra.program.model.address.AddressSpace;
+import ghidra.program.model.data.UnsignedShortDataType;
+import ghidra.program.model.data.DataType;
+import ghidra.program.model.data.PascalStringDataType;
+import ghidra.program.model.listing.Listing;
 import ghidra.program.model.listing.Program;
+import ghidra.program.model.mem.Memory;
+import ghidra.program.model.symbol.SourceType;
+import ghidra.program.model.symbol.SymbolTable;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 
@@ -47,9 +59,10 @@ public class QlLoader extends AbstractProgramWrapperLoader {
 	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
 		List<LoadSpec> loadSpecs = new ArrayList<>();
 
+		if (provider.length() < 64) return loadSpecs;
+
 		BinaryReader reader = new BinaryReader(provider, false);
 
-		if (reader.length() < 64) return loadSpecs;
 		int signature = reader.readUnsignedShort(6);
 		if (signature != 0x4afb) return loadSpecs;
 		// filename field is apparently optional and doesn't prevent files being loaded and ran
@@ -69,7 +82,41 @@ public class QlLoader extends AbstractProgramWrapperLoader {
 			Program program, TaskMonitor monitor, MessageLog log)
 			throws CancelledException, IOException {
 
-		// TODO: Load the bytes from 'provider' into the 'program'.
+		try {
+			Memory memory = program.getMemory();
+			AddressSpace addressSpace = program.getAddressFactory().getDefaultAddressSpace();
+			FileBytes fileBytes = MemoryBlockUtils.createFileBytes(program, provider, monitor);
+
+			// QL programs are usually relocatable, but for non-relocatable programs
+			// I've seen a load address of 196608 (0x30000) reccomended.
+			Address loadAddress = addressSpace.getAddress(0x30000);
+
+			memory.createInitializedBlock(
+				"TEXT",
+				loadAddress,
+				fileBytes,
+				0,
+				provider.length(),
+				false
+			).setWrite(true); // QL has no memory protection
+
+			SymbolTable st = program.getSymbolTable();
+			Listing listing = program.getListing();
+
+			st.createLabel(loadAddress, "entry", SourceType.IMPORTED);
+			st.addExternalEntryPoint(loadAddress);
+
+			Address sigAddress = loadAddress.add(6);
+			st.createLabel(sigAddress, "signature", SourceType.IMPORTED);
+			listing.createData(sigAddress, UnsignedShortDataType.dataType);
+
+			Address filenameAddress = sigAddress.add(2);
+			st.createLabel(filenameAddress, "filename", SourceType.IMPORTED);
+			listing.createData(filenameAddress, PascalStringDataType.dataType);
+
+		} catch (Exception e) {
+			log.appendException(e);
+		}
 	}
 
 	@Override
