@@ -158,7 +158,6 @@ public class X68KXLoader extends AbstractProgramWrapperLoader {
 			log.appendException(e);
 		}
 	}
-
 	void commentHeader(Program program, Address headerAddress) throws CodeUnitInsertionException {
 		Listing listing = program.getListing();
 		Address ha = headerAddress;
@@ -170,37 +169,25 @@ public class X68KXLoader extends AbstractProgramWrapperLoader {
 		ha = ha.add(1);
 		listing.createData(ha, ByteDataType.dataType);
 		listing.setComment(ha, CodeUnit.EOL_COMMENT, "load mode");
-		ha = ha.add(1);			
-		listing.createData(ha, UnsignedIntegerDataType.dataType);
-		listing.setComment(ha, CodeUnit.EOL_COMMENT, "base address");
-		ha = ha.add(4);
-		listing.createData(ha, UnsignedIntegerDataType.dataType);
-		listing.setComment(ha, CodeUnit.EOL_COMMENT, "run (execute) address");
-		ha = ha.add(4);
-		listing.createData(ha, UnsignedIntegerDataType.dataType);
-		listing.setComment(ha, CodeUnit.EOL_COMMENT, "text section size");
-		ha = ha.add(4);
-		listing.createData(ha, UnsignedIntegerDataType.dataType);
-		listing.setComment(ha, CodeUnit.EOL_COMMENT, "data section size");
-		ha = ha.add(4);
-		listing.createData(ha, UnsignedIntegerDataType.dataType);
-		listing.setComment(ha, CodeUnit.EOL_COMMENT, "block storage section size (contains .comm, .stack)");
-		ha = ha.add(4);
-		listing.createData(ha, UnsignedIntegerDataType.dataType);
-		listing.setComment(ha, CodeUnit.EOL_COMMENT, "reallocation (relocation?) info size");
-		ha = ha.add(4);
-		listing.createData(ha, UnsignedIntegerDataType.dataType);
-		listing.setComment(ha, CodeUnit.EOL_COMMENT, "symbol table size");
-		ha = ha.add(4);
-		listing.createData(ha, UnsignedIntegerDataType.dataType);
-		listing.setComment(ha, CodeUnit.EOL_COMMENT, "SCD line number table size");
-		ha = ha.add(4);
-		listing.createData(ha, UnsignedIntegerDataType.dataType);
-		listing.setComment(ha, CodeUnit.EOL_COMMENT, "SCD symbol table size");
-		ha = ha.add(4);
-		listing.createData(ha, UnsignedIntegerDataType.dataType);
-		listing.setComment(ha, CodeUnit.EOL_COMMENT, "SCD character string table size");
-		ha = ha.add(4);
+		ha = ha.add(1);
+
+		for (String name : new String[] {
+			"base address",
+			"run (execute) address",
+			"text section size",
+			"data section size",
+			"block storage section size (contains .comm, .stack)",
+			"reallocation (relocation?) info size",
+			"symbol table size",
+			"SCD line number table size",
+			"SCD symbol table size",
+			"SCD character string table size"
+		}) {
+			listing.createData(ha, UnsignedIntegerDataType.dataType);
+			listing.setComment(ha, CodeUnit.EOL_COMMENT, name);
+			ha = ha.add(4);
+		}
+
 		listing.createData(ha, new ArrayDataType(UnsignedIntegerDataType.dataType, 4));
 		listing.setComment(ha, CodeUnit.EOL_COMMENT, "reserved");
 		ha = ha.add(4 * 4);
