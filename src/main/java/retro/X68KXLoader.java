@@ -35,7 +35,6 @@ import ghidra.program.model.data.ArrayDataType;
 import ghidra.program.model.data.ByteDataType;
 import ghidra.program.model.data.StringDataType;
 import ghidra.program.model.data.UnsignedIntegerDataType;
-import ghidra.program.model.data.UnsignedShortDataType;
 import ghidra.program.model.listing.CodeUnit;
 import ghidra.program.model.listing.Listing;
 import ghidra.program.model.listing.Program;
@@ -47,7 +46,7 @@ import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 
 /**
- * A {@link Loader} for processing Sharp X68000 .X files.
+ * A {@link Loader} for loading Sharp X68000 .X files.
  */
 public class X68KXLoader extends AbstractProgramWrapperLoader {
 
@@ -112,8 +111,7 @@ public class X68KXLoader extends AbstractProgramWrapperLoader {
 				fileBytes,
 				0,
 				XX_HEADER_LEN,
-				false
-			);
+				false);
 
 			commentHeader(program, headerAddress);
 

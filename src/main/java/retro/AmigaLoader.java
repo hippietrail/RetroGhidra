@@ -33,7 +33,7 @@ import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 
 /**
- * A {@link Loader} for processing Amiga "Hunk" format files.
+ * A {@link Loader} for loading Amiga "Hunk" format files.
  */
 public class AmigaLoader extends AbstractProgramWrapperLoader {
 

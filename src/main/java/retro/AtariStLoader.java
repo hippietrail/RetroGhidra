@@ -42,7 +42,7 @@ import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 
 /**
- * A {@link Loader} that can load Atari ST executable files.
+ * A {@link Loader} for loading Atari ST executable files.
  */
 public class AtariStLoader extends AbstractProgramWrapperLoader {
 

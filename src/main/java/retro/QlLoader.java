@@ -43,7 +43,7 @@ import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 
 /**
- * A {@link LoadSpec} loader for Sinclair QL QDOS executable files.
+ * A {@link Loader} for loading Sinclair QL QDOS executable files.
  */
 public class QlLoader extends AbstractProgramWrapperLoader {
 
