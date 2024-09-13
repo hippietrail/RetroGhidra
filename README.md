@@ -23,7 +23,9 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - CP/M .CMD command file loader
 - Sharp X68000 .Z executable format - identifies but does not load yet
 - Sinclair QL Zip file system that handles the QDOS headers in zip extra fields
+- TI 99/4A .bin file formats
 - TI-99/4A FIAD (V9T9) file format
+- TI-99/4A .rpk cartridge format
 - TI-99/4A TIFILES (XMODEM) file loader
 
 # Planned
@@ -62,5 +64,4 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - Sinclair ZX81
 - Tandy Coco: .cas tape images
 - Thomson MO, TO
-- TI-99/4A .rpk cartridge format
 - Timex Sinclair
