@@ -27,29 +27,50 @@ import ghidra.app.util.opinion.LoadSpec;
 import ghidra.framework.model.DomainObject;
 import ghidra.program.model.lang.LanguageCompilerSpecPair;
 import ghidra.program.model.listing.Program;
+import ghidra.util.Msg;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 
 /**
- * A {@link Loader} for loading Sinclair ZX Spectrum Perfect ZX Tape (PZX) tape files.
+ * A {@link Loader} for loading Sinclair ZX Spectrum TAP tape files.
  */
-public class SpectrumPzxLoader extends AbstractProgramWrapperLoader {
+public class SpectrumTapLoader extends AbstractProgramWrapperLoader {
 
-	public static final String PZX_NAME = "Sinclair ZX Spectrum Perfect ZX Tape (PZX)";
-    public static final String PZX_MAGIC = "PZXT";
+	public static final String TAP_NAME = "Sinclair ZX Spectrum TAP";
+	public static final String TAP_EXTENSION = ".tap";
+	public static final int TAP_FIRST_BLOCK_LEN = 0x13;
 
     @Override
 	public String getName() {
-		return PZX_NAME;
+		return TAP_NAME;
 	}
 
 	@Override
 	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
 		List<LoadSpec> loadSpecs = new ArrayList<>();
 
-        BinaryReader reader = new BinaryReader(provider, false);
-        String magic = reader.readAsciiString(0, PZX_MAGIC.length());
-        if (!magic.equals(PZX_MAGIC)) return loadSpecs;
+		String fname = provider.getName();
+		if (fname.indexOf('.') < 0) return loadSpecs;
+		String ext = fname.substring(fname.lastIndexOf('.'));
+		if (!ext.equalsIgnoreCase(TAP_EXTENSION)) return loadSpecs;
+
+		// a series of blocks preceded by a 16-bit little-endian size
+		// the first should be 0x13 bytes so the file should be at least 0x15 bytes long
+		// the last byte of the block is the xor checksum of all the bytes in the block
+		// (the length bytes are not included in the checksum)
+
+		if (provider.length() < TAP_FIRST_BLOCK_LEN + 2) return loadSpecs;
+
+		BinaryReader reader = new BinaryReader(provider, true);
+
+		final int firstBlockSize = reader.readUnsignedShort(0);
+		if (firstBlockSize != TAP_FIRST_BLOCK_LEN) return loadSpecs;
+
+		int blockChecksum = 0;
+		for (int i = 0; i < firstBlockSize - 1; i++)
+			blockChecksum ^= reader.readUnsignedByte(2 + i) & 0xFF;
+
+		if (blockChecksum != (reader.readUnsignedByte(2 + firstBlockSize - 1) & 0xFF)) return loadSpecs;
 
 		loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("z80:LE:16:default", "default"), true));
 

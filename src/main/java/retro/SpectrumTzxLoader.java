@@ -31,16 +31,16 @@ import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 
 /**
- * A {@link Loader} for loading Sinclair ZX Spectrum Perfect ZX Tape (PZX) tape files.
+ * A {@link Loader} for loading Sinclair ZX Spectrum TZX tape files.
  */
-public class SpectrumPzxLoader extends AbstractProgramWrapperLoader {
+public class SpectrumTzxLoader extends AbstractProgramWrapperLoader {
 
-	public static final String PZX_NAME = "Sinclair ZX Spectrum Perfect ZX Tape (PZX)";
-    public static final String PZX_MAGIC = "PZXT";
+	public static final String TZX_NAME = "Sinclair ZX Spectrum TZX";
+    public static final String TZX_MAGIC = "ZXTape!";
 
     @Override
 	public String getName() {
-		return PZX_NAME;
+		return TZX_NAME;
 	}
 
 	@Override
@@ -48,8 +48,8 @@ public class SpectrumPzxLoader extends AbstractProgramWrapperLoader {
 		List<LoadSpec> loadSpecs = new ArrayList<>();
 
         BinaryReader reader = new BinaryReader(provider, false);
-        String magic = reader.readAsciiString(0, PZX_MAGIC.length());
-        if (!magic.equals(PZX_MAGIC)) return loadSpecs;
+        String magic = reader.readAsciiString(0, TZX_MAGIC.length());
+        if (!magic.equals(TZX_MAGIC)) return loadSpecs;
 
 		loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("z80:LE:16:default", "default"), true));
 
