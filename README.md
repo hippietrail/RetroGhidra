@@ -16,6 +16,10 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - Sinclair ZX Spectrum .SNA snapshot loader - 48K snapshots
 - Tandy TRS-80 Model I/III /CMD command file loader
 - Tandy TRS-80 Color Computer .CCC cartridge loader - 2K, 4K, and 8K
+- TI 99/4A .bin file formats
+- TI-99/4A FIAD (V9T9) file format
+- TI-99/4A .rpk cartridge format
+- TI-99/4A TIFILES (XMODEM) file loader
 
 # In progress
 - Amstrad CPC .SNA snapshot format - some 64K snapshots might be usable
@@ -26,10 +30,6 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - Sinclair ZX Spectrum PZX tape image loader - identifies but does not load yet
 - Sinclair ZX Spectrum TAP tape image loader - identifies but does not load yet
 - Sinclair ZX Spectrum TZX tape image loader - identifies but does not load yet
-- TI 99/4A .bin file formats
-- TI-99/4A FIAD (V9T9) file format
-- TI-99/4A .rpk cartridge format
-- TI-99/4A TIFILES (XMODEM) file loader
 
 # Planned
 ## Loaders
