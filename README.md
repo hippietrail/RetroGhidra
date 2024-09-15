@@ -68,3 +68,4 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - Tandy Coco: .cas tape images
 - Thomson MO, TO
 - Timex Sinclair
+- TK2000/Microprofessor II: .ct2 tape format
