@@ -30,6 +30,8 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - Sinclair ZX Spectrum PZX tape image loader - identifies but does not load yet
 - Sinclair ZX Spectrum TAP tape image loader - identifies but does not load yet
 - Sinclair ZX Spectrum TZX tape image loader - identifies but does not load yet
+- TI-99/4A .ctg cartridge format - identifies but does not load yet
+- TK2000/Microprofessor II: .ct2 tape format - identifies but does not load yet
 
 # Planned
 ## Loaders
@@ -68,4 +70,3 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - Tandy Coco: .cas tape images
 - Thomson MO, TO
 - Timex Sinclair
-- TK2000/Microprofessor II: .ct2 tape format
