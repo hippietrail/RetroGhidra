@@ -29,22 +29,15 @@ import ghidra.framework.model.DomainObject;
 import ghidra.program.database.mem.FileBytes;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressSpace;
-import ghidra.program.model.data.ArrayDataType;
-import ghidra.program.model.data.ByteDataType;
-import ghidra.program.model.data.StringDataType;
-import ghidra.program.model.data.UnsignedShortDataType;
 import ghidra.program.model.lang.LanguageCompilerSpecPair;
-import ghidra.program.model.listing.CodeUnit;
-import ghidra.program.model.listing.Listing;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.Memory;
-import ghidra.program.model.util.CodeUnitInsertionException;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 
 /**
  * A {@link Loader} for loading TI-99/4A FIAD (V9T9) files.
- * "FIAD" stands for "Files In A Directory". "V9T9" stands was the emulater that originated the format.
+ * "FIAD" stands for "Files In A Directory". "V9T9" stands was the emulator that originated the format.
  */
 public class Ti994FiadLoader extends AbstractProgramWrapperLoader {
 
@@ -52,28 +45,27 @@ public class Ti994FiadLoader extends AbstractProgramWrapperLoader {
     public static final int FIAD_OFF_FILE_STATUS_FLAGS = 0x0c;
     public static final int FIAD_HEADER_LEN = 128;
 
-    public static final int TIF_FLAG_DATA_PROGRAM = 1 << 0;
-    public static final int TIF_FLAG_DIS_INT = 1 << 1;
-    public static final int TIF_FLAG_PROTECTED = 1 << 3;
-    public static final int TIF_FLAG_FIX_VAR = 1 << 7;
-	public static final int TIF_FLAG_TYPE_MASK = TIF_FLAG_DATA_PROGRAM | TIF_FLAG_DIS_INT | TIF_FLAG_FIX_VAR;
-	public static final int TIF_DIS_FIX = 0;
-	public static final int TIF_DIS_VAR = TIF_FLAG_FIX_VAR;
-	public static final int TIF_INT_FIX = TIF_FLAG_DIS_INT;
-	public static final int TIF_INT_VAR = TIF_FLAG_DIS_INT | TIF_FLAG_FIX_VAR;
-
-	public static final int FIAD_LOAD_ADDR = 0x6000; // TODO this is a guess!
+	public static final int FIAD_LOAD_ADDR = 0x6000;
 
 	@Override
 	public String getName() {
 		return FIAD_NAME;
 	}
 
+	// lower numbers have higher priority
+	// 50 seems to be standard, raw uses 100
+	// RetroGhidra Loaders that don't have magic numbers should use 60
+    @Override
+    public int getTierPriority() {
+        return 60;
+    }
+
 	@Override
 	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
 		List<LoadSpec> loadSpecs = new ArrayList<>();
 
-		if (provider.length() < FIAD_HEADER_LEN) return loadSpecs;
+		// can't be larger than header size + 64kb (TODO: there's probably a lower limit)
+		if (provider.length() < FIAD_HEADER_LEN || provider.length() > FIAD_HEADER_LEN + 64 * 1024) return loadSpecs;
 
         BinaryReader reader = new BinaryReader(provider, false);
 
@@ -81,6 +73,9 @@ public class Ti994FiadLoader extends AbstractProgramWrapperLoader {
 		// TIFILES supports two additional bits not support by FIAD (I think)
 		int statusFlags = reader.readUnsignedByte(FIAD_OFF_FILE_STATUS_FLAGS);
 		if ((statusFlags & ~0b1000_1011) != 0) return loadSpecs;
+
+		// if bit 0 is set, "program", then bits 1 and 7 have no meaning so should be 0
+		if ((statusFlags & 0b0000_0001) != 0 && ((statusFlags & 0b1000_0010) != 0)) return loadSpecs;
 
 		// check that offset 0x20 up to 0x80 are all 0
         for (int i = 0x20; i < 0x80; i++) {
@@ -113,13 +108,15 @@ public class Ti994FiadLoader extends AbstractProgramWrapperLoader {
 				FIAD_HEADER_LEN,
 				false);
 
-			commentHeader(program, headerAddress, provider);
+			Ti994LoaderHelper.commentFiadHeader(program, headerAddress, provider);
 
             // last letter of the filename to determine where to load a file:
             // xxxxxC.BIN - loads as CPU cartridge ROM at >6000
             // xxxxxD.BIN - loads as banked CPU cartridge ROM at >6000, second bank (such as Extended BASIC or AtariSoft carts)
             // xxxxxG.BIN - loads as GROM cartridge at >6000 in GROM space
             // xxxxx3.BIN - Classic99 extension, loads as a 379/Jon Guidry style cartridge ROM at >6000
+			// xxxxx8.BIN - A newer extension
+			// xxxxx9.BIN - A newer extension
 			memory.createInitializedBlock(
 				"TMS9900",
 				loadAddress,
@@ -132,68 +129,6 @@ public class Ti994FiadLoader extends AbstractProgramWrapperLoader {
 		} catch (Exception e) {
 			log.appendException(e);
 		}
-	}
-
-	void commentHeader(Program program, Address headerAddress, ByteProvider provider) throws CodeUnitInsertionException, IOException {
-        BinaryReader reader = new BinaryReader(provider, true); // little-endian needed for 1 header field!
-		Listing listing = program.getListing();
-		Address ha = headerAddress;
-		listing.createData(ha, new StringDataType(), 10);
-		listing.setComment(ha, CodeUnit.EOL_COMMENT, "file name");
-		ha = ha.add(10);
-		listing.createData(ha, UnsignedShortDataType.dataType);
-		listing.setComment(ha, CodeUnit.EOL_COMMENT, "extended record length");
-		ha = ha.add(2);
-		listing.createData(ha, ByteDataType.dataType);
-        final int flags = reader.readUnsignedByte(FIAD_OFF_FILE_STATUS_FLAGS) & 0xff;
-        String flagsStr = "Flags: "
-            + ((flags & TIF_FLAG_DATA_PROGRAM) == 0 ? "Data" : "Program")
-            + ", "
-            + ((flags & TIF_FLAG_DIS_INT) == 0 ? "DIS" : "INT") // "Display", "Internal", aka: "ASCII", "Binary"
-            + ", "
-            + ((flags & TIF_FLAG_PROTECTED) == 0 ? "Unp" : "P")
-            + "rotected,\n"
-            + ((flags & TIF_FLAG_FIX_VAR) == 0 ? "Fixed" : "Variable") // "FIX", "VAR")
-            + " length records";
-		final int type = flags & TIF_FLAG_TYPE_MASK;
-		switch (type) {
-			case TIF_FLAG_DATA_PROGRAM:
-				flagsStr += "\nType: PROGRAM";
-				break;
-			case TIF_DIS_FIX:
-				flagsStr += "\nType: DIS/FIX";
-				break;
-			case TIF_DIS_VAR:
-				flagsStr += "\nType: DIS/VAR";
-				break;
-			case TIF_INT_FIX:
-				flagsStr += "\nType: INT/FIX";
-				break;
-			case TIF_INT_VAR:
-				flagsStr += "\nType: INT/VAR";
-				break;
-			default:
-				flagsStr += "\nType: ???";
-		}
-        listing.setComment(ha, CodeUnit.EOL_COMMENT, flagsStr);
-		ha = ha.add(1);
-		listing.createData(ha, ByteDataType.dataType);
-		listing.setComment(ha, CodeUnit.EOL_COMMENT, "number of recs/sec");
-		ha = ha.add(1);
-		listing.createData(ha, UnsignedShortDataType.dataType);
-		listing.setComment(ha, CodeUnit.EOL_COMMENT, "number of sectors currently allocated");
-		ha = ha.add(2);
-		listing.createData(ha, ByteDataType.dataType);
-		listing.setComment(ha, CodeUnit.EOL_COMMENT, "end of file offset");
-		ha = ha.add(1);
-		listing.createData(ha, ByteDataType.dataType);
-		listing.setComment(ha, CodeUnit.EOL_COMMENT, "logical record length");
-		ha = ha.add(1);
-		listing.createData(ha, UnsignedShortDataType.dataType);
-		listing.setComment(ha, CodeUnit.EOL_COMMENT, "number of level 3 records allocated");
-		ha = ha.add(2);
-		listing.createData(ha, new ArrayDataType(ByteDataType.dataType, 108));
-		listing.setComment(ha, CodeUnit.EOL_COMMENT, "unused");
 	}
 
 	@Override

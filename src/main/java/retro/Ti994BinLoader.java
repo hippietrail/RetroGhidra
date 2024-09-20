@@ -32,6 +32,7 @@ import ghidra.program.model.lang.LanguageCompilerSpecPair;
 import ghidra.program.model.listing.CodeUnit;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.Memory;
+import ghidra.util.Msg;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 
@@ -52,7 +53,7 @@ public class Ti994BinLoader extends AbstractProgramWrapperLoader {
 	}
 
     public static final String BIN_NAME = "TI-99/4A BIN";
-	public static final int BIN_LOAD_ADDR = 0x6000; // TODO this is a guess!
+	public static final int BIN_LOAD_ADDR = 0x6000;
 
 	public BinExtType binExtType = BinExtType.NONE;
 	public boolean hasBinExtension = false;
@@ -62,10 +63,24 @@ public class Ti994BinLoader extends AbstractProgramWrapperLoader {
 		return BIN_NAME;
 	}
 
+	// lower numbers have higher priority
+	// 50 seems to be standard, raw uses 100
+	// RetroGhidra Loaders that don't have magic numbers should use 60
+    @Override
+    public int getTierPriority() {
+        return 60;
+    }
+
 	@Override
 	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
 		List<LoadSpec> loadSpecs = new ArrayList<>();
 
+		// can't be larger than 64kb (TODO: there's probably a lower limit)
+		if (provider.length() > 64 * 1024) return loadSpecs;
+
+		// we can detect many file types based on the first 6 to 10 bytes of the file.
+		// we can't actually rely on the file extension or the last character of the file name
+		// but we can use them as hints.
 		String name = provider.getName();
 		final int dotIndex = name.lastIndexOf('.');
 		if (dotIndex > 0) {
@@ -80,10 +95,9 @@ public class Ti994BinLoader extends AbstractProgramWrapperLoader {
             // xxxxxG.BIN - loads as GROM cartridge at >6000 in GROM space
 			//              up to 40kb?
             // xxxxx3.BIN - Classic99 extension, loads as a 379/Jon Guidry style cartridge ROM at >6000 - deprecated!
-			// xxxxx8.BIN - 
-			// xxxxx9.BIN - 
+			// xxxxx8.BIN - A newer extension
+			// xxxxx9.BIN - A newer extension
 			switch (Character.toString(name.charAt(name.length() - 1)).toLowerCase()) {
-			// switch (ext.charAt(ext.length() - 1)) {
 			case "c":
 				binExtType = BinExtType.CPU_CARTRIDGE_ROM;
 				break;
@@ -105,23 +119,16 @@ public class Ti994BinLoader extends AbstractProgramWrapperLoader {
 			}
 		}
 		
-		BinaryReader reader = new BinaryReader(provider, false);
 
-		// TODO we can detect many file types based on the first 6 to 10 bytes of the file.
-		// TODO we can't actually rely on the file extension or the last character of the file name
-		// TODO but we can use them as hints.
-
-		// ROM cartridges start with 16 or 18 byte header starting with $AA
+		// ROM cartridges start with a 16- or 18-byte header starting with $AA, the "Standard header"
 		// https://forums.atariage.com/topic/159642-assembly-guidance/
-
 		if (binExtType == BinExtType.NONE) {
-			final int firstByte = reader.readByte(0) & 0xFF;
-			if (firstByte == 0xAA) {
-				// binExtType = BinExtType.CPU_CARTRIDGE_ROM;
-			} else {
-				return loadSpecs;
-			}
+			BinaryReader reader = new BinaryReader(provider, false);
+
+			if ((reader.readByte(0) & 0xFF) != 0xAA) return loadSpecs;
 		}
+
+		// either we have a .bin file extension preceded by c/d/g/3/8/9, or we have a file beginning with $AA
 
 		loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("9900:BE:16:default", "default"), true));
 
@@ -138,7 +145,14 @@ public class Ti994BinLoader extends AbstractProgramWrapperLoader {
 		FileBytes fileBytes = MemoryBlockUtils.createFileBytes(program, provider, monitor);
 
 		try {
-			memory.createInitializedBlock("BIN", loadAddress, fileBytes, 0, provider.length(), false);
+			long length = provider.length();
+			if (BIN_LOAD_ADDR + provider.length() > 0x10000) {
+				Msg.warn(this, "File too large to load 0x" + Long.toHexString(length)
+					+ " bytes at 0x" + Integer.toHexString(BIN_LOAD_ADDR)
+					+ ", truncating to 0x" + Integer.toHexString(0x10000 - BIN_LOAD_ADDR));
+				length = 0x10000 - BIN_LOAD_ADDR;
+			}
+			memory.createInitializedBlock("BIN", loadAddress, fileBytes, 0, length, false);
 			
 			String initialComment = "Has .bin suffix: " + (hasBinExtension ? "yes" : "no");
 			switch (binExtType) {
@@ -160,55 +174,6 @@ public class Ti994BinLoader extends AbstractProgramWrapperLoader {
 			program.getListing().setComment(loadAddress, CodeUnit.PRE_COMMENT, initialComment);
 			
 			Ti994LoaderHelper.commentCode(program, loadAddress, provider, 0);
-
-			// GRAM KARTE
-			// byte 0-1 : Vlag -
-			// >A5A5:GROM file.
-            // >5A5A:ROM file.
-			//
-			// GRAM KRACKER
-			// byte 0: Vlag -
-			// >00: Dit is de laatste file.
-			// >80: Er volgt een memory image file.
-			// >FF: Er volgen meer files.
-			//
-			// GRAM SIMULATOR
-			// byte 0   : Diverse gegevens
-			//
-			// MODULE SIMULATOR
-			// byte 0-3 : Vlag - >424D >4D57
-			//
-			// MEMORY IMAGE E/A MODULE
-			// byte 0-1 : Vlag -
-			// >FFFF: Er volgen meer files.
-            // >0000: Dit is laatste file.
-			//
-			// RAM MODULE HANDLER
-			// byte 0-1 : Vlag - >0000: Er is maar een file.
-			//
-			// DSR RAM HANDLER
-			// byte 0-1 : Cru base adres of CRU bank switch adres.
-			//
-			// EASYBUG
-			// byte 0-1 : Laad adres.
-			//
-			// BASIC
-			// byte 0-1 : Check flag - XOR van volgende twee waarden.
-			// Bij protectie 2's complement waarde.
-			//
-			// EXTENDED BASIC
-			// byte 0-1 : Vlag ->ABCD.
-			//
-			// LOGO (PROCEDURES)
-			// byte 0-1 : >0000.
-			//
-			// LOGO (VORMEN EN HOKJES)
-			// >0000-
-			// >03FF : Vormen definities (sprites).
-			//
-			// LOGO (ALLES)
-			// >0000->03FF : Vormen definities (sprites).
-			// >0400- : Hokjes definities.
 		} catch (Exception e) {
 			log.appendException(e);
 		}

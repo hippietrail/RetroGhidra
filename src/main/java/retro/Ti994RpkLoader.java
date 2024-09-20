@@ -27,6 +27,7 @@ import java.util.zip.ZipFile;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.w3c.dom.ls.DOMImplementationLS;
 import org.xml.sax.InputSource;
@@ -37,8 +38,6 @@ import ghidra.app.util.bin.InputStreamByteProvider;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.app.util.opinion.AbstractProgramWrapperLoader;
 import ghidra.app.util.opinion.LoadSpec;
-import ghidra.app.util.opinion.QueryOpinionService;
-import ghidra.app.util.opinion.QueryResult;
 import ghidra.framework.model.DomainObject;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressSpace;
@@ -58,6 +57,8 @@ public class Ti994RpkLoader extends AbstractProgramWrapperLoader {
 	public static final String RPK_EXTENSION = ".rpk";
 	public static final long RPK_LOAD_ADDRESS = 0x6000;
 
+	public List<String> binFiles = new ArrayList<>();
+
 	@Override
 	public String getName() {
 		return RPK_NAME;
@@ -75,7 +76,6 @@ public class Ti994RpkLoader extends AbstractProgramWrapperLoader {
 		if (!ext.equalsIgnoreCase(RPK_EXTENSION)) return loadSpecs;
 
 		boolean hasLayoutXml = false;
-		int numBinFiles = 0;
 
 		File file = provider.getFile();
 		ZipFile zip = new ZipFile(file);
@@ -85,18 +85,17 @@ public class Ti994RpkLoader extends AbstractProgramWrapperLoader {
 			String ename = entry.getName();
 			final int dotIdx = ename.lastIndexOf('.');
 
-			Msg.info(this, ename);
 			if (ename.equals("layout.xml")) {
 				hasLayoutXml = true;
 			} else if (dotIdx > 0 && ename.substring(dotIdx).equalsIgnoreCase(".bin")) {
-				numBinFiles ++;
+				binFiles.add(ename);
 			}
 		}
 		zip.close();
 
 		// current RPKs do not seem to need any of:
 		// meta-inf.xml, META-INF/, MANIFEST.MF, or softlist.xml
-		if (!hasLayoutXml || numBinFiles == 0) return loadSpecs;
+		if (!hasLayoutXml || binFiles.isEmpty()) return loadSpecs;
 
 		loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("9900:BE:16:default", "default"), true));
 
@@ -110,108 +109,132 @@ public class Ti994RpkLoader extends AbstractProgramWrapperLoader {
 
 		File file = provider.getFile();
 		ZipFile zip = new ZipFile(file);
-		Enumeration<? extends ZipEntry> entries = zip.entries();
-		// long nextAddr = 0x0000;
-		while (entries.hasMoreElements()) {
-			ZipEntry entry = entries.nextElement();
-			String entryName = entry.getName();
-			final int dotIdx = entryName.lastIndexOf('.');
 
-			Msg.info(this, entryName);
-			if (entryName.equals("layout.xml")) {
-				InputStream zis = zip.getInputStream(entry);
-				String layoutXml = new String(zis.readAllBytes(), Charset.forName("UTF-8"));
+		ZipEntry xmlEntry = zip.getEntry("layout.xml");
+		if (xmlEntry == null) {
+			// impossible unless we change the check in findSupportedLoadSpecs()
+			zip.close();
+			throw new IOException("Missing layout.xml");
+		}
 
-				try {
-					Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(new StringReader(layoutXml)));
+		String pcbType = null;
 
-					final DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();
-					final DOMImplementationLS impl = (DOMImplementationLS) registry.getDOMImplementation("LS");
+		InputStream zis = zip.getInputStream(xmlEntry);
+		String layoutXml = new String(zis.readAllBytes(), Charset.forName("UTF-8"));
+		try {
+			Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(new StringReader(layoutXml)));
 
-					Ti994LoaderHelper.appendComment(
-						program.getListing(),
-						program.getAddressFactory().getDefaultAddressSpace().getAddress(0x0000),
-						CodeUnit.PRE_COMMENT, impl.createLSSerializer().writeToString(doc)
-					);
-				} catch (Exception e) {
-					log.appendException(e);
-				}
-			} else if (dotIdx > 0 && entryName.substring(dotIdx).equalsIgnoreCase(".bin")) {
-				String binName = entryName.substring(0, dotIdx);
+			DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();
+			DOMImplementationLS impl = (DOMImplementationLS) registry.getDOMImplementation("LS");
+			String formattedXml = impl.createLSSerializer().writeToString(doc);
 
-				try {
-					// choose comment based on last letter of binName (ignore case)
-					// https://forums.atariage.com/topic/372380-understanding-how-cartridges-load-and-run/#comment-5532254
-					// ’s Classic99 still honors it, the ‘3’ terminator is deprecated in favor of
-					// ‘9’ for the 379 inverted-bank implementation and ‘8’ for the 378 non-inverted-bank implementation.
-					// xxxxxC.BIN - loads as CPU cartridge ROM at >6000
-					// xxxxxD.BIN - loads as banked CPU cartridge ROM at >6000,
-					//              second bank (such as Extended BASIC or AtariSoft carts)
-					// xxxxxG.BIN - loads as GROM cartridge at >6000 in GROM space
-					// xxxxx3.BIN - Classic99 extension, loads as a 379/Jon Guidry style cartridge ROM at >6000 - deprecated!
-					// xxxxx8.BIN - Classic99 extension, loads as a 378 non-inverted-bank style cartridge ROM at >6000
-					// xxxxx9.BIN - Classic99 extension, loads as a 379 inverted-bank style cartridge ROM at >6000
-					String binTypeComment = null;
-					String binType = Character.toString(binName.charAt(binName.length() - 1)).toLowerCase();
-					switch (binType) {
-						case "c": binTypeComment = "c: CPU cartridge ROM"; break;
-						case "d": binTypeComment = "d: banked CPU cartridge ROM"; break;
-						case "g": binTypeComment = "g: GROM cartridge"; break;
-						case "3": binTypeComment = "3: Classic99 extension"; break; // deprecated
-						case "8": binTypeComment = "8: Classic99 extension"; break;
-						case "9": binTypeComment = "9: Classic99 extension"; break;
-						default: break;
+			Ti994LoaderHelper.appendComment(
+				program.getListing(),
+				program.getAddressFactory().getDefaultAddressSpace().getAddress(RPK_LOAD_ADDRESS),
+				CodeUnit.PRE_COMMENT, formattedXml
+			);
+
+			NodeList pcbs = doc.getElementsByTagName("pcb");
+			pcbType = pcbs.getLength() > 0 ? pcbs.item(0).getAttributes().getNamedItem("type").getNodeValue() : null;
+			
+			Msg.info(this, "pcbType: " + pcbType);
+
+		} catch (Exception e) {
+			log.appendException(e);
+		}
+
+		// https://www.ninerpedia.org/wiki/MESS_cartridge_handling
+		// known values: standard, paged, minimem, super, mbx, paged379i, paged378, paged377, pagedcru, gromemu
+		if (pcbType.equals("standard")) {
+			Iterator<String> bfit = binFiles.iterator();
+			while (bfit.hasNext()) {
+				monitor.checkCanceled(); // TODO deprecated
+				String entryName = bfit.next();
+
+				final int dotIdx = entryName.lastIndexOf('.');			
+
+				if (dotIdx > 0 && entryName.substring(dotIdx).equalsIgnoreCase(".bin")) {
+					String binName = entryName.substring(0, dotIdx);
+
+					try {
+						// choose comment based on last letter of binName (ignore case)
+						// https://forums.atariage.com/topic/372380-understanding-how-cartridges-load-and-run/#comment-5532254
+						// ’s Classic99 still honors it, the ‘3’ terminator is deprecated in favor of
+						// ‘9’ for the 379 inverted-bank implementation and ‘8’ for the 378 non-inverted-bank implementation.
+						// xxxxxC.BIN - loads as CPU cartridge ROM at >6000
+						// xxxxxD.BIN - loads as banked CPU cartridge ROM at >6000,
+						//              second bank (such as Extended BASIC or AtariSoft carts)
+						// xxxxxG.BIN - loads as GROM cartridge at >6000 in GROM space
+						// xxxxx3.BIN - Classic99 extension, loads as a 379/Jon Guidry style cartridge ROM at >6000 - deprecated!
+						// xxxxx8.BIN - Classic99 extension, loads as a 378 non-inverted-bank style cartridge ROM at >6000
+						// xxxxx9.BIN - Classic99 extension, loads as a 379 inverted-bank style cartridge ROM at >6000
+						String binTypeComment = null;
+						String binType = Character.toString(binName.charAt(binName.length() - 1)).toLowerCase();
+						switch (binType) {
+							case "c": binTypeComment = "c: CPU cartridge ROM"; break;
+							case "d": binTypeComment = "d: banked CPU cartridge ROM"; break;
+							case "g": binTypeComment = "g: GROM cartridge"; break;
+							case "3": binTypeComment = "3: Classic99 extension"; break; // deprecated
+							case "8": binTypeComment = "8: Classic99 extension"; break;
+							case "9": binTypeComment = "9: Classic99 extension"; break;
+							default: binTypeComment = binType + ": not a known .bin final char (c/d/g/3/8/9)"; break;
+						}
+
+						// TODO in the case of a GROM we shouldn't use the default address space
+						// TODO GROMs use the GROM space - we probably need to create a new space for this with some API?
+
+						// AddressSpace addresssSpace = program.getAddressFactory().getDefaultAddressSpace();
+						// TODO make a new addressSpace 'GROM' if bineType is 'g', use the default address space otherwise
+						// TODO this seems to be nontrivial to do from a Loader
+						AddressSpace addressSpace = binType.equals("g")
+							? AddressSpace.OTHER_SPACE
+							: program.getAddressFactory().getDefaultAddressSpace();
+
+						ZipEntry entry = zip.getEntry(entryName);
+
+						long size = entry.getSize();
+						
+						if (RPK_LOAD_ADDRESS + size > 0x10000) {
+							Msg.warn(this, "File too large to load 0x" + Long.toHexString(size)
+								+ " bytes at 0x" + Long.toHexString(RPK_LOAD_ADDRESS)
+								+ ", truncating to 0x" + Long.toHexString(0x10000 - RPK_LOAD_ADDRESS));
+							size = 0x10000 - RPK_LOAD_ADDRESS;
+						} else {
+							Msg.info(this, "Loading 0x" + Long.toHexString(size)
+								+ " bytes at 0x" + Long.toHexString(RPK_LOAD_ADDRESS));
+						}
+
+						Address loadAddress = addressSpace.getAddress(RPK_LOAD_ADDRESS);
+
+						program.getMemory().createInitializedBlock(
+							entryName,
+							loadAddress,
+							zip.getInputStream(entry),
+							size,
+							monitor, false
+						);
+
+						Ti994LoaderHelper.appendComment(
+							program.getListing(),
+							loadAddress,
+							CodeUnit.PRE_COMMENT, binTypeComment
+						);
+						Ti994LoaderHelper.commentCode(
+							program,
+							loadAddress,
+							new InputStreamByteProvider(zip.getInputStream(entry), entry.getSize()),
+							0
+						);
+
+					} catch (Exception e) {
+						log.appendException(e);
 					}
-
-					// TODO in the case of a GROM we shouldn't use the default address space
-					// TODO GROMs use the GROM space - we probably need to create a new space for this with some API?
-
-					// AddressSpace addresssSpace = program.getAddressFactory().getDefaultAddressSpace();
-					// TODO make a new addressSpace 'GROM' if bineType is 'g', use the default address space otherwise
-					// TODO this seems to be nontrivial to do from a Loader
-					AddressSpace addressSpace = binType.equals("g")
-						? AddressSpace.OTHER_SPACE
-						: program.getAddressFactory().getDefaultAddressSpace();
-
-					// TODO could it be that the address factory doesn't know about the GROM space?
-					// TODO how do we let it know?
-					// program.getAddressFactory().addAddressSpace(addressSpace);
-					// DefaultAddressFactory defaultAddressFactory = program.getAddressFactory();
-					// defaultAddressFactory.addAddressSpace(addressSpace);
-					// ProgramAddressFactory programAddressFactory = program.getAddressFactory();
-					// programAddressFactory.addAddressSpace(addressSpace);
-					// GromAddressFactory gromAddressFactory = new GromAddressFactory();
-					// gromAddressFactory.createNewGromSpace();
-
-					Address loadAddress = addressSpace.getAddress(RPK_LOAD_ADDRESS);
-
-					program.getMemory().createInitializedBlock(
-						entryName,
-						loadAddress,
-						zip.getInputStream(entry),
-						entry.getSize(),
-						monitor, false
-					);
-
-					Ti994LoaderHelper.appendComment(
-						program.getListing(),
-						loadAddress,
-						CodeUnit.PRE_COMMENT, binTypeComment
-					);
-					Ti994LoaderHelper.commentCode(
-						program,
-						loadAddress,
-						new InputStreamByteProvider(zip.getInputStream(entry), entry.getSize()),
-						0
-					);
-
-					// point nextAddr to the next multiple of 0x1000 greater than the end of this block
-					// nextAddr = (nextAddr + entry.getSize() + 0xfff) & 0xfffff000;
-				} catch (Exception e) {
-					log.appendException(e);
 				}
 			}
+		} else {
+			Msg.error(this, "The RPK Loader only supports the 'standard' PCB Type. This RPK file has a '" + pcbType + "' PCB Type.");
 		}
+
 		zip.close();
 	}
 
