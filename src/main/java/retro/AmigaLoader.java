@@ -44,6 +44,14 @@ public class AmigaLoader extends AbstractProgramWrapperLoader {
         return AMIGA_NAME;
 	}
 
+	// lower numbers have higher priority
+	// 50 seems to be standard, raw uses 100
+	// RetroGhidra Loaders that don't have proper magic numbers should use 60
+    @Override
+    public int getTierPriority() {
+        return 60;
+    }
+
 	@Override
 	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
 		List<LoadSpec> loadSpecs = new ArrayList<>();

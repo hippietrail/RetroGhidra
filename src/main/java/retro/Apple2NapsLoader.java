@@ -50,6 +50,9 @@ public class Apple2NapsLoader extends AbstractProgramWrapperLoader {
 	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
 		List<LoadSpec> loadSpecs = new ArrayList<>();
 
+		// TODO the NAPS tag can come either before or after the filename extension
+		// TOOO the code currently only supports the NAPS tag after the filename
+		// TODO add support for NAPS tag before the the filename extension
         String name = provider.getName();
         if (name.indexOf('#') < 0) return loadSpecs;
         String naps = name.substring(name.lastIndexOf('#') + 1);
