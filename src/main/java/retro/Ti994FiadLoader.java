@@ -108,7 +108,7 @@ public class Ti994FiadLoader extends AbstractProgramWrapperLoader {
 				FIAD_HEADER_LEN,
 				false);
 
-			Ti994LoaderHelper.commentFiadHeader(program, headerAddress, provider);
+			Ti994LoaderHelper.commentFiadHeader(program, headerAddress, loadAddress, provider);
 
             // last letter of the filename to determine where to load a file:
             // xxxxxC.BIN - loads as CPU cartridge ROM at >6000
@@ -125,7 +125,7 @@ public class Ti994FiadLoader extends AbstractProgramWrapperLoader {
 				provider.length() - FIAD_HEADER_LEN,
 				false);
 
-			Ti994LoaderHelper.commentCode(program, loadAddress, provider, FIAD_HEADER_LEN);
+			Ti994LoaderHelper.commentCode(program, loadAddress, provider, FIAD_HEADER_LEN, log);
 		} catch (Exception e) {
 			log.appendException(e);
 		}

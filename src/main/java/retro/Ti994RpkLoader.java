@@ -223,7 +223,8 @@ public class Ti994RpkLoader extends AbstractProgramWrapperLoader {
 							program,
 							loadAddress,
 							new InputStreamByteProvider(zip.getInputStream(entry), entry.getSize()),
-							0
+							0,
+							log
 						);
 
 					} catch (Exception e) {

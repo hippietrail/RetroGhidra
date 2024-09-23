@@ -173,7 +173,7 @@ public class Ti994BinLoader extends AbstractProgramWrapperLoader {
 			}
 			program.getListing().setComment(loadAddress, CodeUnit.PRE_COMMENT, initialComment);
 			
-			Ti994LoaderHelper.commentCode(program, loadAddress, provider, 0);
+			Ti994LoaderHelper.commentCode(program, loadAddress, provider, 0, log);
 		} catch (Exception e) {
 			log.appendException(e);
 		}
