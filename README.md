@@ -58,6 +58,7 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - Apple Lisa
 - Atari 8-bit cartridge, disk, and tape formats
 - BeOS (Ghidra natively supports PEF)
+- Commodore 64 X00 format (P00, R00, S00, U00, etc)
 - Commodore PET
 - Dragon 32/64
 - Jupiter Ace
