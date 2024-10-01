@@ -22,7 +22,8 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - TI-99/4A TIFILES (XMODEM) file loader
 
 # In progress
-- Amstrad CPC .SNA snapshot format - some 64K snapshots might be usable
+- Amstrad CPC .SNA snapshot format loader - some 64K snapshots might be usable
+- Apple Lisa object file loader - identifies but does not load yet
 - Commodore Amiga: "Hunk" executable and object file loader - identifies but does not load yet
 - CP/M .CMD command file loader
 - Sharp X68000 .Z executable format - identifies but does not load yet
@@ -31,6 +32,7 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - Sinclair ZX Spectrum TAP tape image loader - identifies but does not load yet
 - Sinclair ZX Spectrum TZX tape image loader - identifies but does not load yet
 - TI-99/4A .ctg cartridge format - identifies but does not load yet
+- TI-99/4A GPL bytecode disassembler
 - TK2000/Microprofessor II: .ct2 tape format - identifies but does not load yet
 
 # Planned
@@ -55,7 +57,6 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 # To investigate
 - Acorn: UEF (Unified Emulator Format) for BBC Micro and Electron
 - Apple IIgs
-- Apple Lisa
 - Atari 8-bit cartridge, disk, and tape formats
 - BeOS (Ghidra natively supports PEF)
 - Commodore 64 X00 format (P00, R00, S00, U00, etc)
