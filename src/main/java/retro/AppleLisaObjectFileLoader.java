@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.IntStream;
 
+import ghidra.app.util.MemoryBlockUtils;
 import ghidra.app.util.Option;
 import ghidra.app.util.bin.BinaryReader;
 import ghidra.app.util.bin.ByteProvider;
@@ -26,8 +27,11 @@ import ghidra.app.util.importer.MessageLog;
 import ghidra.app.util.opinion.AbstractProgramWrapperLoader;
 import ghidra.app.util.opinion.LoadSpec;
 import ghidra.framework.model.DomainObject;
+import ghidra.program.model.address.Address;
 import ghidra.program.model.lang.LanguageCompilerSpecPair;
 import ghidra.program.model.listing.Program;
+import ghidra.program.model.symbol.SourceType;
+import ghidra.program.model.symbol.SymbolTable;
 import ghidra.util.Msg;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
@@ -39,34 +43,54 @@ public class AppleLisaObjectFileLoader extends AbstractProgramWrapperLoader {
 
     public static final String LISA_NAME = "Apple Lisa Object File";
 
-        // InterfLoc is misprinted in http://pascal.hansotten.com/uploads/lisa/Lisa_Develpment_System_Internals_Documentation_198402.pdf
-        // 86 and 92 are given in different places, but both are used for other things.
-        private static final Map<Integer, String> TYPE_NAMES = Map.ofEntries(
-         Map.entry(0x00, "EOFMark"),
-         Map.entry(0x80, "ModuleName"),
-         Map.entry(0x81, "EndBlock"),
-         Map.entry(0x82, "EntryPoint"),
-         Map.entry(0x83, "External"),
-         Map.entry(0x84, "StartAddress"),
-         Map.entry(0x85, "CodeBlock"),
-         Map.entry(0x86, "Relocation"),
-        //  Map.entry(0x86, "InterfLoc"),
-         Map.entry(0x87, "CommonReloc"),
-         Map.entry(0x89, "ShortExternal"),
-         Map.entry(0x92, "UnitBlock"),
-         Map.entry(0x98, "Executable"),
-         Map.entry(0x99, "VersionCtrl"),
-         Map.entry(0x9A, "SegmentTable"),
-         Map.entry(0x9B, "UnitTable"),
-         Map.entry(0x9C, "SegLocation"),
-         Map.entry(0x9D, "UnitLocation"),
-         Map.entry(0x9E, "FilesBlock")
-     );
+    public static final int LISA_TAG_EOF_MARK = 0x00;
+    public static final int LISA_TAG_MODULE_NAME = 0x80;
+    public static final int LISA_TAG_END_BLOCK = 0x81;
+    public static final int LISA_TAG_ENTRY_POINT = 0x82;
+    public static final int LISA_TAG_EXTERNAL = 0x83;
+    public static final int LISA_TAG_START_ADDRESS = 0x84;
+    public static final int LISA_TAG_CODE_BLOCK = 0x85;
+    public static final int LISA_TAG_RELOCATION = 0x86;
+    public static final int LISA_TAG_COMMON_RELOC = 0x87;
+    public static final int LISA_TAG_SHORT_EXTERNAL = 0x89;
+    public static final int LISA_TAG_UNIT_BLOCK = 0x92;
+    public static final int LISA_TAG_EXECUTABLE = 0x98;
+    public static final int LISA_TAG_VERSION_CTRL = 0x99;
+    public static final int LISA_TAG_SEGMENT_TABLE = 0x9A;
+    public static final int LISA_TAG_UNIT_TABLE = 0x9B;
+    public static final int LISA_TAG_SEG_LOCATION = 0x9C;
+    public static final int LISA_TAG_UNIT_LOCATION = 0x9D;
+    public static final int LISA_TAG_FILES_BLOCK = 0x9E;
+
+    // InterfLoc is misprinted in http://pascal.hansotten.com/uploads/lisa/Lisa_Develpment_System_Internals_Documentation_198402.pdf
+    // 86 and 92 are given in different places, but both are used for other things.
+    private static final Map<Integer, String> TYPE_NAMES = Map.ofEntries(
+        Map.entry(LISA_TAG_EOF_MARK, "EOFMark"),
+        Map.entry(LISA_TAG_MODULE_NAME, "ModuleName"),
+        Map.entry(LISA_TAG_END_BLOCK, "EndBlock"),
+        Map.entry(LISA_TAG_ENTRY_POINT, "EntryPoint"),
+        Map.entry(LISA_TAG_EXTERNAL, "External"),
+        Map.entry(LISA_TAG_START_ADDRESS, "StartAddress"),
+        Map.entry(LISA_TAG_CODE_BLOCK, "CodeBlock"),
+        Map.entry(LISA_TAG_RELOCATION, "Relocation"),
+        //Map.entry(LISA_TAG_INTERF_LOC, "InterfLoc"),
+        Map.entry(LISA_TAG_COMMON_RELOC, "CommonReloc"),
+        Map.entry(LISA_TAG_SHORT_EXTERNAL, "ShortExternal"),
+        Map.entry(LISA_TAG_UNIT_BLOCK, "UnitBlock"),
+        Map.entry(LISA_TAG_EXECUTABLE, "Executable"),
+        Map.entry(LISA_TAG_VERSION_CTRL, "VersionCtrl"),
+        Map.entry(LISA_TAG_SEGMENT_TABLE, "SegmentTable"),
+        Map.entry(LISA_TAG_UNIT_TABLE, "UnitTable"),
+        Map.entry(LISA_TAG_SEG_LOCATION, "SegLocation"),
+        Map.entry(LISA_TAG_UNIT_LOCATION, "UnitLocation"),
+        Map.entry(LISA_TAG_FILES_BLOCK, "FilesBlock")
+    );
+
+	private Long codeBlockOffset = null; 
 
     String getTypeName(int type) {
-        String hex = String.format("0x%02X", type);
         String name = TYPE_NAMES.get(type);
-        return name == null ? hex + " ???" : hex + " '" + name + "'";
+        return String.format("0x%02X", type) + ' ' + (name == null ? "???" : name);
     }
 
 	@Override
@@ -86,11 +110,19 @@ public class AppleLisaObjectFileLoader extends AbstractProgramWrapperLoader {
             final int type = reader.readNextByte() & 0xff;
             String name = getTypeName(type);
             final long len = reader.readNextUnsignedValue(3);
+            if (len < 4) return loadSpecs;
+            if (reader.length() - off < len) return loadSpecs;
+
             Msg.info(this, String.format("Lisa: offset=%06X, type=%s, len=%d", off, name, len));
 
-            if (len < 4) return loadSpecs;
+            if (type == LISA_TAG_CODE_BLOCK) {
+                if (codeBlockOffset == null) {
+					codeBlockOffset = off;
+				} else {
+					Msg.warn(this, "Lisa: multiple code block offsets: 0x" + Long.toHexString(codeBlockOffset) + " and 0x" + Long.toHexString(off));
+				}
+            }
 
-            if (reader.length() - off < len) return loadSpecs;
             off += len;
             reader.setPointerIndex(off);
 
@@ -98,17 +130,14 @@ public class AppleLisaObjectFileLoader extends AbstractProgramWrapperLoader {
         }
 
         final int bytesRemaining = Math.toIntExact(reader.length() - off);
-        if (bytesRemaining == 0) {
-            Msg.info(this, "Lisa: end of file");
-        } else {
-            Msg.info(this, "Lisa: not at end of file. bytes remaining: 0x" + Integer.toHexString(bytesRemaining) + " (" + bytesRemaining + " bytes)");
+        if (bytesRemaining > 0) {
+            Msg.info(this, "Lisa: Bytes remaining: 0x" + Integer.toHexString(bytesRemaining) + " (" + bytesRemaining + " bytes)");
             // both the number of zero bytes and the total file length are arbitrary, not rounded up to a block or sector size
             byte[] remainder = reader.readByteArray(off, bytesRemaining);
             if (IntStream.range(0, remainder.length).map(i -> remainder[i]).anyMatch(i -> i != 0x00)) {
                 Msg.info(this, "   remainder is not all 0x00");
                 return loadSpecs;
             }
-			Msg.info(this, "   remainder is all 0x00");
         }
 
         loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("68000:BE:32:default", "default"), true));
@@ -122,6 +151,38 @@ public class AppleLisaObjectFileLoader extends AbstractProgramWrapperLoader {
 			throws CancelledException, IOException {
 
 		// TODO: Load the bytes from 'provider' into the 'program'.
+		if (codeBlockOffset == null) {
+			Msg.warn(this, "Lisa: no code block found");
+			return;
+		}
+		Msg.info(this, "Lisa: code block at offset 0x" + Long.toHexString(codeBlockOffset));
+		
+		BinaryReader reader = new BinaryReader(provider, false); // big-endian
+		reader.setPointerIndex(codeBlockOffset);
+		reader.readNextByte();                              // record type: code block
+		final long len1 = reader.readNextUnsignedValue(3);  // record length in bytes
+		final long len2 = reader.readNextUnsignedInt();     // code block length in bytes (doesn't match the record length)
+		final long addr = reader.readNextUnsignedInt();     // address to load code block
+		Msg.info(this, "Lisa: code block length 0x" + Long.toHexString(len1) + ", 0x" + Long.toHexString(len2) + ", 0x" + Long.toHexString(addr));
+		
+        try {
+            Address startAndEntryPoint = program.getAddressFactory().getDefaultAddressSpace().getAddress(addr);
+
+            program.getMemory().createInitializedBlock(
+                "CodeBlock",
+                startAndEntryPoint,
+                MemoryBlockUtils.createFileBytes(program, provider, monitor),
+                codeBlockOffset + 4 + 4 + 4,
+                len1 - (4 + 4 + 4),
+                false
+            );
+            
+            SymbolTable st = program.getSymbolTable();
+            st.createLabel(startAndEntryPoint, "entry", SourceType.ANALYSIS);
+            st.addExternalEntryPoint(startAndEntryPoint);
+        } catch (Exception e) {
+            log.appendException(e);
+        }
 	}
 
 	@Override
