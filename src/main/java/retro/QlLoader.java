@@ -16,7 +16,6 @@
 package retro;
 
 import java.io.IOException;
-import java.lang.foreign.MemoryAddress;
 import java.util.*;
 
 import ghidra.app.util.MemoryBlockUtils;

@@ -42,7 +42,6 @@ import ghidra.util.task.TaskMonitor;
 public class Apple2Binary2Loader extends AbstractProgramWrapperLoader {
 
 	public static final String BIN2_NAME = "Apple II Binary II";
-	public static final int BIN2_HEADER_LEN = 128;
 	public static final String BIN2_MAGIC = "\nGL"; // Binary II was developed by Gary B. Little
 	
 	public static final int BIN2_OFF_ACCESS_CODE = 3;
@@ -50,18 +49,24 @@ public class Apple2Binary2Loader extends AbstractProgramWrapperLoader {
 	public static final int BIN2_OFF_AUX_TYPE_CODE = 5; // 16-bit
 	public static final int BIN2_OFF_STORAGE_TYPE_CODE = 7;
 	public static final int BIN2_OFF_SIZE_IN_BLOCKS = 8; // 16-bit
+	// 10, 12, 14, 16
 	public static final int BIN2_OFF_ID_BYTE = 18; // always 0x00
+	// 19
 	public static final int BIN2_OFF_EOF_POSITION = 20; // 24-bit
 	public static final int BIN2_OFF_FILENAME_LEN = 23; // (or partial pathname)
 	public static final int BIN2_OFF_FILENAME = 24; // 64 bytes (or partial pathname)
 	public static final int BIN2_OFF_RESERVED_2 = 88;
 	public static final int BIN2_OFF_PRODOS_16_FILETYPE = 111; // should all be 0
+	// 112, 113, 114, 116
 	public static final int BIN2_OFF_SPACE_NEEDED = 117;
 	public static final int BIN2_OFF_OSTYPE = 121; // we'll only accept ProDOS and DOS 3
 	public static final int BIN2_OFF_NATIVE_FILETYPE_CODE = 122; // 16-bit, used by DOS 3
+	// 124
 	public static final int BIN2_OFF_DATA_FLAGS = 125;
 	public static final int BIN2_OFF_VERSION = 126; // only 0 & 1
 	public static final int BIN2_OFF_NUM_FILES_TO_FOLLOW = 127; // we'll only work with single-file archives
+	public static final int BIN2_HEADER_LEN = 128;
+
 	public static final int BIN2_ID_BYTE = 0x02;
 	public static final int BIN2_FILETYPE_TXT = 0x04;
 	public static final int BIN2_FILETYPE_BIN = 0x06;
@@ -112,19 +117,24 @@ public class Apple2Binary2Loader extends AbstractProgramWrapperLoader {
 		// and only handle Binary II archives with a single file since it's a useful wrapper providing the missing fields
 		// but for now we're going to go through and find the first binary entry
 
-		int off = 0;
+		long off = 0;
+		int i = 0;
 		while (true) {
+			Msg.info(this, "Binary II loader: entry " + i++ + ", offset = 0x" + Long.toHexString(off));
 			if (reader.readUnsignedByte(off + BIN2_OFF_FILETYPE_CODE) == BIN2_FILETYPE_BIN) {
+				Msg.info(this, "Binary II loader: found binary file, offset = 0x" + Long.toHexString(off));
 				loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("6502:LE:16:default", "default"), true));
 				break;
 			}
-			final int eofPos = reader.readUnsignedShort(off + BIN2_OFF_EOF_POSITION)
-				| (reader.readUnsignedByte(off + BIN2_OFF_EOF_POSITION + 2) << 16);
-			int dataBlocks = eofPos / 128;
+			final long eofPos = reader.readUnsignedValue(off + BIN2_OFF_EOF_POSITION, 3);
+			long dataBlocks = eofPos / 128;
 			if (eofPos % 128 != 0) dataBlocks++;
 
-			int endOffset = off +BIN2_HEADER_LEN + dataBlocks * 128;
-			if (endOffset >= fileLength) break;
+			long endOffset = off +BIN2_HEADER_LEN + dataBlocks * 128;
+			if (endOffset >= fileLength) {
+				Msg.info(this, "Binary II loader: end of file reached, offset = 0x" + Long.toHexString(endOffset));
+				break;
+			}
 			off = endOffset;
 		}
 
@@ -188,7 +198,7 @@ public class Apple2Binary2Loader extends AbstractProgramWrapperLoader {
 								startAndEntryPoint,              								// start
 								MemoryBlockUtils.createFileBytes(program, provider, monitor),	// filebytes
 								startOffset,             										// offset
-								eofPos, 											            // size
+								eofPos, 											            // size - we're using the name from the docs, but it just means file size
 								false
 							).setWrite(true);
 

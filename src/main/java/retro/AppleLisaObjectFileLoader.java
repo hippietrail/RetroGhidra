@@ -140,6 +140,7 @@ public class AppleLisaObjectFileLoader extends AbstractProgramWrapperLoader {
             }
         }
 
+        // No other 680x0 has ever been used, so we can hardcode this
         loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("68000:BE:32:default", "default"), true));
 
 		return loadSpecs;
