@@ -30,8 +30,10 @@ import ghidra.program.database.mem.FileBytes;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressSpace;
 import ghidra.program.model.lang.LanguageCompilerSpecPair;
+import ghidra.program.model.lang.LanguageID;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.Memory;
+import ghidra.util.Msg;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 
@@ -83,7 +85,7 @@ public class Ti994FiadLoader extends AbstractProgramWrapperLoader {
             if (val != 0) return loadSpecs;
         }
 
-		loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("9900:BE:16:default", "default"), true));
+		Ti994LoaderHelper.addLoadSpecs(this, getLanguageService(), loadSpecs);
 
 		return loadSpecs;
 	}

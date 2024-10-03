@@ -28,7 +28,6 @@ import ghidra.app.util.opinion.LoadSpec;
 import ghidra.framework.model.DomainObject;
 import ghidra.program.database.mem.FileBytes;
 import ghidra.program.model.address.Address;
-import ghidra.program.model.lang.LanguageCompilerSpecPair;
 import ghidra.program.model.listing.CodeUnit;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.Memory;
@@ -128,9 +127,7 @@ public class Ti994BinLoader extends AbstractProgramWrapperLoader {
 			if ((reader.readByte(0) & 0xFF) != 0xAA) return loadSpecs;
 		}
 
-		// either we have a .bin file extension preceded by c/d/g/3/8/9, or we have a file beginning with $AA
-
-		loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("9900:BE:16:default", "default"), true));
+		Ti994LoaderHelper.addLoadSpecs(this, getLanguageService(), loadSpecs);
 
 		return loadSpecs;
 	}

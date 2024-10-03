@@ -25,7 +25,6 @@ import ghidra.app.util.importer.MessageLog;
 import ghidra.app.util.opinion.AbstractProgramWrapperLoader;
 import ghidra.app.util.opinion.LoadSpec;
 import ghidra.framework.model.DomainObject;
-import ghidra.program.model.lang.LanguageCompilerSpecPair;
 import ghidra.program.model.listing.Program;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
@@ -55,7 +54,7 @@ public class Ti994TiCtgLoader extends AbstractProgramWrapperLoader {
         String magic = reader.readAsciiString(0, CTG_MAGIC.length());
         if (!magic.equals(CTG_MAGIC)) return loadSpecs;
 
-		loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("9900:BE:16:default", "default"), true));
+		Ti994LoaderHelper.addLoadSpecs(this, getLanguageService(), loadSpecs);
 
 		return loadSpecs;
 	}

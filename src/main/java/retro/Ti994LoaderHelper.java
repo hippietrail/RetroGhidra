@@ -11,6 +11,8 @@ import java.util.stream.Stream;
 import ghidra.app.util.bin.BinaryReader;
 import ghidra.app.util.bin.ByteProvider;
 import ghidra.app.util.importer.MessageLog;
+import ghidra.app.util.opinion.AbstractProgramWrapperLoader;
+import ghidra.app.util.opinion.LoadSpec;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressSpace;
 import ghidra.program.model.data.ArrayDataType;
@@ -18,6 +20,9 @@ import ghidra.program.model.data.ByteDataType;
 import ghidra.program.model.data.PascalString255DataType;
 import ghidra.program.model.data.StringDataType;
 import ghidra.program.model.data.UnsignedShortDataType;
+import ghidra.program.model.lang.LanguageCompilerSpecPair;
+import ghidra.program.model.lang.LanguageID;
+import ghidra.program.model.lang.LanguageService;
 import ghidra.program.model.listing.CodeUnit;
 import ghidra.program.model.listing.Listing;
 import ghidra.program.model.listing.Program;
@@ -26,7 +31,6 @@ import ghidra.program.model.symbol.SourceType;
 import ghidra.program.model.symbol.SymbolTable;
 import ghidra.program.model.util.CodeUnitInsertionException;
 import ghidra.util.Msg;
-import ghidra.util.exception.InvalidInputException;
 
 public class Ti994LoaderHelper {
 
@@ -116,6 +120,21 @@ public class Ti994LoaderHelper {
     //         return variable;
     //     }
     // }
+
+    static void addLoadSpecs(AbstractProgramWrapperLoader loader, LanguageService languageService, List<LoadSpec> loadSpecs) {
+		for (String[] info : new String[][]{{"9900", "TMS 9900 CPU"}, {"GPL", "TI-99/4A GPL"}}) {
+			LanguageCompilerSpecPair lcsp = new LanguageCompilerSpecPair(info[0] + ":BE:16:default", "default");
+
+			LanguageID languageID = lcsp.getLanguageID();
+
+			try {
+				languageService.getLanguageDescription(languageID);
+				loadSpecs.add(new LoadSpec(loader, 0, lcsp, true));
+			} catch (Exception e) {
+				Msg.warn(loader, info[1] + " support not found. Find the extension on GitHub.");
+			}
+		}
+	}
 
     static void commentFiadOrTifilesHeader(Field[] fields, Program program, Address headerAddress, Address loadAddress, ByteProvider provider) throws Exception {
         BinaryReader reader = new BinaryReader(provider, false); // big-endian BUT little-endian needed for NUMBER OF LEVEL 3 RECORDS ALLOCATED

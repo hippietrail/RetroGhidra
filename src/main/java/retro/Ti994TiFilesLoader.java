@@ -29,7 +29,6 @@ import ghidra.framework.model.DomainObject;
 import ghidra.program.database.mem.FileBytes;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressSpace;
-import ghidra.program.model.lang.LanguageCompilerSpecPair;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.Memory;
 import ghidra.util.exception.CancelledException;
@@ -82,7 +81,7 @@ public class Ti994TiFilesLoader extends AbstractProgramWrapperLoader {
             if (val != 0 && val != 0xca53) return loadSpecs;
         }
 
-		loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("9900:BE:16:default", "default"), true));
+		Ti994LoaderHelper.addLoadSpecs(this, getLanguageService(), loadSpecs);
 
 		return loadSpecs;
 	}

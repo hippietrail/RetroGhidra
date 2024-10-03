@@ -41,7 +41,6 @@ import ghidra.app.util.opinion.LoadSpec;
 import ghidra.framework.model.DomainObject;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressSpace;
-import ghidra.program.model.lang.LanguageCompilerSpecPair;
 import ghidra.program.model.listing.CodeUnit;
 import ghidra.program.model.listing.Program;
 import ghidra.util.Msg;
@@ -97,7 +96,7 @@ public class Ti994RpkLoader extends AbstractProgramWrapperLoader {
 		// meta-inf.xml, META-INF/, MANIFEST.MF, or softlist.xml
 		if (!hasLayoutXml || binFiles.isEmpty()) return loadSpecs;
 
-		loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("9900:BE:16:default", "default"), true));
+		Ti994LoaderHelper.addLoadSpecs(this, getLanguageService(), loadSpecs);
 
 		return loadSpecs;
 	}
