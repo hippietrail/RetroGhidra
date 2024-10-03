@@ -1,4 +1,4 @@
-Ghidra Loaders and FileSystems for various retrocomputing platforms.
+Ghidra Loaders, FileSystems, and Processors for various retrocomputing platforms.
 
 # Done
 - Apple II Binary II archive loader - only first binary is loaded
@@ -6,24 +6,26 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - Apple Lisa object file loader
 - Atari 2600 .a26/.bin cartridge file loader - only 2K and 4K are possible
 - Atari 8-bit .XEX file loader
-- Atari ST executable format loader
+- Atari ST executable file loader
 - Classic 680x0 Mac application loader
 - Commodore 64 .CRT cartridge loader - loads straightforward cartridges
 - Commodore VIC-20 .PRG cartridge loader - not other types of .PRG
 - Exidy Sorcerer .SNP snapshot loader
 - RISC OS AIF (Arm Image Format) loader
-- Sharp X68000 .X executable format loader
-- Sinclair QL executable format loader
+- Sharp X68000 .X executable file loader
+- Sinclair QL executable file loader
 - Sinclair ZX Spectrum .SNA snapshot loader - 48K snapshots
 - Tandy TRS-80 Model I/III /CMD command file loader
 - Tandy TRS-80 Color Computer .CCC cartridge loader - 2K, 4K, and 8K
-- TI 99/4A .bin file formats
-- TI-99/4A FIAD (V9T9) file format
-- TI-99/4A .rpk cartridge format
+- TI 99/4A .bin file loader
+- TI-99/4A FIAD (V9T9) file loader
+- TI-99/4A .rpk cartridge loader
 - TI-99/4A TIFILES (XMODEM) file loader
 
 # In progress
+## Loaders
 - Amstrad CPC .SNA snapshot format loader - some 64K snapshots might be usable
+- Commodore 64 X00 format (P00, R00, S00, U00, etc)
 - Commodore Amiga: "Hunk" executable and object file loader - identifies but does not load yet
 - CP/M .CMD command file loader
 - Sharp X68000 .Z executable format - identifies but does not load yet
@@ -32,8 +34,13 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - Sinclair ZX Spectrum TAP tape image loader - identifies but does not load yet
 - Sinclair ZX Spectrum TZX tape image loader - identifies but does not load yet
 - TI-99/4A .ctg cartridge format - identifies but does not load yet
-- TI-99/4A GPL bytecode disassembler
 - TK2000/Microprofessor II: .ct2 tape format - identifies but does not load yet
+
+## FileSystems
+- Apple II Binary II file system
+
+## Processors
+- TI-99/4A GPL bytecode disassembler
 
 # Planned
 ## Loaders
@@ -43,7 +50,6 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - Sinclair ZX Spectrum: More snapshot and emulator formats
 
 ## FileSystems
-- Apple II Binary II archives
 - Apple II .do and .po disk image formats
 - Commodore 64 disk image format
 - Sinclair Spectrum: .DSK +3DOS disk image format
@@ -53,13 +59,13 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - Tandy TRS-80 Model I/III: .DMK disk image format
 - Tandy TRS-80 Model I/III: .JV1 disk image format
 - Tandy TRS-80 Model I/III: .JV3 disk image format
+- TI-99/4A: .ark Archiver format
 
 # To investigate
 - Acorn: UEF (Unified Emulator Format) for BBC Micro and Electron
 - Apple IIgs
 - Atari 8-bit cartridge, disk, and tape formats
 - BeOS (Ghidra natively supports PEF)
-- Commodore 64 X00 format (P00, R00, S00, U00, etc)
 - Commodore PET
 - Dragon 32/64
 - Jupiter Ace
@@ -72,3 +78,4 @@ Ghidra Loaders and FileSystems for various retrocomputing platforms.
 - Tandy Coco: .cas tape images
 - Thomson MO, TO
 - Timex Sinclair
+- Xerox Alto, Star
