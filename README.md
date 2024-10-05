@@ -1,3 +1,7 @@
+# RetroGhidra
+
+<img src="https://github.com/user-attachments/assets/4b48b672-e1a0-43c1-b6f1-b45808ab8224" width="256">
+
 Ghidra Loaders, FileSystems, and Processors for various retrocomputing platforms.
 
 # Done
