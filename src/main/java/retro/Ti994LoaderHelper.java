@@ -14,6 +14,7 @@ import ghidra.app.util.importer.MessageLog;
 import ghidra.app.util.opinion.AbstractProgramWrapperLoader;
 import ghidra.app.util.opinion.LoadSpec;
 import ghidra.program.model.address.Address;
+import ghidra.program.model.address.AddressOutOfBoundsException;
 import ghidra.program.model.address.AddressSpace;
 import ghidra.program.model.data.ArrayDataType;
 import ghidra.program.model.data.ByteDataType;
@@ -30,6 +31,7 @@ import ghidra.program.model.symbol.SourceType;
 import ghidra.program.model.symbol.SymbolTable;
 import ghidra.program.model.util.CodeUnitInsertionException;
 import ghidra.util.Msg;
+import retro.Ti994BinLoader;
 
 public class Ti994LoaderHelper {
 
@@ -137,6 +139,35 @@ public class Ti994LoaderHelper {
 		}
 	}
 
+    static boolean isGramKrackerHeader(int first, int second, int third) {
+        // first: first byte is MF, second byte is Type
+        // second: length; third: address
+        final int mf = (first >> 8) & 0xff;
+        final int type = first & 0xff;
+        final int length = second;
+        final int address = third;
+
+        // MF can only be 0x00, 0x80, or 0xFF - no more files, load UTIL file next, more files to load
+        // Type can only be 0x01 to 0x0a or 0x00 or 0xff:
+		// >01 to >08 = GROM >0000 to >E000
+		// >09, >0A = ROM1, ROM2 >6000
+		// >00, >FF = RAM expansion
+        final boolean validMf = mf == 0x00 || mf == 0x80 || mf == 0xff;
+        final boolean validType = (type >= 0x01 && type <= 0x0a) || type == 0x00 || type == 0xff;
+        final boolean isGramKrackerHeader = validMf && validType && length > 0 && address > 0;
+        Msg.info(Ti994BinLoader.class, "Checking for GRAM Kracker header");
+        Msg.info(Ti994BinLoader.class, "MF: 0x" + Integer.toHexString(mf));
+        Msg.info(Ti994BinLoader.class, "Type: 0x" + Integer.toHexString(type));
+        Msg.info(Ti994BinLoader.class, "Length: 0x" + Integer.toHexString(length));
+        Msg.info(Ti994BinLoader.class, "Address: 0x" + Integer.toHexString(address));
+        Msg.info(Ti994BinLoader.class, "isGramKrackerHeader: " + isGramKrackerHeader);
+        // the length field does not include the 6-byte header
+        // the file may be longer than this field but my test file is padded with zeroes from that point
+        // the file cannot be shorter than this field (taking into account the size of the header)
+        // the address here is not related to the address in the standard header. my test files has A000 here but 6000 in the standard header
+        return isGramKrackerHeader;
+    }
+    
     static void commentFiadOrTifilesHeader(HeaderField[] fields, Program program, Address headerAddress, Address loadAddress, ByteProvider provider) throws Exception {
         BinaryReader reader = new BinaryReader(provider, false); // big-endian BUT little-endian needed for NUMBER OF LEVEL 3 RECORDS ALLOCATED
         Listing listing = program.getListing();
@@ -272,7 +303,7 @@ public class Ti994LoaderHelper {
 		listing.setComment(addr, type, oldComment + newComment);
 	}
 
-	static void loadAndComment(Program program, Address addr, ByteProvider provider, int readerIndex, MessageLog log)
+	static void loadAndComment(Program program, Address addr, ByteProvider provider, long startOffset, MessageLog log)
 			throws CodeUnitInsertionException, IOException {
 		Listing listing = program.getListing();
 
@@ -280,43 +311,33 @@ public class Ti994LoaderHelper {
 
         // The type of file is determined by looking at the first six to ten bytes
 
-		reader.setPointerIndex(readerIndex);
-        final int first = reader.readNextUnsignedShort() & 0xffff;
-		final int second = reader.readNextUnsignedShort() & 0xffff;
-		final int third = reader.readNextUnsignedShort() & 0xffff;
+		reader.setPointerIndex(startOffset);
+        int first = reader.readNextUnsignedShort() & 0xffff;
+		int second = reader.readNextUnsignedShort() & 0xffff;
+		int third = reader.readNextUnsignedShort() & 0xffff;
 
         // BASIC (Texas Instruments)
 		if ((first ^ second) == third) {
-            appendComment(listing, addr, CodeUnit.PRE_COMMENT, "XOR: BASIC (Texas Instruments)");
-			listing.createData(addr, UnsignedShortDataType.dataType);
-			listing.setComment(addr, CodeUnit.EOL_COMMENT, "check flag");
-			listing.createData(addr.add(2), UnsignedShortDataType.dataType);
-			listing.createData(addr.add(4), UnsignedShortDataType.dataType);
-			listing.setComment(addr.add(4), CodeUnit.EOL_COMMENT, "BASIC (Texas Instruments)");
-			listing.setComment(addr.add(4), CodeUnit.POST_COMMENT, " ");
+            handleTiBasic(program, addr, reader, third, log);
+            return;
         }
 
         // MEMORY IMAGE E/A MODULE (Texas Instruments)
 		else if (first == 0xffff) {
-            // can also be 0x0000 but that is the first word for a few formats
-            appendComment(listing, addr, CodeUnit.PRE_COMMENT, "ffff: MEMORY IMAGE E/A MODULE (Texas Instruments)");
-            listing.createData(addr, UnsignedShortDataType.dataType);
-            listing.setComment(addr, CodeUnit.EOL_COMMENT, "more files will follow");
-            listing.createData(addr.add(2), UnsignedShortDataType.dataType);
-            listing.setComment(addr.add(2), CodeUnit.EOL_COMMENT, "total length of file (header + data)");
-            listing.createData(addr.add(4), UnsignedShortDataType.dataType);
-            listing.setComment(addr.add(4), CodeUnit.EOL_COMMENT, "load address (for the first file also the start address)");
-            listing.setComment(addr.add(4), CodeUnit.POST_COMMENT, " ");
+            handleEaModule(program, addr, reader, third, log);
+            return;
         }
 
-        else if ((first & 0xff00) == 0xaa00)
-            loadAndCommentStandardHeader(program, addr, reader, readerIndex, log);
+        // if there was a Gram Kracker header, we already skipped it
+
+        if ((first & 0xff00) == 0xaa00)
+            loadAndCommentStandardHeader(program, addr, reader, startOffset, log);
     }
 
     // "Standard header"
     // https://www.unige.ch/medecine/nouspikel/ti99/headers.htm
     // https://forums.atariage.com/topic/159642-assembly-guidance/
-    static void loadAndCommentStandardHeader(Program program, Address addr, BinaryReader reader, int readerIndex, MessageLog log)
+    static void loadAndCommentStandardHeader(Program program, Address addr, BinaryReader reader, long readerIndex, MessageLog log)
     		throws CodeUnitInsertionException, IOException {
         Listing listing = program.getListing();
         appendComment(listing, addr, CodeUnit.PRE_COMMENT, "AA: Standard header");
@@ -339,7 +360,7 @@ public class Ti994LoaderHelper {
         // >4008: >4018        Ptr to subprogram list
         // >400A: >4030        Ptr to DSR list
         // PDF of official manual: http://ftp.whtech.com/datasheets%20and%20manuals/Specifications/gpl_programmers_guide-OCRed.pdf
-
+        //
         // TABLE H.1
         // GROM HEADER
         // LOCATION SIZE            CONTENTS
@@ -421,4 +442,29 @@ public class Ti994LoaderHelper {
         }
     }
 
+    static void handleTiBasic(Program program, Address addr, BinaryReader reader, int readerIndex, MessageLog log) throws CodeUnitInsertionException {
+        Listing listing = program.getListing();
+
+        appendComment(listing, addr, CodeUnit.PRE_COMMENT, "XOR: BASIC (Texas Instruments)");
+        listing.createData(addr, UnsignedShortDataType.dataType);
+        listing.setComment(addr, CodeUnit.EOL_COMMENT, "check flag");
+        listing.createData(addr.add(2), UnsignedShortDataType.dataType);
+        listing.createData(addr.add(4), UnsignedShortDataType.dataType);
+        listing.setComment(addr.add(4), CodeUnit.EOL_COMMENT, "BASIC (Texas Instruments)");
+        listing.setComment(addr.add(4), CodeUnit.POST_COMMENT, " ");
+    }
+
+    static void handleEaModule(Program program, Address addr, BinaryReader reader, int readerIndex, MessageLog log) throws CodeUnitInsertionException, AddressOutOfBoundsException {
+        Listing listing = program.getListing();
+        // can also be 0x0000 but that is the first word for a few formats
+        appendComment(listing, addr, CodeUnit.PRE_COMMENT, "ffff: MEMORY IMAGE E/A MODULE (Texas Instruments)");
+        listing.createData(addr, UnsignedShortDataType.dataType);
+        listing.setComment(addr, CodeUnit.EOL_COMMENT, "more files will follow");
+        listing.createData(addr.add(2), UnsignedShortDataType.dataType);
+        listing.setComment(addr.add(2), CodeUnit.EOL_COMMENT, "total length of file (header + data)");
+        listing.createData(addr.add(4), UnsignedShortDataType.dataType);
+        listing.setComment(addr.add(4), CodeUnit.EOL_COMMENT, "load address (for the first file also the start address)");
+        listing.setComment(addr.add(4), CodeUnit.POST_COMMENT, " ");
+    }
+    
 }
