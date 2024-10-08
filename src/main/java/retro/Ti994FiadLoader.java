@@ -29,13 +29,11 @@ import ghidra.framework.model.DomainObject;
 import ghidra.program.database.mem.FileBytes;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressSpace;
-import ghidra.program.model.lang.LanguageCompilerSpecPair;
-import ghidra.program.model.lang.LanguageID;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.Memory;
-import ghidra.util.Msg;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
+import retro.Ti994LoaderHelper.HeaderField;
 
 /**
  * A {@link Loader} for loading TI-99/4A FIAD (V9T9) files.
@@ -79,8 +77,8 @@ public class Ti994FiadLoader extends AbstractProgramWrapperLoader {
 		// if bit 0 is set, "program", then bits 1 and 7 have no meaning so should be 0
 		if ((statusFlags & 0b0000_0001) != 0 && ((statusFlags & 0b1000_0010) != 0)) return loadSpecs;
 
-		// check that offset 0x20 up to 0x80 are all 0
-        for (int i = 0x20; i < 0x80; i++) {
+		// check that offset 20 up to 128 are all 0
+        for (int i = 20; i < 128; i++) {
             int val = reader.readByte(i);
             if (val != 0) return loadSpecs;
         }
@@ -110,7 +108,18 @@ public class Ti994FiadLoader extends AbstractProgramWrapperLoader {
 				FIAD_HEADER_LEN,
 				false);
 
-			Ti994LoaderHelper.commentFiadHeader(program, headerAddress, loadAddress, provider);
+		    // FDR, FIAD (V9T9), and TIFILES (XMODEM) headers are described here: https://hexbus.com/ti99geek/
+			Ti994LoaderHelper.commentFiadOrTifilesHeader(new HeaderField[] {
+				HeaderField.FIAD_FILENAME,
+				HeaderField.FIAD_EXTENDED_RECORD_LENGTH,
+				HeaderField.FILE_STATUS_FLAGS,
+				HeaderField.NUMBER_OF_RECS_SEC,
+				HeaderField.NUMBER_OF_SECTORS_CURRENTLY_ALLOCATED,
+				HeaderField.END_OF_FILE_OFFSET,
+				HeaderField.LOGICAL_RECORD_LENGTH,
+				HeaderField.NUMBER_OF_LEVEL_3_RECORDS_ALLOCATED, // LE
+				HeaderField.FIAD_FILLER
+			}, program, headerAddress, loadAddress, provider);
 
             // last letter of the filename to determine where to load a file:
             // xxxxxC.BIN - loads as CPU cartridge ROM at >6000
@@ -127,7 +136,7 @@ public class Ti994FiadLoader extends AbstractProgramWrapperLoader {
 				provider.length() - FIAD_HEADER_LEN,
 				false);
 
-			Ti994LoaderHelper.commentCode(program, loadAddress, provider, FIAD_HEADER_LEN, log);
+			Ti994LoaderHelper.loadAndComment(program, loadAddress, provider, FIAD_HEADER_LEN, log);
 		} catch (Exception e) {
 			log.appendException(e);
 		}

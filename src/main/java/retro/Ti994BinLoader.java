@@ -117,21 +117,65 @@ public class Ti994BinLoader extends AbstractProgramWrapperLoader {
 				break;
 			}
 		}
-		
 
-		// ROM cartridges start with a 16- or 18-byte header starting with $AA, the "Standard header"
+		// Cartridges start with a 16-byte header starting with >AA, the "GROM header" or "Standard header"
+		// but "dump files" may have their own header preceding it, such as the so-called "GRAM KRACKER header"
 		// https://forums.atariage.com/topic/159642-assembly-guidance/
 		if (binExtType == BinExtType.NONE) {
 			BinaryReader reader = new BinaryReader(provider, false);
 
-			if ((reader.readByte(0) & 0xFF) != 0xAA) return loadSpecs;
+			boolean hasStandardHeaderSignature = false;
+
+			final int first = reader.readNextUnsignedShort() & 0xffff;
+			final int second = reader.readNextUnsignedShort() & 0xffff;
+			final int third = reader.readNextUnsignedShort() & 0xffff;
+			final int aa = reader.readNextByte() & 0xFF;
+
+			// Standard header followed by GK header?
+			if ((first >> 8) == 0xAA) {
+				hasStandardHeaderSignature = true;
+			}
+
+			// GK header followed by Standard header?
+			else if (isGramKrackerHeader(first, second, third) && aa == 0xAA) {
+				hasStandardHeaderSignature = true;
+			}
+
+			if (!hasStandardHeaderSignature) return loadSpecs;
 		}
 
+		// filename ended with one of the special letters followed by .bin, or file has appropriate headers
 		Ti994LoaderHelper.addLoadSpecs(this, getLanguageService(), loadSpecs);
 
 		return loadSpecs;
 	}
 
+    static boolean isGramKrackerHeader(int first, int second, int third) {
+        // first: first byte is MF, second byte is Type
+        // second: length; third: address
+        final int mf = (first >> 8) & 0xff;
+        final int type = first & 0xff;
+        final int length = second;
+        final int address = third;
+
+        // MF can only be 0x00, 0x80, or 0xFF - no more files, load UTIL file next, more files to load
+        // TYpe can only be 0x01 to 0x0a or 0x00 or 0xff
+        final boolean validMf = mf == 0x00 || mf == 0x80 || mf == 0xff;
+        final boolean validType = (type >= 0x01 && type <= 0x0a) || type == 0x00 || type == 0xff;
+        final boolean isGramKrackerHeader = validMf && validType && length > 0 && address > 0;
+        Msg.info(Ti994BinLoader.class, "Checking for GRAM Kracker header");
+        Msg.info(Ti994BinLoader.class, "MF: 0x" + Integer.toHexString(mf));
+        Msg.info(Ti994BinLoader.class, "Type: 0x" + Integer.toHexString(type));
+        Msg.info(Ti994BinLoader.class, "Length: 0x" + Integer.toHexString(length));
+        Msg.info(Ti994BinLoader.class, "Address: 0x" + Integer.toHexString(address));
+        Msg.info(Ti994BinLoader.class, "isGramKrackerHeader: " + isGramKrackerHeader);
+        // the length field does not include the 6-byte header
+        // the file may be longer than this field but my test file is padded with zeroes from that point
+        // the file cannot be shorter than this field (taking into account the size of the header)
+        // the address here is not related to the address in the standard header. my test files has A000 here but 6000 in the standard header
+        return isGramKrackerHeader;
+    }
+    
 	@Override
 	protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
 			Program program, TaskMonitor monitor, MessageLog log)
@@ -170,7 +214,7 @@ public class Ti994BinLoader extends AbstractProgramWrapperLoader {
 			}
 			program.getListing().setComment(loadAddress, CodeUnit.PRE_COMMENT, initialComment);
 			
-			Ti994LoaderHelper.commentCode(program, loadAddress, provider, 0, log);
+			Ti994LoaderHelper.loadAndComment(program, loadAddress, provider, 0, log);
 		} catch (Exception e) {
 			log.appendException(e);
 		}

@@ -26,7 +26,6 @@ import ghidra.program.model.lang.LanguageService;
 import ghidra.program.model.listing.CodeUnit;
 import ghidra.program.model.listing.Listing;
 import ghidra.program.model.listing.Program;
-import ghidra.program.model.mem.MemoryAccessException;
 import ghidra.program.model.symbol.SourceType;
 import ghidra.program.model.symbol.SymbolTable;
 import ghidra.program.model.util.CodeUnitInsertionException;
@@ -51,7 +50,8 @@ public class Ti994LoaderHelper {
 	public static final int DIS_VAR = FLAG_FIX_VAR;
 	public static final int INT_FIX = FLAG_DIS_INT;
 	public static final int INT_VAR = FLAG_DIS_INT | FLAG_FIX_VAR;
-    private enum Field {
+    
+    public enum HeaderField {
         FIAD_FILENAME(10),
         FIAD_EXTENDED_RECORD_LENGTH(2),
         FIAD_FILLER(108),
@@ -66,7 +66,7 @@ public class Ti994LoaderHelper {
 
         private final int size;
 
-        Field(int size) {
+        HeaderField(int size) {
             this.size = size;
         }
 
@@ -87,12 +87,12 @@ public class Ti994LoaderHelper {
     //     DIS_VAR(false, true),
     //     INT_FIX(true, false),
     //     INT_VAR(true, true);
-
+    //
     //     private final boolean program;
     //     // display vs internal, fixed vs variable size records. DISPLAY and FIXED are the defaults (0)
     //     private final boolean internal;
     //     private final boolean variable;
-
+    //
     //     StatusFlagType(boolean program, boolean internal, boolean variable) {
     //         // if program is true, internal and variable are not used so setting them to true is invalid
     //         // if program is false, all combinations of internal and variable are valid
@@ -103,7 +103,7 @@ public class Ti994LoaderHelper {
     //         this.internal = internal; // true = internal, false = display
     //         this.variable = variable; // true = variable, false = fixed
     //     }
-
+    //
     //     public boolean isProgram() {
     //         return program;
     //     }
@@ -122,6 +122,7 @@ public class Ti994LoaderHelper {
     // }
 
     static void addLoadSpecs(AbstractProgramWrapperLoader loader, LanguageService languageService, List<LoadSpec> loadSpecs) {
+        // TODO depending on how we got here, we might only need one or the other
 		for (String[] info : new String[][]{{"9900", "TMS 9900 CPU"}, {"GPL", "TI-99/4A GPL"}}) {
 			LanguageCompilerSpecPair lcsp = new LanguageCompilerSpecPair(info[0] + ":BE:16:default", "default");
 
@@ -136,7 +137,7 @@ public class Ti994LoaderHelper {
 		}
 	}
 
-    static void commentFiadOrTifilesHeader(Field[] fields, Program program, Address headerAddress, Address loadAddress, ByteProvider provider) throws Exception {
+    static void commentFiadOrTifilesHeader(HeaderField[] fields, Program program, Address headerAddress, Address loadAddress, ByteProvider provider) throws Exception {
         BinaryReader reader = new BinaryReader(provider, false); // big-endian BUT little-endian needed for NUMBER OF LEVEL 3 RECORDS ALLOCATED
         Listing listing = program.getListing();
         Address ha = headerAddress;
@@ -148,7 +149,7 @@ public class Ti994LoaderHelper {
         int numberOfSectorsCurrentlyAllocated = -1;
         int endOfFileOffset = -1;
 
-        for (Field field : fields) {
+        for (HeaderField field : fields) {
             final int size = field.getSize();
 
             if (size == 1) {
@@ -168,7 +169,7 @@ public class Ti994LoaderHelper {
                         listing.createData(ha, new ArrayDataType(ByteDataType.dataType, size));
                         break;
                     default:
-                        Msg.info(Ti994LoaderHelper.class, "Unknown field. Field: " + field);
+                        Msg.error(Ti994LoaderHelper.class, "Unknown field. Field: " + field);
                         break;
                 }
             }
@@ -265,43 +266,14 @@ public class Ti994LoaderHelper {
         return new AbstractMap.SimpleEntry<>(typeString, extraComment);
     }
 
-    // FDR, FIAD (V9T9), and TIFILES (XMODEM) headers are described here: https://hexbus.com/ti99geek/
-
-    static void commentFiadHeader(Program program, Address headerAddress, Address loadAddress, ByteProvider provider) throws Exception {
-    	commentFiadOrTifilesHeader(new Field[] {
-            Field.FIAD_FILENAME,
-            Field.FIAD_EXTENDED_RECORD_LENGTH,
-            Field.FILE_STATUS_FLAGS,
-            Field.NUMBER_OF_RECS_SEC,
-            Field.NUMBER_OF_SECTORS_CURRENTLY_ALLOCATED,
-            Field.END_OF_FILE_OFFSET,
-            Field.LOGICAL_RECORD_LENGTH,
-            Field.NUMBER_OF_LEVEL_3_RECORDS_ALLOCATED, // LE
-            Field.FIAD_FILLER
-        }, program, headerAddress, loadAddress, provider);
-    }
-
-    static void commentTiFilesHeader(Program program, Address headerAddress, Address loadAddress, ByteProvider provider) throws Exception {
-    	commentFiadOrTifilesHeader(new Field[] {
-            Field.TIFILES_MAGIC,
-            Field.NUMBER_OF_SECTORS_CURRENTLY_ALLOCATED,
-            Field.FILE_STATUS_FLAGS,
-            Field.NUMBER_OF_RECS_SEC,
-            Field.END_OF_FILE_OFFSET,
-            Field.LOGICAL_RECORD_LENGTH,
-            Field.NUMBER_OF_LEVEL_3_RECORDS_ALLOCATED, // LE
-            Field.TIFILES_FILLER
-        }, program, headerAddress, loadAddress, provider);
-    }
-
     static void appendComment(Listing listing, Address addr, int type, String newComment) {
 		String maybeOldComment = listing.getComment(type, addr);
 		String oldComment = maybeOldComment == null ? "" : maybeOldComment + "\n";
 		listing.setComment(addr, type, oldComment + newComment);
 	}
 
-	static void commentCode(Program program, Address addr, ByteProvider provider, int readerIndex, MessageLog log)
-			throws CodeUnitInsertionException, IOException, MemoryAccessException {
+	static void loadAndComment(Program program, Address addr, ByteProvider provider, int readerIndex, MessageLog log)
+			throws CodeUnitInsertionException, IOException {
 		Listing listing = program.getListing();
 
         BinaryReader reader = new BinaryReader(provider, false);
@@ -338,14 +310,14 @@ public class Ti994LoaderHelper {
         }
 
         else if ((first & 0xff00) == 0xaa00)
-            commentStandardHeader(program, addr, reader, readerIndex, log);
+            loadAndCommentStandardHeader(program, addr, reader, readerIndex, log);
     }
-    
+
     // "Standard header"
     // https://www.unige.ch/medecine/nouspikel/ti99/headers.htm
     // https://forums.atariage.com/topic/159642-assembly-guidance/
-    static void commentStandardHeader(Program program, Address addr, BinaryReader reader, int readerIndex, MessageLog log)
-    		throws CodeUnitInsertionException, IOException, MemoryAccessException {
+    static void loadAndCommentStandardHeader(Program program, Address addr, BinaryReader reader, int readerIndex, MessageLog log)
+    		throws CodeUnitInsertionException, IOException {
         Listing listing = program.getListing();
         appendComment(listing, addr, CodeUnit.PRE_COMMENT, "AA: Standard header");
         listing.createData(addr, ByteDataType.dataType);
@@ -357,14 +329,39 @@ public class Ti994LoaderHelper {
         listing.createData(addr.add(3), ByteDataType.dataType);
         listing.setComment(addr.add(3), CodeUnit.EOL_COMMENT, "Not used");
 
+        // TODO this documentation is inconsistent: https://www.unige.ch/medecine/nouspikel/ti99/headers.htm
+        // summary says
+        // >x006	Pointer to program list (>0000 if none)
+        // >x008	Pointer the DSR list (>0000 if none)
+        // >x00A	Pointer to subprogram list (>0000 if none)
+        // but example says
+        // >4006: >0000        Ptr to program list (none)
+        // >4008: >4018        Ptr to subprogram list
+        // >400A: >4030        Ptr to DSR list
+        // PDF of official manual: http://ftp.whtech.com/datasheets%20and%20manuals/Specifications/gpl_programmers_guide-OCRed.pdf
+
+        // TABLE H.1
+        // GROM HEADER
+        // LOCATION SIZE            CONTENTS
+        //     X000 byte            >AA valid identification
+        //     X001 byte            version number
+        //     X002 byte            number of program
+        //     X003 byte            reserved
+        //     X004 word (2 bytes)  address of first power up routine header
+        //     X006 word            address of first user program header
+        //     X008 word            address of first DSR header
+        //     X00A word            address of first subroutine link header
+        //     X00C word            address of first interrupt link
+        //     X00E word            address of first. BASIC subprogram libraries
+
         listing.createData(addr.add(4), UnsignedShortDataType.dataType);
         listing.setComment(addr.add(4), CodeUnit.EOL_COMMENT, "Pointer to power-up list (can't use in cartridge ROM)");
         listing.createData(addr.add(6), UnsignedShortDataType.dataType);
         listing.setComment(addr.add(6), CodeUnit.EOL_COMMENT, "Pointer to program list");
         listing.createData(addr.add(8), UnsignedShortDataType.dataType);
-        listing.setComment(addr.add(8), CodeUnit.EOL_COMMENT, "Pointer to DSR list"); // device service routine
+        listing.setComment(addr.add(8), CodeUnit.EOL_COMMENT, "Pointer to DSR list (or subprogram list?)");
         listing.createData(addr.add(10), UnsignedShortDataType.dataType);
-        listing.setComment(addr.add(10), CodeUnit.EOL_COMMENT, "Pointer to subprogram list");
+        listing.setComment(addr.add(10), CodeUnit.EOL_COMMENT, "Pointer to subprogram list (or DSR list?)");
         
         // TODO there can be another field in the standard header, Pointer to ISR list
         // TODO in cartridges this field does not exist and the program list can point to the area it would occupy

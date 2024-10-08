@@ -98,6 +98,14 @@ public class AppleLisaObjectFileLoader extends AbstractProgramWrapperLoader {
 		return LISA_NAME;
 	}
 
+	// lower numbers have higher priority
+	// 50 seems to be standard, raw uses 100
+	// RetroGhidra Loaders that don't have magic numbers should use 60
+    @Override
+    public int getTierPriority() {
+        return 60;
+    }
+
 	@Override
 	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
 		List<LoadSpec> loadSpecs = new ArrayList<>();
@@ -128,6 +136,8 @@ public class AppleLisaObjectFileLoader extends AbstractProgramWrapperLoader {
 
             if (type == 0) break;
         }
+        
+		if (codeBlockOffset == null) return loadSpecs;
 
         final int bytesRemaining = Math.toIntExact(reader.length() - off);
         if (bytesRemaining > 0) {
@@ -140,7 +150,7 @@ public class AppleLisaObjectFileLoader extends AbstractProgramWrapperLoader {
             }
         }
 
-        // No other 680x0 has ever been used, so we can hardcode this
+        // No other 680x0 has ever been used, so we can hard code this
         loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("68000:BE:32:default", "default"), true));
 
 		return loadSpecs;

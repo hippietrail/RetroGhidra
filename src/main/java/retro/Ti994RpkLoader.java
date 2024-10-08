@@ -218,7 +218,7 @@ public class Ti994RpkLoader extends AbstractProgramWrapperLoader {
 							loadAddress,
 							CodeUnit.PRE_COMMENT, binTypeComment
 						);
-						Ti994LoaderHelper.commentCode(
+						Ti994LoaderHelper.loadAndComment(
 							program,
 							loadAddress,
 							new InputStreamByteProvider(zip.getInputStream(entry), entry.getSize()),

@@ -31,8 +31,10 @@ import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressSpace;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.Memory;
+import ghidra.util.Msg;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
+import retro.Ti994LoaderHelper.HeaderField;
 
 /**
  * A {@link Loader} for loading TI-99/4A TIFILES (XMODEM) files.
@@ -57,7 +59,10 @@ public class Ti994TiFilesLoader extends AbstractProgramWrapperLoader {
 		List<LoadSpec> loadSpecs = new ArrayList<>();
 
 		// can't be larger than header size + 64kb (TODO: there's probably a lower limit)
-		if (provider.length() < TIF_HEADER_LEN || provider.length() > TIF_HEADER_LEN + 64 * 1024) return loadSpecs;
+		// if (provider.length() < TIF_HEADER_LEN || provider.length() > TIF_HEADER_LEN + 64 * 1024) return loadSpecs;
+		Msg.info(this, "File size: 0x" + Long.toHexString(provider.length()));
+		Msg.info(this, "Max size: 0x" + Long.toHexString(TIF_HEADER_LEN + 64 * 1024));
+		if (provider.length() < TIF_HEADER_LEN) return loadSpecs;
 
         BinaryReader reader = new BinaryReader(provider, false);
 
@@ -73,10 +78,12 @@ public class Ti994TiFilesLoader extends AbstractProgramWrapperLoader {
 		// if bit 0 is set, "program", then bits 1 and 7 have no meaning so should be 0
 		if ((statusFlags & 0b0000_0001) != 0 && ((statusFlags & 0b1000_0010) != 0)) return loadSpecs;
 
-        // check that offset 0x20 up to 0x80 are all 0 or [0xca, 0x53]
+        // check that offset 16 up to 128 are all 0 or [0xca, 0x53]
+		// TODO for FIAD filler starts at 20, but for TIFILES it starts at 16
+		// TODO but 16 to 26 can also be the native filename
         // https://hexbus.com/ti99geek/Doc/Ti99_dsk1_fdr.html
         // TELCO fills these bytes up to 0x7f with 0xca53.
-        for (int i = 0x20; i < 0x80; i += 2) {
+        for (int i = 26; i < 128; i += 2) {
             int val = reader.readUnsignedShort(i);
             if (val != 0 && val != 0xca53) return loadSpecs;
         }
@@ -106,7 +113,17 @@ public class Ti994TiFilesLoader extends AbstractProgramWrapperLoader {
                 TIF_HEADER_LEN,
 				false);
 
-			Ti994LoaderHelper.commentTiFilesHeader(program, headerAddress, loadAddress, provider);
+		    // FDR, FIAD (V9T9), and TIFILES (XMODEM) headers are described here: https://hexbus.com/ti99geek/
+			Ti994LoaderHelper.commentFiadOrTifilesHeader(new HeaderField[] {
+				HeaderField.TIFILES_MAGIC,
+				HeaderField.NUMBER_OF_SECTORS_CURRENTLY_ALLOCATED,
+				HeaderField.FILE_STATUS_FLAGS,
+				HeaderField.NUMBER_OF_RECS_SEC,
+				HeaderField.END_OF_FILE_OFFSET,
+				HeaderField.LOGICAL_RECORD_LENGTH,
+				HeaderField.NUMBER_OF_LEVEL_3_RECORDS_ALLOCATED, // LE
+				HeaderField.TIFILES_FILLER
+			}, program, headerAddress, loadAddress, provider);
 
             // last letter of the filename to determine where to load a file:
             // xxxxxC.BIN - loads as CPU cartridge ROM at >6000
@@ -115,7 +132,9 @@ public class Ti994TiFilesLoader extends AbstractProgramWrapperLoader {
             // xxxxx3.BIN - Classic99 extension, loads as a 379/Jon Guidry style cartridge ROM at >6000
             // xxxxx8.BIN - A newer extension
             // xxxxx9.BIN - A newer extension
-            memory.createInitializedBlock(
+            
+			// TODO overflows with the INT/FIX 128 files "GPLMAN1", "GPLMAN2", and "RYTEDATA"
+			memory.createInitializedBlock(
                 "TMS9900",
                 loadAddress,
                 fileBytes,
@@ -123,7 +142,7 @@ public class Ti994TiFilesLoader extends AbstractProgramWrapperLoader {
                 provider.length() - TIF_HEADER_LEN,
                 false);
 
-                Ti994LoaderHelper.commentCode(program, loadAddress, provider, TIF_HEADER_LEN, log);
+                Ti994LoaderHelper.loadAndComment(program, loadAddress, provider, TIF_HEADER_LEN, log);
             } catch (Exception e) {
 			log.appendException(e);
 		}
