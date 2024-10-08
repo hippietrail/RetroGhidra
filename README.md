@@ -5,7 +5,7 @@
 [Ghidra](https://github.com/NationalSecurityAgency/ghidra) Loaders, FileSystems, and Processors for various retrocomputing platforms.
 
 # Done
-- Apple II Binary II archive loader - only first binary is loaded
+## Loaders
 - Apple II NAPS (NuLib2 Attribute Preservation String) loader
 - Apple Lisa object file loader
 - Atari 2600 .a26/.bin cartridge file loader - only 2K and 4K are possible
@@ -26,6 +26,9 @@
 - TI-99/4A .rpk cartridge loader
 - TI-99/4A TIFILES (XMODEM) file loader
 
+## FileSystems
+- Apple II Binary II file system
+
 # In progress
 ## Loaders
 - Amstrad CPC .SNA snapshot format loader - some 64K snapshots might be usable
@@ -39,9 +42,6 @@
 - Sinclair ZX Spectrum TZX tape image loader - identifies but does not load yet
 - TI-99/4A .ctg cartridge format - identifies but does not load yet
 - TK2000/Microprofessor II: .ct2 tape format - identifies but does not load yet
-
-## FileSystems
-- Apple II Binary II file system
 
 ## Processors
 - TI-99/4A GPL bytecode disassembler
