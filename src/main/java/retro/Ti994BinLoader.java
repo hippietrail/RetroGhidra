@@ -40,8 +40,7 @@ import ghidra.util.task.TaskMonitor;
  */
 public class Ti994BinLoader extends AbstractProgramWrapperLoader {
 
-	// TODO move to LoaderHelper?
-	public static enum BinExtType {
+	private static enum BinExtType {
 		CPU_CARTRIDGE_ROM,
 		BANKED_CPU_CARTRIDGE_ROM,
 		GROM_CARTRIDGE,
@@ -51,13 +50,13 @@ public class Ti994BinLoader extends AbstractProgramWrapperLoader {
 		NONE
 	}
 
-    public static final String BIN_NAME = "TI-99/4A BIN";
-	public static final int BIN_LOAD_ADDR = 0x6000;
+    private static final String BIN_NAME = "TI-99/4A BIN";
+	private static final int BIN_LOAD_ADDR = 0x6000;
 
-	public BinExtType binExtType = BinExtType.NONE;
-	public boolean hasBinExtension = false;
+	private BinExtType binExtType = BinExtType.NONE;
+	private boolean hasBinExtension = false;
 
-	public boolean hasGramKrackerHeader = false;
+	private boolean hasGramKrackerHeader = false;
 
 	@Override
 	public String getName() {

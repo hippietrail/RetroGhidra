@@ -53,6 +53,7 @@ public class Ti994LoaderHelper {
 	public static final int INT_FIX = FLAG_DIS_INT;
 	public static final int INT_VAR = FLAG_DIS_INT | FLAG_FIX_VAR;
     
+    // for FIAD and TIFILES headers, both based on FDR
     public enum HeaderField {
         FIAD_FILENAME(10),
         FIAD_EXTENDED_RECORD_LENGTH(2),
@@ -83,7 +84,8 @@ public class Ti994LoaderHelper {
         }
     }
 
-    // public enum StatusFlagType {
+    /*
+     * // public enum StatusFlagType {
     // 	PROGRAM(false, false),
     //     DIS_FIX(false, false),
     //     DIS_VAR(false, true),
@@ -122,22 +124,35 @@ public class Ti994LoaderHelper {
     //         return variable;
     //     }
     // }
-
+    */
+    static final Map<String, String> PROCESSOR_NAMES = Map.of(
+        "9900", "TMS 9900 CPU",
+        "GPL", "TI-99/4A GPL"
+    );
+    
     static void addLoadSpecs(AbstractProgramWrapperLoader loader, LanguageService languageService, List<LoadSpec> loadSpecs) {
-        // TODO depending on how we got here, we might only need one or the other
-		for (String[] info : new String[][]{{"9900", "TMS 9900 CPU"}, {"GPL", "TI-99/4A GPL"}}) {
-			LanguageCompilerSpecPair lcsp = new LanguageCompilerSpecPair(info[0] + ":BE:16:default", "default");
+        addLoadSpecsExt(loader, languageService, loadSpecs, new String[] { "9900", "GPL" });
+    }
 
-			LanguageID languageID = lcsp.getLanguageID();
+    static void addLoadSpecsExt(AbstractProgramWrapperLoader loader, LanguageService languageService, List<LoadSpec> loadSpecs, String[] processorIds) {
+        for (String processorId : processorIds) {
+            String name = PROCESSOR_NAMES.get(processorId);
+            if (name == null) {
+                Msg.error(loader, "Unknown processor ID: " + processorId);
+            } else {
+                LanguageCompilerSpecPair lcsp = new LanguageCompilerSpecPair(processorId + ":BE:16:default", "default");
 
-			try {
-				languageService.getLanguageDescription(languageID);
-				loadSpecs.add(new LoadSpec(loader, 0, lcsp, true));
-			} catch (Exception e) {
-				Msg.warn(loader, info[1] + " support not found. Find the extension on GitHub.");
-			}
-		}
-	}
+                LanguageID languageID = lcsp.getLanguageID();
+
+                try {
+                    languageService.getLanguageDescription(languageID);
+                    loadSpecs.add(new LoadSpec(loader, 0, lcsp, true));
+                } catch (Exception e) {
+                    Msg.warn(loader, name + " support not found. Find the extension on GitHub.");
+                }
+            }
+        }
+    }
 
     static boolean isGramKrackerHeader(int first, int second, int third) {
         // first: first byte is MF, second byte is Type
@@ -305,7 +320,7 @@ public class Ti994LoaderHelper {
 
 	static void loadAndComment(Program program, Address addr, ByteProvider provider, long startOffset, MessageLog log)
 			throws CodeUnitInsertionException, IOException {
-		Listing listing = program.getListing();
+		// Listing listing = program.getListing();
 
         BinaryReader reader = new BinaryReader(provider, false);
 

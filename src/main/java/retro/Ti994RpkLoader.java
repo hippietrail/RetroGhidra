@@ -79,6 +79,7 @@ public class Ti994RpkLoader extends AbstractProgramWrapperLoader {
 		File file = provider.getFile();
 		ZipFile zip = new ZipFile(file);
 		Enumeration<? extends ZipEntry> entries = zip.entries();
+		List<String> processorIds = new ArrayList<>();
 		while (entries.hasMoreElements()) {
 			ZipEntry entry = entries.nextElement();
 			String ename = entry.getName();
@@ -88,15 +89,36 @@ public class Ti994RpkLoader extends AbstractProgramWrapperLoader {
 				hasLayoutXml = true;
 			} else if (dotIdx > 0 && ename.substring(dotIdx).equalsIgnoreCase(".bin")) {
 				binFiles.add(ename);
+
+				switch (ename.charAt(dotIdx - 1)) {
+				case 'c':
+				case 'd':
+					processorIds.add("9900");
+					break;
+				case 'g':
+					processorIds.add("GPL");
+					break;
+				case '3':
+				case '8':
+				case '9':
+					Msg.warn(this, "TODO: Does '" + ename.charAt(dotIdx - 1) + "' mean TMS-9900 or GPL code?");
+					break;
+				default:
+					Msg.warn(this, "Character before .bin not known: '" + ename.charAt(dotIdx - 1) + "'");
+					break;
+				}
 			}
 		}
 		zip.close();
 
-		// current RPKs do not seem to need any of:
+		// current RPKs often contain but do not seem to need or use any of:
 		// meta-inf.xml, META-INF/, MANIFEST.MF, or softlist.xml
 		if (!hasLayoutXml || binFiles.isEmpty()) return loadSpecs;
 
-		Ti994LoaderHelper.addLoadSpecs(this, getLanguageService(), loadSpecs);
+		// TODO if we know there's TMS-9900 or GPL code, add loadSpecs for those we know about
+		// TODO but if we don't know, add both and let the user choose
+		//Ti994LoaderHelper.addLoadSpecs(this, getLanguageService(), loadSpecs);
+		Ti994LoaderHelper.addLoadSpecsExt(this, getLanguageService(), loadSpecs, processorIds.toArray(new String[0]));
 
 		return loadSpecs;
 	}
@@ -179,15 +201,11 @@ public class Ti994RpkLoader extends AbstractProgramWrapperLoader {
 							default: binTypeComment = binType + ": not a known .bin final char (c/d/g/3/8/9)"; break;
 						}
 
-						// TODO in the case of a GROM we shouldn't use the default address space
-						// TODO GROMs use the GROM space - we probably need to create a new space for this with some API?
+						String[] validBinTypes = { "c", "d", "g" };
 
-						// AddressSpace addresssSpace = program.getAddressFactory().getDefaultAddressSpace();
-						// TODO make a new addressSpace 'GROM' if bineType is 'g', use the default address space otherwise
-						// TODO this seems to be nontrivial to do from a Loader
-						AddressSpace addressSpace = binType.equals("g")
-							? AddressSpace.OTHER_SPACE
-							: program.getAddressFactory().getDefaultAddressSpace();
+						AddressSpace addressSpace = Arrays.asList(validBinTypes).contains(binType)
+							? program.getAddressFactory().getDefaultAddressSpace()
+							: AddressSpace.OTHER_SPACE;
 
 						ZipEntry entry = zip.getEntry(entryName);
 
