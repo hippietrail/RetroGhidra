@@ -46,6 +46,9 @@
 ## Processors
 - TI-99/4A GPL bytecode disassembler
 
+## Ghidra features
+- [Submitted a PR](https://github.com/NationalSecurityAgency/ghidra/pull/7062) allowing FileSystems to pass filetype info to the filesystem browser, which works on filename extensions by default.
+
 # Planned
 ## Loaders
 - Sharp X68000: .R executable format
