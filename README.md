@@ -74,6 +74,9 @@
 - Atari 8-bit cartridge, disk, and tape formats
 - BeOS (Ghidra natively supports PEF)
 - Commodore PET
+- CP/M .REL file loader
+- CP/M .SPR file loader
+- CP/M Plus and MP/M .PRL relocatable binary file loader
 - Dragon 32/64
 - Jupiter Ace
 - NeXT
