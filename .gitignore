@@ -3,3 +3,5 @@
 bin/
 .gradle/
 .vscode/settings.json
+dist/
+.settings/

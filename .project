@@ -10,15 +10,21 @@
 			<arguments>
 			</arguments>
 		</buildCommand>
+		<buildCommand>
+			<name>org.eclipse.buildship.core.gradleprojectbuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
 	</buildSpec>
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
+		<nature>org.eclipse.buildship.core.gradleprojectnature</nature>
 	</natures>
 	<linkedResources>
 		<link>
 			<name>Ghidra</name>
 			<type>2</type>
-			<location>/Users/hippietrail/Downloads/ghidra_11.1.2_PUBLIC</location>
+			<location>/Users/hippietrail/Downloads/ghidra_11.2_PUBLIC</location>
 		</link>
 	</linkedResources>
 </projectDescription>
