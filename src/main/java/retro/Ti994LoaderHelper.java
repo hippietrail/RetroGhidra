@@ -13,6 +13,7 @@ import ghidra.app.util.bin.ByteProvider;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.app.util.opinion.AbstractProgramWrapperLoader;
 import ghidra.app.util.opinion.LoadSpec;
+import ghidra.docking.settings.FormatSettingsDefinition;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressOutOfBoundsException;
 import ghidra.program.model.address.AddressSpace;
@@ -25,6 +26,7 @@ import ghidra.program.model.lang.LanguageCompilerSpecPair;
 import ghidra.program.model.lang.LanguageID;
 import ghidra.program.model.lang.LanguageService;
 import ghidra.program.model.listing.CodeUnit;
+import ghidra.program.model.listing.Data;
 import ghidra.program.model.listing.Listing;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.symbol.SourceType;
@@ -196,10 +198,14 @@ public class Ti994LoaderHelper {
         int endOfFileOffset = -1;
 
         for (HeaderField field : fields) {
+        	// create the data for the field based on its size and type
             final int size = field.getSize();
 
             if (size == 1) {
-                listing.createData(ha, ByteDataType.dataType);
+				Data data = listing.createData(ha, ByteDataType.dataType);
+				if (field == HeaderField.LOGICAL_RECORD_LENGTH) {
+					FormatSettingsDefinition.DEF.setChoice(data, FormatSettingsDefinition.DECIMAL);
+				}
             } else if (size == 2) {
                 listing.createData(ha, UnsignedShortDataType.dataType);
             } else {
@@ -219,6 +225,9 @@ public class Ti994LoaderHelper {
                         break;
                 }
             }
+            
+			// set the field's comment based on its type and calculations with previous fields
+
             String comment = field.toString();
             switch (field) {
             case FILE_STATUS_FLAGS:
