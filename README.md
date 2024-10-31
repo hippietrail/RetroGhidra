@@ -71,6 +71,7 @@
 # To investigate
 - Acorn: UEF (Unified Emulator Format) for BBC Micro and Electron
 - Apple IIgs
+- Apple Newton
 - Atari 8-bit cartridge, disk, and tape formats
 - BeOS (Ghidra natively supports PEF)
 - Commodore PET
@@ -81,11 +82,13 @@
 - Jupiter Ace
 - NeXT
 - Oric
+- Palm Pilot
 - MSX
 - RISC OS AOF (ARM Object Format) and ALF (Acorn Library Format)
 - SAM Coupé
 - Sinclair ZX81
 - Tandy Coco: .cas tape images
 - Thomson MO, TO
+- TI-89, TI-92
 - Timex Sinclair
 - Xerox Alto, Star
