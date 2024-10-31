@@ -73,6 +73,7 @@
 - Apple IIgs
 - Apple Newton
 - Atari 8-bit cartridge, disk, and tape formats
+- Atari ST .o object file format
 - BeOS (Ghidra natively supports PEF)
 - Commodore PET
 - CP/M .REL file loader
@@ -83,7 +84,10 @@
 - NeXT
 - Oric
 - Palm Pilot
+- Philips CD-i
 - MSX
+- OS-9/68000
+- Panasonic 3DO
 - RISC OS AOF (ARM Object Format) and ALF (Acorn Library Format)
 - SAM Coupé
 - Sinclair ZX81
