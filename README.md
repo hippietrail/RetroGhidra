@@ -73,9 +73,10 @@
 - Apple IIgs
 - Apple Newton
 - Atari 8-bit cartridge, disk, and tape formats
-- Atari ST DRI object and/or library file format
-- Atari ST GST object and/or library file format
-- BeOS (Ghidra natively supports PEF)
+- Atari ST DRI .o object and/or library file format
+- Atari ST GST .bin object and/or library file format
+- Atari ST Lattice .O object and/or library file format
+  - BeOS (Ghidra natively supports PEF)
 - Commodore PET
 - CP/M .REL file loader
 - CP/M .SPR file loader
