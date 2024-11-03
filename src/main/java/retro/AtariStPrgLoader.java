@@ -44,12 +44,12 @@ import ghidra.util.task.TaskMonitor;
 /**
  * A {@link Loader} for loading Atari ST executable files.
  */
-public class AtariStLoader extends AbstractProgramWrapperLoader {
+public class AtariStPrgLoader extends AbstractProgramWrapperLoader {
 
 	// normal extensions: .prg (executable program), .tos (TOS program), .ttp (TOS program that takes parameters)
 	// other extensions: .app (multiTOS application), .ovl ("recovery executable"? probably overlay), .acc (desk accessory)
 	// more extensions: .cpx (control panel)
-    public static final String ST_NAME = "Atari ST";
+    public static final String ST_NAME = "Atari ST PRG";
 	// ST_OFF_MAGIC = 0x00;
 	public static final int ST_OFF_TSIZE = 0x02; // size of text segment
 	public static final int ST_OFF_DSIZE = 0x06; // size of data segment

@@ -5,7 +5,7 @@
     <constraint loader="Arm Image Format (AIF)" compilerSpecID="default">
         <constraint primary="arm" processor="ARM" endian="little" size="32" />
     </constraint>
-    <constraint loader="Atari ST" compilerSpecID="default">
+    <constraint loader="Atari ST PRG" compilerSpecID="default">
         <constraint primary="68000" processor="68000" endian="big" size="32" />
     </constraint>
     <constraint loader="Classic Macintosh Resource Fork" compilerSpecID="default">
