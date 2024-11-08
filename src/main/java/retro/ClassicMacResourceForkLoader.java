@@ -44,7 +44,7 @@ import ghidra.util.task.TaskMonitor;
 public class ClassicMacResourceForkLoader extends AbstractProgramWrapperLoader {
 
     public static final String RSRC_NAME = "Classic Macintosh Resource Fork";
-    public static final int RSRC_HEADER_SIZE = 16;
+    public static final int RSRC_HEADER_LEN = 16;
     public static final int RSRC_MAP_HEADER_OFFSET_TO_TYPE_LIST_OFFSET = 8;
     public static final int RSRC_TYPE_LIST_ENTRY_SIZE = 8;
     public static final int RSRC_RESOURCE_LIST_ENTRY_SIZE = 12;
@@ -73,7 +73,7 @@ public class ClassicMacResourceForkLoader extends AbstractProgramWrapperLoader {
 		List<LoadSpec> loadSpecs = new ArrayList<>();
 
         final long fileSize = provider.length();
-        if (fileSize < RSRC_HEADER_SIZE) return loadSpecs;
+        if (fileSize < RSRC_HEADER_LEN) return loadSpecs;
 
         BinaryReader reader = new BinaryReader(provider, false);
 
@@ -92,7 +92,7 @@ public class ClassicMacResourceForkLoader extends AbstractProgramWrapperLoader {
         // header fields within the bounds of the file, otherwise false positive
         if (fileSize < dataOffset + dataLen
         		|| fileSize < mapOffset + mapLen
-        		|| fileSize < mapOffset + RSRC_HEADER_SIZE)
+        		|| fileSize < mapOffset + RSRC_HEADER_LEN)
             return loadSpecs;
 
         // header matches dupe header at offset mapOffset, otherwise false positive
@@ -100,7 +100,7 @@ public class ClassicMacResourceForkLoader extends AbstractProgramWrapperLoader {
 
         // 1.14 Skip copy of resource header
         // 1.14   and handle to next resource map, file reference number, Resource fork attributes
-        reader.setPointerIndex(mapOffset + RSRC_HEADER_SIZE + RSRC_MAP_HEADER_OFFSET_TO_TYPE_LIST_OFFSET);
+        reader.setPointerIndex(mapOffset + RSRC_HEADER_LEN + RSRC_MAP_HEADER_OFFSET_TO_TYPE_LIST_OFFSET);
         // 1.14 Offset from beginning of map to resource type list
         final int typeListOffset = reader.readNextUnsignedShort();
 

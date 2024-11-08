@@ -423,9 +423,9 @@ public class Ti994LoaderHelper {
             // Standard Header is 14 bytes if it includes an ISR list
             // Standard Header would be 16 bytes if the 'Next menu item' field is considered part of the Standard Header
             //   but this is probably an error and 'Next menu item' is part of each program entry in the program list
-            final int STANDARD_HEADER_SIZE = 12;
+            final int STANDARD_HEADER_LEN = 12;
 
-            if (firstProg.compareTo(addr.add(STANDARD_HEADER_SIZE)) < 0) {
+            if (firstProg.compareTo(addr.add(STANDARD_HEADER_LEN)) < 0) {
                 Msg.error(Ti994LoaderHelper.class, "The 'First program' pointer points to a location within the header area we already covered.");
                 Msg.error(Ti994LoaderHelper.class, " Area after defined header starts at 0x" + Integer.toHexString(pointerToProgList)
                     + ", first program pointer is 0x" + Long.toHexString(firstProg.getOffset()));
