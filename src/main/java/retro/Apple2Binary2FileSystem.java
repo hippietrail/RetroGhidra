@@ -132,19 +132,19 @@ public class Apple2Binary2FileSystem extends AbstractFileSystem<BnyEntry> {
 				//Msg.info(this, napsSuffix + " ->" + i + ": " + filename + " : " + filetype + " : 0x" + Long.toHexString(off));
 
 				fsIndex.storeFile(
-						filename + napsSuffix,		// path
-						i++ + 2000,					// file index
-						false,						// is directory
-						eofPos,						// name is confusing, it's just the size
+					filename + napsSuffix,		// path
+					i++ + 2000,					// file index
+					false,						// is directory
+					eofPos,						// name is confusing, it's just the size
 
-						new BnyEntry(
-							filename + napsSuffix,	// name
-							off + BNY_HEADER_LEN,	// offset
-							eofPos,					// length, as above
+					new BnyEntry(
+						filename + napsSuffix,	// name
+						off + BNY_HEADER_LEN,	// offset
+						eofPos,					// length, as above
 
-							filetypeCode,			// filetype code
-							auxTypeCode				// aux type code
-						)
+						filetypeCode,			// filetype code
+						auxTypeCode				// aux type code
+					)
 				);
 			}
 
