@@ -33,7 +33,6 @@ import ghidra.program.model.symbol.SourceType;
 import ghidra.program.model.symbol.SymbolTable;
 import ghidra.program.model.util.CodeUnitInsertionException;
 import ghidra.util.Msg;
-import retro.Ti994BinLoader;
 
 public class Ti994LoaderHelper {
 
@@ -172,12 +171,12 @@ public class Ti994LoaderHelper {
         final boolean validMf = mf == 0x00 || mf == 0x80 || mf == 0xff;
         final boolean validType = (type >= 0x01 && type <= 0x0a) || type == 0x00 || type == 0xff;
         final boolean isGramKrackerHeader = validMf && validType && length > 0 && address > 0;
-//        Msg.info(Ti994BinLoader.class, "Checking for GRAM Kracker header");
-//        Msg.info(Ti994BinLoader.class, "MF: 0x" + Integer.toHexString(mf));
-//        Msg.info(Ti994BinLoader.class, "Type: 0x" + Integer.toHexString(type));
-//        Msg.info(Ti994BinLoader.class, "Length: 0x" + Integer.toHexString(length));
-//        Msg.info(Ti994BinLoader.class, "Address: 0x" + Integer.toHexString(address));
-//        Msg.info(Ti994BinLoader.class, "isGramKrackerHeader: " + isGramKrackerHeader);
+        // Msg.info(Ti994BinLoader.class, "Checking for GRAM Kracker header");
+        // Msg.info(Ti994BinLoader.class, "MF: 0x" + Integer.toHexString(mf));
+        // Msg.info(Ti994BinLoader.class, "Type: 0x" + Integer.toHexString(type));
+        // Msg.info(Ti994BinLoader.class, "Length: 0x" + Integer.toHexString(length));
+        // Msg.info(Ti994BinLoader.class, "Address: 0x" + Integer.toHexString(address));
+        // Msg.info(Ti994BinLoader.class, "isGramKrackerHeader: " + isGramKrackerHeader);
         // the length field does not include the 6-byte header
         // the file may be longer than this field but my test file is padded with zeroes from that point
         // the file cannot be shorter than this field (taking into account the size of the header)
