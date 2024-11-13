@@ -36,6 +36,7 @@ import ghidra.program.model.symbol.SymbolTable;
 import ghidra.util.Msg;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
+import retro.RetroGhidra;
 
 /**
  * A {@link Loader} for loading the TRS-80 Model 100 .co files.
@@ -97,18 +98,9 @@ public class Trs80Model100CoLoader extends AbstractProgramWrapperLoader {
 			Program program, TaskMonitor monitor, MessageLog log)
 			throws CancelledException, IOException {
 
-		BinaryReader reader = new BinaryReader(provider, true);
-
 		try {
-			MemoryBlock block = program.getMemory().createInitializedBlock(
-				"memory",																// name
-				program.getAddressFactory().getDefaultAddressSpace().getAddress(start),	// start
-				MemoryBlockUtils.createFileBytes(program, provider, monitor),			// filebytes
-				CO_HEADER_LENGTH,														// offset
-				length,																	// size
-				false																	// overlay
-			);
-			block.setWrite(true);
+			RetroGhidra.createInitializedBlockFromByteProvider(program, provider, monitor,
+				"memory", start, CO_HEADER_LENGTH, length).setWrite(true);
 
 			Address entryAddress = program.getAddressFactory().getDefaultAddressSpace().getAddress(entry);
 			SymbolTable st = program.getSymbolTable();
