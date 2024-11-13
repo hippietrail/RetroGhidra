@@ -1,0 +1,8 @@
+https://github.com/abbrev/tiemu
+
+https://github.com/farmergreg/ti-command-post-plus/blob/8bf03d70c8460521d47ff1bf02da48934222f01c/redpillneo/extgraph.h#L395
+
+https://cdn.ti-planet.org/downloads2/1446144333/sdk8992pguide.pdf
+
+https://education.ti.com/html/eguides/discontinued/computer-software/EN/SDK-TI-83-Developer-Guide_EN.pdf
+
