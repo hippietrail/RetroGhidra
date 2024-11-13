@@ -60,8 +60,8 @@ public class Ti994TiFilesLoader extends AbstractProgramWrapperLoader {
 
 		// can't be larger than header size + 64kb (TODO: there's probably a lower limit)
 		// if (provider.length() < TIF_HEADER_LEN || provider.length() > TIF_HEADER_LEN + 64 * 1024) return loadSpecs;
-		Msg.info(this, "File size: 0x" + Long.toHexString(provider.length()));
-		Msg.info(this, "Max size: 0x" + Long.toHexString(TIF_HEADER_LEN + 64 * 1024));
+//		Msg.info(this, "File size: 0x" + Long.toHexString(provider.length()));
+//		Msg.info(this, "Max size: 0x" + Long.toHexString(TIF_HEADER_LEN + 64 * 1024));
 		if (provider.length() < TIF_HEADER_LEN) return loadSpecs;
 
         BinaryReader reader = new BinaryReader(provider, false);
