@@ -181,15 +181,4 @@ public class SpectrumSnaLoader extends AbstractProgramWrapperLoader {
 			log.appendException(e);
 		}
 	}
-
-	@Override
-	public List<Option> getDefaultOptions(ByteProvider provider, LoadSpec loadSpec,
-			DomainObject domainObject, boolean isLoadIntoProgram) {
-		return super.getDefaultOptions(provider, loadSpec, domainObject, isLoadIntoProgram);
-	}
-
-	@Override
-	public String validateOptions(ByteProvider provider, LoadSpec loadSpec, List<Option> options, Program program) {
-		return super.validateOptions(provider, loadSpec, options, program);
-	}
 }

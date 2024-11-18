@@ -192,25 +192,4 @@ public class X68KXLoader extends AbstractProgramWrapperLoader {
 		listing.createData(ha, UnsignedIntegerDataType.dataType);
 		listing.setComment(ha, CodeUnit.EOL_COMMENT, "position from bound module list top-of-file");
 	}
-
-	@Override
-	public List<Option> getDefaultOptions(ByteProvider provider, LoadSpec loadSpec,
-			DomainObject domainObject, boolean isLoadIntoProgram) {
-		List<Option> list =
-			super.getDefaultOptions(provider, loadSpec, domainObject, isLoadIntoProgram);
-
-		// TODO: If this loader has custom options, add them to 'list'
-		list.add(new Option("Option name goes here", "Default option value goes here"));
-
-		return list;
-	}
-
-	@Override
-	public String validateOptions(ByteProvider provider, LoadSpec loadSpec, List<Option> options, Program program) {
-
-		// TODO: If this loader has custom options, validate them here.  Not all options require
-		// validation.
-
-		return super.validateOptions(provider, loadSpec, options, program);
-	}
 }
