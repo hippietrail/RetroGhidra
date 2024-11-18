@@ -40,9 +40,10 @@ import ghidra.util.task.TaskMonitor;
 
 /**
  * A {@link Loader} for loading TI83F .8xp files for Z80-based TI calculators such as the TI-84.
+ *
  * TI83F is the magic number used in this exact format.
  * .8xp is the file extension used by this exact format.
- * 
+ *
  * There's a whole bunch of related file formats, magic numbers, and file extensions.
  * It's hard to know which should be supported in the same loader.
  * So for now starting with the one used in the "Matrix Rain" YouTube video: https://github.com/bchiha/Ready-Z80/tree/main/17-TI-84_Programming

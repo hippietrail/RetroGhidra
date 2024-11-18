@@ -38,6 +38,7 @@ import ghidra.util.task.TaskMonitor;
 
 /**
  * A {@link Loader} for loading TRS-80 /CMD files (load modules).
+ *
  * TODO: /REL files too?
  */
 public class Trs80Loader extends AbstractProgramWrapperLoader {
