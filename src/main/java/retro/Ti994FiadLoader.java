@@ -37,6 +37,7 @@ import retro.Ti994LoaderHelper.HeaderField;
 
 /**
  * A {@link Loader} for loading TI-99/4A FIAD (V9T9) files.
+ *
  * "FIAD" stands for "Files In A Directory". "V9T9" stands was the emulator that originated the format.
  */
 public class Ti994FiadLoader extends AbstractProgramWrapperLoader {
