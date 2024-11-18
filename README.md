@@ -21,7 +21,10 @@
 - Sinclair ZX Spectrum .SNA snapshot loader - 48K snapshots
 - Tandy TRS-80 Model I/III /CMD command file loader
 - Tandy TRS-80 Color Computer .CCC cartridge loader - 2K, 4K, and 8K
-- TI 99/4A .bin file loader
+- Tandy TRS-80 Model 100 .co file loader
+- Tandy TRS-80 Model 100 RLC file loader
+- Texas Instruments Z80 calculator TI83F .8xp file loader
+- TI-99/4A .bin file loader
 - TI-99/4A FIAD (V9T9) file loader
 - TI-99/4A .rpk cartridge loader
 - TI-99/4A TIFILES (XMODEM) file loader
@@ -35,6 +38,7 @@
 - Commodore 64 X00 format (P00, R00, S00, U00, etc)
 - Commodore Amiga: "Hunk" executable and object file loader - identifies but does not load yet
 - CP/M .CMD command file loader
+- Neo Geo .neo file loader - identifies but does not load yet
 - Sharp X68000 .Z executable format - identifies but does not load yet
 - Sinclair QL Zip file system that handles the QDOS headers in zip extra fields
 - Sinclair ZX Spectrum PZX tape image loader - identifies but does not load yet
@@ -84,7 +88,6 @@
 - CP/M Plus and MP/M .PRL relocatable binary file loader
 - Dragon 32/64
 - Jupiter Ace
-- Neo Geo
 - NeXT
 - Oric
 - Palm Pilot
