@@ -47,6 +47,9 @@
 - TI-99/4A .ctg cartridge format - identifies but does not load yet
 - TK2000/Microprofessor II: .ct2 tape format - identifies but does not load yet
 
+## FileSystems
+- Commodore D80 disk image file system
+
 ## Processors
 - TI-99/4A GPL bytecode disassembler
 
