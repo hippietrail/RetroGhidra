@@ -47,13 +47,14 @@ class BnyEntry {
 }
 
 /**
- * TODO: Provide class-level documentation that describes what this file system does.
+ * A {@link GFileSystem} implementation for Apple II Binary II.
+ * 
+ * @see <a href="https://wiki.preterhuman.net/Apple_II_Binary_File_Format">Apple II Binary File Format</a>
  */
 @FileSystemInfo(type = "bny", // ([a-z0-9]+ only)
 		description = "Apple II Binary II", factory = Apple2Binary2FileSystemFactory.class)
 public class Apple2Binary2FileSystem extends AbstractFileSystem<BnyEntry> {
 
-	// https://wiki.preterhuman.net/Apple_II_Binary_File_Format
 	public static final int BNY_OFF_FILETYPE_CODE = 4;
 	public static final int BNY_OFF_AUX_TYPE_CODE = 5; // 16-bit
 	public static final int BNY_OFF_EOF_POSITION = 20; // 24-bit
