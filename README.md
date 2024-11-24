@@ -46,6 +46,7 @@
 - Sinclair ZX Spectrum PZX tape image loader - identifies but does not load yet
 - Sinclair ZX Spectrum TAP tape image loader - identifies but does not load yet
 - Sinclair ZX Spectrum TZX tape image loader - identifies but does not load yet
+- Spectrum Next .nex file loader - identifies but does not load yet
 - TI-99/4A .ctg cartridge format - identifies but does not load yet
 - TK2000/Microprofessor II: .ct2 tape format - identifies but does not load yet
 
