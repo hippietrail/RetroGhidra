@@ -48,7 +48,7 @@ import ghidra.util.task.TaskMonitor;
  * It's hard to know which should be supported in the same loader.
  * So for now starting with the one used in the "Matrix Rain" YouTube video: https://github.com/bchiha/Ready-Z80/tree/main/17-TI-84_Programming
  */
-public class Ti83fpLoader extends AbstractProgramWrapperLoader {
+public class Ti83fLoader extends AbstractProgramWrapperLoader {
 
 	public static final String TI83F_NAME = "TI .8xp";
 	public static final String TI83F_MAGIC = "**TI83F*";
