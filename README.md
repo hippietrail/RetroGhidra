@@ -35,6 +35,7 @@
 
 # In progress
 ## Loaders
+- Agon Light MOS .bin loader - identifies but does not load yet
 - Amstrad CPC .SNA snapshot format loader - some 64K snapshots might be usable
 - Commodore 64 X00 format (P00, R00, S00, U00, etc)
 - Commodore Amiga: "Hunk" executable and object file loader - identifies but does not load yet
