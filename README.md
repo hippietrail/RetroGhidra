@@ -92,6 +92,8 @@
 - CP/M Plus and MP/M .PRL relocatable binary file loader
 - Dragon 32/64
 - Jupiter Ace
+- KC 85
+- KC 87
 - NeXT
 - Oric
 - Palm Pilot
