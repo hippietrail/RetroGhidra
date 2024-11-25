@@ -15,6 +15,7 @@
 - Commodore 64 .CRT cartridge loader - loads straightforward cartridges
 - Commodore VIC-20 .PRG cartridge loader - not other types of .PRG
 - Exidy Sorcerer .SNP snapshot loader
+- KC 85 .kcc file loader
 - RISC OS AIF (Arm Image Format) loader
 - Sharp X68000 .X executable file loader
 - Sinclair QL executable file loader
@@ -92,7 +93,6 @@
 - CP/M Plus and MP/M .PRL relocatable binary file loader
 - Dragon 32/64
 - Jupiter Ace
-- KC 85
 - KC 87
 - NeXT
 - Oric
