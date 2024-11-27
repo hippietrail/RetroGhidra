@@ -74,6 +74,7 @@
 - Tandy TRS-80 Model I/III: .DMK disk image format
 - Tandy TRS-80 Model I/III: .JV1 disk image format
 - Tandy TRS-80 Model I/III: .JV3 disk image format
+- Teledisk disk image format
 - TI-99/4A: .ark Archiver format
 
 # To investigate
