@@ -51,6 +51,9 @@
 - TI-99/4A .ctg cartridge format - identifies but does not load yet
 - TK2000/Microprofessor II: .ct2 tape format - identifies but does not load yet
 
+## Filesystems
+- Teledisk disk image format
+
 ## Processors
 - TI-99/4A GPL bytecode disassembler
 
@@ -74,7 +77,6 @@
 - Tandy TRS-80 Model I/III: .DMK disk image format
 - Tandy TRS-80 Model I/III: .JV1 disk image format
 - Tandy TRS-80 Model I/III: .JV3 disk image format
-- Teledisk disk image format
 - TI-99/4A: .ark Archiver format
 
 # To investigate
