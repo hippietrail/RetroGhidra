@@ -89,6 +89,7 @@
 - Atari ST GST .bin object and/or library file format
 - Atari ST Lattice .O object and/or library file format
 - BeOS (Ghidra natively supports PEF)
+- Camputers Lynx
 - Coleco Adam
 - Commodore PET
 - CP/M .REL file loader
@@ -97,6 +98,7 @@
 - Dragon 32/64
 - Jupiter Ace
 - KC 87
+- Memotech MTX 512
 - NeXT
 - Oric
 - Palm Pilot
