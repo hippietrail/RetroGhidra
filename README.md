@@ -52,7 +52,9 @@
 - TK2000/Microprofessor II: .ct2 tape format - identifies but does not load yet
 
 ## Filesystems
-- Teledisk disk image format
+- Apple II .do and .po disk image formats
+- CP/M (just as KC 85 et al use it for now)
+- Teledisk disk image format (just as KC 85 et al use it for now)
 
 ## Processors
 - TI-99/4A GPL bytecode disassembler
@@ -68,7 +70,6 @@
 - Sinclair ZX Spectrum: More snapshot and emulator formats
 
 ## FileSystems
-- Apple II .do and .po disk image formats
 - Commodore 64 disk image format
 - Sinclair Spectrum: .DSK +3DOS disk image format
 - Sinclair Spectrum: .SCL disk format
