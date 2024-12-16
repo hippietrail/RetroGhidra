@@ -32,6 +32,7 @@ public class Apple2ProDosDskFileSystemFactory implements GFileSystemFactoryByteP
 
     public static final int TRACKS = 35;
     public static final int SECTORS_PER_TRACK = 16;
+    public static final int BLOCKS_PER_TRACK = SECTORS_PER_TRACK / 2;
     public static final int SECTOR_SIZE = 256;
     public static final int BLOCK_SIZE = SECTOR_SIZE * 2;
     public static final int DISK_IMAGE_SIZE = TRACKS * SECTORS_PER_TRACK * SECTOR_SIZE;
@@ -68,14 +69,30 @@ public class Apple2ProDosDskFileSystemFactory implements GFileSystemFactoryByteP
             int vdhStorageTYpe = vdhStorageTypeAndNameLength >> 4;
             int vdhNameLength = vdhStorageTypeAndNameLength & 0x0f;
             byte[] vdhName = reader.readNextByteArray(15);
+            int r1 = reader.readNextUnsignedShort(); // reserved, should be zeros
+            long modTime = reader.readNextUnsignedInt();
+            int lowerCaseFlags = reader.readNextUnsignedShort();
+            long createTime = reader.readNextUnsignedInt();
+            int versionMinVersion = reader.readNextUnsignedShort(); // one int with two meanings or one value per byte?
+            int accessFlags = reader.readNextUnsignedByte();
+            int directoryEntryLength = reader.readNextUnsignedByte(); // usually $27 (39)
+            int entriesPerDirBlock = reader.readNextUnsignedByte(); // usually $200/$27 = $0d
+            int numActiveEntriesInVolumeDir = reader.readNextUnsignedShort();
+            int volumeBitmapStartBlock = reader.readNextUnsignedShort();
+            int totalBlocksInVolume = reader.readNextUnsignedShort();
 
             if (kbPrevDirBlockNum == 0 && kbNextDirBlockNum == 3 &&
                     vdhStorageTYpe == 0x0f &&
                     vdhNameLength >= 1 && vdhNameLength <= 15 &&
-                    isValidVolumeName(vdhName, vdhNameLength)
+                    isValidVolumeName(vdhName, vdhNameLength) &&
+                    r1 == 0 &&
+                    directoryEntryLength == 39 &&
+                    entriesPerDirBlock == 13 &&
+                    volumeBitmapStartBlock < TRACKS * BLOCKS_PER_TRACK &&
+                    totalBlocksInVolume == TRACKS * BLOCKS_PER_TRACK
             ) {
                 String ordering = (offset == keyBlockOffsets[0]) ? "ProDOS" : "DOS 3";
-                Msg.info(this, "DOS 3 volume directory header key block found. Ordering: " + ordering);
+                Msg.info(this, "ProDOS volume directory header key block found. Ordering: " + ordering);
                 return true;
             }
         }

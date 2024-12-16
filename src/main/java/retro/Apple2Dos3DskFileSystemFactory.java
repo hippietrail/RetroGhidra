@@ -43,6 +43,7 @@ public class Apple2Dos3DskFileSystemFactory implements GFileSystemFactoryBytePro
         if (provider.length() != DISK_IMAGE_SIZE) return false;
 
         // DOS 3 directory is on Track #17 Sector #0 - Sector #0 is in the same place for both .do and .po orderings
+        // VTOC is Volume Table of Contents
         int vtocOffset = SECTOR_SIZE * SECTORS_PER_TRACK * 17;
 
         BinaryReader reader = new BinaryReader(provider, true);
@@ -61,29 +62,33 @@ public class Apple2Dos3DskFileSystemFactory implements GFileSystemFactoryBytePro
         int diskVolumeNumber = reader.readNextUnsignedByte();
         byte[] u3 = reader.readNextByteArray(32); // usnused - all always zero? NO! have seen [0] = -2
         int maxTrackSectorPairs = reader.readNextUnsignedByte(); // should be 122
-        int u4 = reader.readNextUnsignedShort(); // unused x 2 - always zero?
+        // int u4 = reader.readNextUnsignedShort(); // unused x 2 - always zero?
+        byte[] u4 = reader.readNextByteArray(8);
+        int lastTrackWithAllocatedSectors = reader.readNextUnsignedByte();
+        int directionOfTrackAllocation = reader.readNextByte(); // always -1 or 1
+        int u5 = reader.readNextUnsignedShort(); // unused x 2 - always zero?
+        int numberOfTracks = reader.readNextUnsignedByte(); // usually 35, 40, or 50
+        int numberOfSectors = reader.readNextUnsignedByte(); // usually 13, 16, or 32
+        int numberOfBytesPerSector = reader.readNextUnsignedShort(); // always 256?
+        // the reamainder of the sector consists of 4-byte free sector bitmaps, 1 for each track
 
         if (nextCatalogSectorTrack == 17 &&
 			nextCatalogSectorSector < SECTORS_PER_TRACK &&
 			// (dosVersion == 2 || dosVersion == 3) &&
 			diskVolumeNumber < 255 &&
-            // u3 test how? IntStream?
-			IntStream.range(1, u3.length).allMatch(i -> u3[i] == 0) &&
-            maxTrackSectorPairs == 122
+            IntStream.range(1, u3.length).allMatch(i -> u3[i] == 0) &&
+            maxTrackSectorPairs == 122 &&
+            IntStream.range(0, u4.length).allMatch(i -> u4[i] == 0) &&
+            // lastTrackWithAllocatedSectors < TRACKS && // loderunner data disk: 255
+            (directionOfTrackAllocation == -1 || directionOfTrackAllocation == 1) &&
+            u5 == 0 &&
+            (numberOfTracks == 35 || numberOfTracks == 40 || numberOfTracks == 50) &&
+            // (numberOfSectors == 13 || numberOfSectors == 16 || numberOfSectors == 32) && // loderunner data disk: 15
+            numberOfBytesPerSector == 256
         ) {
             Msg.info(this, "DOS 3 VTOC found");
 			return true;
 		}
-        
-        // Msg.info(this, String.format("u1 %d, next cat sect track %d, next cat sect sector %d, dos version %d, u2 %d, volume number %d",
-    	// 	u1,
-    	// 	nextCatalogSectorTrack, nextCatalogSectorSector,
-    	// 	dosVersion,
-    	// 	u2,
-    	// 	diskVolumeNumber));
-        
-        // if it looks like a VTOC, we still have to scan through the sectors to observe
-        // the order of nextCatalogSectorSector's values - this tell us .do ordering vs .po
 
         return false;
     }
