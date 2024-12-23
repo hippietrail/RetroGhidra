@@ -36,6 +36,8 @@ public class Apple2Dos3DskFileSystemFactory implements GFileSystemFactoryBytePro
     public static final int SECTOR_SIZE = 256;
     public static final int DISK_IMAGE_SIZE = TRACKS * SECTORS_PER_TRACK * SECTOR_SIZE;
 
+    private boolean isDos3Order;
+
     @Override
     public boolean probe(ByteProvider provider, FileSystemService fsService, TaskMonitor monitor)
 			throws IOException, CancelledException {
@@ -86,8 +88,23 @@ public class Apple2Dos3DskFileSystemFactory implements GFileSystemFactoryBytePro
             // (numberOfSectors == 13 || numberOfSectors == 16 || numberOfSectors == 32) && // loderunner data disk: 15
             numberOfBytesPerSector == 256
         ) {
-            Msg.info(this, "DOS 3 VTOC found");
-			return true;
+            // read the beginning of the next sector in the disk image to see if it's in native dos 3 sector order or not
+            reader.setPointerIndex(vtocOffset + SECTOR_SIZE);
+            reader.readNextUnsignedByte(); // unused - always zero? NO!
+            int nextNextCatalogSectorTrack = reader.readNextUnsignedByte(); // always 17? probably
+            int nextNextCatalogSectorSector = reader.readNextUnsignedByte(); // always 15? NO
+            // Msg.info(this, "probe() nextCatalogSectorTrack: " + nextNextCatalogSectorTrack + ", nextCatalogSectorSector: " + nextNextCatalogSectorSector);
+            if (nextNextCatalogSectorTrack == 0 && nextNextCatalogSectorSector == 0) {
+                isDos3Order = true;
+                // Msg.info(this, "DOS 3 VTOC found in DOS 3 ordered image");
+                return true;
+            } else if (nextNextCatalogSectorTrack == 17 && nextNextCatalogSectorSector == 13) {
+                isDos3Order = false;
+                // Msg.info(this, "DOS 3 VTOC found in ProDOS ordered image");
+                return true;
+            } else {
+                Msg.info(this, "DOS 3 VTOC found in unknown ordered image");
+            }
 		}
 
         return false;
@@ -97,7 +114,7 @@ public class Apple2Dos3DskFileSystemFactory implements GFileSystemFactoryBytePro
     public GFileSystem create(FSRLRoot fsFSRL, ByteProvider provider, FileSystemService fsService, TaskMonitor monitor)
             throws IOException, CancelledException {
 
-        Apple2Dos3DskFileSystem fs = new Apple2Dos3DskFileSystem(fsFSRL, provider);
+        Apple2Dos3DskFileSystem fs = new Apple2Dos3DskFileSystem(fsFSRL, provider, isDos3Order);
         fs.mount(monitor);
         return fs;
     }

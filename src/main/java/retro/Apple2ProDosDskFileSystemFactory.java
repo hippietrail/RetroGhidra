@@ -37,6 +37,8 @@ public class Apple2ProDosDskFileSystemFactory implements GFileSystemFactoryByteP
     public static final int BLOCK_SIZE = SECTOR_SIZE * 2;
     public static final int DISK_IMAGE_SIZE = TRACKS * SECTORS_PER_TRACK * SECTOR_SIZE;
 
+    private boolean isProDosOrder;
+
     @Override
     public boolean probe(ByteProvider provider, FileSystemService fsService, TaskMonitor monitor)
     		throws IOException {
@@ -91,8 +93,9 @@ public class Apple2ProDosDskFileSystemFactory implements GFileSystemFactoryByteP
                     volumeBitmapStartBlock < TRACKS * BLOCKS_PER_TRACK &&
                     totalBlocksInVolume == TRACKS * BLOCKS_PER_TRACK
             ) {
+                isProDosOrder = (offset == keyBlockOffsets[0]);
                 String ordering = (offset == keyBlockOffsets[0]) ? "ProDOS" : "DOS 3";
-                Msg.info(this, "ProDOS volume directory header key block found. Ordering: " + ordering);
+                // Msg.info(this, "ProDOS volume directory header key block found. Ordering: " + ordering);
                 return true;
             }
         }
@@ -116,11 +119,11 @@ public class Apple2ProDosDskFileSystemFactory implements GFileSystemFactoryByteP
         return true;
     }
 
-        @Override
+    @Override
     public GFileSystem create(FSRLRoot fsFSRL, ByteProvider provider, FileSystemService fsService, TaskMonitor monitor)
             throws IOException, CancelledException {
 
-        Apple2ProDosDskFileSystem fs = new Apple2ProDosDskFileSystem(fsFSRL, provider);
+        Apple2ProDosDskFileSystem fs = new Apple2ProDosDskFileSystem(fsFSRL, provider, isProDosOrder);
         fs.mount(monitor);
         return fs;
     }
