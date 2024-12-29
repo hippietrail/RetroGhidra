@@ -44,12 +44,12 @@ public class Apple2PascalDskFileSystemFactory implements GFileSystemFactoryByteP
 
         reader.setPointerIndex(SECTOR_SIZE * 11); // all the images I have are in DOS 3 order
 
-        int zero1 = reader.readNextUnsignedShort();
-        int six = reader.readNextUnsignedShort();
-        int zero2 = reader.readNextUnsignedShort();
-        int fileNameLen = reader.readNextUnsignedByte();
+        int sysAreaStartBlockNum = reader.readNextUnsignedShort(); // system area start block number (always 0)
+        int nextBlock = reader.readNextUnsignedShort(); // next block (first block after directory; always 6)
+        int fileType     = reader.readNextUnsignedShort(); // file type ($00)
+        int fileNameLen = reader.readNextUnsignedByte(); // file name length
 
-        return zero1 == 0 && six == 6 && zero2 == 0 && fileNameLen >= 1 && fileNameLen <= 7;
+        return sysAreaStartBlockNum == 0 && nextBlock == 6 && fileType == 0 && fileNameLen >= 1 && fileNameLen <= 7;
     }
 
     @Override
