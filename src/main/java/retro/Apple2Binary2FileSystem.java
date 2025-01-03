@@ -4,9 +4,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -68,7 +68,7 @@ public class Apple2Binary2FileSystem extends AbstractFileSystem<BnyEntry> {
 
 	/**
 	 * File system constructor.
-	 * 
+	 *
 	 * @param fsFSRL The root {@link FSRL} of the file system.
 	 * @param provider The file system provider.
 	 */
@@ -79,9 +79,9 @@ public class Apple2Binary2FileSystem extends AbstractFileSystem<BnyEntry> {
 
 	/**
 	 * Mounts (opens) the file system.
-	 * 
+	 *
 	 * @param monitor A cancellable task monitor.
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public void mount(TaskMonitor monitor) throws IOException {
 		monitor.setMessage("Opening " + Apple2Binary2FileSystem.class.getSimpleName() + "...");
@@ -109,7 +109,7 @@ public class Apple2Binary2FileSystem extends AbstractFileSystem<BnyEntry> {
 			// NOTE so an archive is simply a concatenation of files with entry headers
 			String filetype = (filetypeCode == 4) ? "text" : (filetypeCode == 6) ? "binary" : "0x" + Integer.toHexString(filetypeCode);
 			Msg.info(this, i + ": " + filename + " ; type:" + filetype + " ; offset:0x" + Long.toHexString(off) + " ; aux:0x" + Integer.toHexString(auxTypeCode));
-			
+
 			fsIndex.storeFile(
 					filename,					// path
 					i++,						// file index

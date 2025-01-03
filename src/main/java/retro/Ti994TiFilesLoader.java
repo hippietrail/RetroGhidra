@@ -4,9 +4,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -132,7 +132,7 @@ public class Ti994TiFilesLoader extends AbstractProgramWrapperLoader {
             // xxxxx3.BIN - Classic99 extension, loads as a 379/Jon Guidry style cartridge ROM at >6000
             // xxxxx8.BIN - A newer extension
             // xxxxx9.BIN - A newer extension
-            
+
 			// TODO overflows with the INT/FIX 128 files "GPLMAN1", "GPLMAN2", and "RYTEDATA"
 			memory.createInitializedBlock(
                 "TMS9900",
