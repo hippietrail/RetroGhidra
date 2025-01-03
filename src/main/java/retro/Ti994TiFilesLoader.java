@@ -4,9 +4,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -60,8 +60,8 @@ public class Ti994TiFilesLoader extends AbstractProgramWrapperLoader {
 
 		// can't be larger than header size + 64kb (TODO: there's probably a lower limit)
 		// if (provider.length() < TIF_HEADER_LEN || provider.length() > TIF_HEADER_LEN + 64 * 1024) return loadSpecs;
-		Msg.info(this, "File size: 0x" + Long.toHexString(provider.length()));
-		Msg.info(this, "Max size: 0x" + Long.toHexString(TIF_HEADER_LEN + 64 * 1024));
+		// Msg.info(this, "File size: 0x" + Long.toHexString(provider.length()));
+		// Msg.info(this, "Max size: 0x" + Long.toHexString(TIF_HEADER_LEN + 64 * 1024));
 		if (provider.length() < TIF_HEADER_LEN) return loadSpecs;
 
         BinaryReader reader = new BinaryReader(provider, false);
@@ -132,7 +132,7 @@ public class Ti994TiFilesLoader extends AbstractProgramWrapperLoader {
             // xxxxx3.BIN - Classic99 extension, loads as a 379/Jon Guidry style cartridge ROM at >6000
             // xxxxx8.BIN - A newer extension
             // xxxxx9.BIN - A newer extension
-            
+
 			// TODO overflows with the INT/FIX 128 files "GPLMAN1", "GPLMAN2", and "RYTEDATA"
 			memory.createInitializedBlock(
                 "TMS9900",
