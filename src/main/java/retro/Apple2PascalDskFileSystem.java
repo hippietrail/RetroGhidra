@@ -38,20 +38,25 @@ class PascalEntry {
     String name;
     long size;
     // file attributes
+    int blockNumStart;
+    int blockNumPastEnd;
     int fileType;
+    int lastBlockByteCount;
     int modDate;
-    // temporary, might or might not be used
-    long offset;
 
     PascalEntry(String name, long size,
+            int blockNumStart,
+            int blockNumPastEnd,
             int fileType,
-            int modDate,
-            long offset) {
+            int lastBlockByteCount,
+            int modDate) {
         this.name = name;
         this.size = size;
+        this.blockNumStart = blockNumStart;
+        this.blockNumPastEnd = blockNumPastEnd;
         this.fileType = fileType;
+        this.lastBlockByteCount = lastBlockByteCount;
         this.modDate = modDate;
-        this.offset = offset;
     }
 }
 
@@ -62,6 +67,7 @@ class PascalEntry {
 		description = "Apple II Pascal", factory = Apple2PascalDskFileSystemFactory.class)
 public class Apple2PascalDskFileSystem extends AbstractFileSystem<PascalEntry> {
 
+    public static final int SECTORS_PER_TRACK = 16;
     public static final int SECTOR_SIZE = 256;
     public static final int FT_UNTYPED = 0;
     public static final int FT_XDSK = 1;
@@ -107,26 +113,22 @@ public class Apple2PascalDskFileSystem extends AbstractFileSystem<PascalEntry> {
 
         BinaryReader reader = new BinaryReader(provider, true);
 
-        // TODO
-        // The directory starts in block 2. All disks have a 2048-byte directory spanning blocks 2 through 5 (inclusive)
         // the pascal fs is like prodos in that a block is two sectors
         // and uses the same sector ordering: 0 = 0, 1 = 15, n = 15 - n
-        // so lets make a new byteprovider/binaryreader of sectors 4 through 10+11 in reverse order
-        // we can use RangeMappedByteProvider to get an in-order version of the catalog/directory
         RangeMappedByteProvider rmbp = new RangeMappedByteProvider(provider, getFSRL());
-        // a loop calling `addRange(long offset, long rangeLen`
+
         for (int s = 11; s >= 4; s--) rmbp.addRange(s * SECTOR_SIZE, SECTOR_SIZE);
 
         reader = new BinaryReader(rmbp, true);
 
         int numberOfFilesInDirectory = 0;
 
-        // Each directory entry is 26 bytes long, providing space for 78 entries
         for (int e = 0; e < 78; e++) {
             if (e == 0) {
                 int sysAreaStartBlockNum = reader.readNextUnsignedShort();
                 int nextBlock = reader.readNextUnsignedShort();
                 int fileType = reader.readNextUnsignedShort();
+
                 // read a pascal string
                 int volumeNameLen = reader.readNextUnsignedByte();
                 byte[] volumeName = reader.readNextByteArray(volumeNameLen);
@@ -139,8 +141,7 @@ public class Apple2PascalDskFileSystem extends AbstractFileSystem<PascalEntry> {
                 long mostRecentlySetDateValue = reader.readNextUnsignedShort();
                 reader.readNextUnsignedInt(); // reserved
 
-                Msg.info(this, "Pascal volume name: '" + new String(volumeName) + "'");
-                // Msg.info(this, "  offset now: 0x" + Long.toHexString(reader.getPointerIndex()));
+                // Msg.info(this, "Pascal volume name: '" + new String(volumeName) + "'");
             } else {
                 if (e > numberOfFilesInDirectory) break;
 
@@ -148,39 +149,33 @@ public class Apple2PascalDskFileSystem extends AbstractFileSystem<PascalEntry> {
                 int firstBlockPastEndOfFile = reader.readNextUnsignedShort();
                 int fileTypeEtc = reader.readNextUnsignedShort();
                 int fileType = fileTypeEtc & 0x0f;
+
                 // read a pascal string
                 int fileNameLen = reader.readNextUnsignedByte();
-                //if (fileNameLen == 0) break;
-
                 byte[] fileNameBytes = reader.readNextByteArray(fileNameLen);
                 // file name is 1 to 15 chars long, to skip over the rest we have to read
                 if (fileNameLen < 15) reader.readNextByteArray(15 - fileNameLen);
+
                 int numberOfBytesUsedInLastBlock = reader.readNextUnsignedShort();
                 int modificationDate = reader.readNextUnsignedShort();
 
-                Msg.info(this, "Pascal file name: " + e + ": '" + new String(fileNameBytes) + "'");
-                // Msg.info(this, "  offset now: 0x" + Long.toHexString(reader.getPointerIndex()));
+                // Msg.info(this, "Pascal file name: " + e + ": '" + new String(fileNameBytes) + "'");
 
-                int size = (firstBlockPastEndOfFile - fileStartBlockNum) * SECTOR_SIZE;
-                if (size > numberOfBytesUsedInLastBlock) {
-                    size = size - SECTOR_SIZE + numberOfBytesUsedInLastBlock;
-                }
+                int size = (firstBlockPastEndOfFile - fileStartBlockNum) * SECTOR_SIZE * 2;
 
                 String name = new String(fileNameBytes);
 
                 fsIndex.storeFile(
-                    // standard attributes
-                    name,
-                    e,
-                    false,
-                    size,
+                    name, e, false, size,
                     new PascalEntry(
                         // standard attributes
                         name, size,
                         // file attributes
-                        fileType, modificationDate,
-                        // TODO
-                        0
+                        fileStartBlockNum,
+                        firstBlockPastEndOfFile,
+                        fileType,
+                        numberOfBytesUsedInLastBlock,
+                        modificationDate
                     )
                 );
             }
@@ -207,10 +202,30 @@ public class Apple2PascalDskFileSystem extends AbstractFileSystem<PascalEntry> {
             throws IOException, CancelledException {
 
         PascalEntry metadata = fsIndex.getMetadata(file);
-        return (metadata != null)
-                // TODO
-                ? new ByteProviderWrapper(provider, metadata.offset, metadata.size, file.getFSRL())
-                : null;
+        if (metadata == null) return null;
+
+        RangeMappedByteProvider rmbp = new RangeMappedByteProvider(provider, file.getFSRL());
+
+        for (int b = metadata.blockNumStart; b < metadata.blockNumPastEnd; b++) {
+            int s1 = b * 2;
+            int s2 = b * 2 + 1;
+            int t1 = s1 >> 4;
+            int t2 = s2 >> 4;
+            s1 = s1 & 0x0f;
+            s2 = s2 & 0x0f;
+
+            // if sector ordering is not ProDOS, convert logical sector num to image sector num
+            if (s1 != 0 && s1 != 15) s1 = 15 - s1;
+            if (s2 != 0 && s2 != 15) s2 = 15 - s2;
+
+            long o1 = t1 * SECTORS_PER_TRACK * SECTOR_SIZE + s1 * SECTOR_SIZE;
+            long o2 = t2 * SECTORS_PER_TRACK * SECTOR_SIZE + s2 * SECTOR_SIZE;
+
+            rmbp.addRange(o1, SECTOR_SIZE);
+            rmbp.addRange(o2, SECTOR_SIZE);
+        }
+
+        return rmbp;
     }
 
     @Override
@@ -221,12 +236,12 @@ public class Apple2PascalDskFileSystem extends AbstractFileSystem<PascalEntry> {
             // standard attributes
             result.add(FileAttributeType.NAME_ATTR, metadata.name);
             result.add(FileAttributeType.SIZE_ATTR, metadata.size);
+
             // file attributes
             result.add("File Type", filetypeToString(metadata.fileType));
+            result.add("Last Block Byte Count", metadata.lastBlockByteCount);
             int y = metadata.modDate >> 9;
-            int m = (metadata.modDate >> 4) & 0x1f;
-            int d = metadata.modDate & 0x0f;
-            result.add("Date Modified", (y < 40 ? 2000 + y : 1900 + y) + "-" + m + "-" + d);
+            result.add("Date Modified", (y < 40 ? 2000 + y : 1900 + y) + "-" + ((metadata.modDate >> 4) & 0x1f) + "-" + (metadata.modDate & 0x0f));
         }
         return result;
     }
