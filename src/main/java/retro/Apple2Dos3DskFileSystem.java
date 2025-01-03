@@ -4,9 +4,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -105,7 +105,7 @@ public class Apple2Dos3DskFileSystem extends AbstractFileSystem<Dos3Entry> {
 
 	/**
 	 * File system constructor.
-	 * 
+	 *
 	 * @param fsFSRL The root {@link FSRL} of the file system.
 	 * @param provider The file system provider.
 	 * @param isDos3Order True if the disk image is in DOS 3 sector order, false if it is in ProDOS sector order.
@@ -118,7 +118,7 @@ public class Apple2Dos3DskFileSystem extends AbstractFileSystem<Dos3Entry> {
 
 	/**
 	 * Mounts (opens) the file system.
-	 * 
+	 *
 	 * @param monitor A cancellable task monitor.
 	 */
 	public void mount(TaskMonitor monitor) throws IOException {
@@ -129,16 +129,16 @@ public class Apple2Dos3DskFileSystem extends AbstractFileSystem<Dos3Entry> {
 		// read the VTOC and then loop over the remaining sectors in the track
 		final int vtocOffset = SECTOR_SIZE * SECTORS_PER_TRACK * CATALOG_TRACK;
 		reader.setPointerIndex(vtocOffset);
-		
+
 		reader.readNextUnsignedByte();										// unused
 		final int firstCatalogSectorTrack = reader.readNextUnsignedByte();	// always 17
 		final int firstCatalogSectorSector = reader.readNextUnsignedByte();	// NOT always 15
-	
+
 		int catTrack = firstCatalogSectorTrack;
 		int catSector = firstCatalogSectorSector;
 
 		int gix = 0; // unique inde for Ghidra
-		
+
 		while (catTrack != 0) {
 			if (monitor.isCancelled()) break;
 			if (catTrack != CATALOG_TRACK) throw new IOException("Unexpected track number in catalog: " + catTrack);
@@ -147,7 +147,7 @@ public class Apple2Dos3DskFileSystem extends AbstractFileSystem<Dos3Entry> {
 			final int adjustedSector = isDos3Order || catSector == 0 || catSector == SECTORS_PER_TRACK - 1
 				? catSector
 				: 15 - catSector;
-			
+
 			final int offset = SECTOR_SIZE * SECTORS_PER_TRACK * catTrack + SECTOR_SIZE * adjustedSector;
 
 			reader.setPointerIndex(offset + 1); // skip unused first byte
@@ -163,7 +163,7 @@ public class Apple2Dos3DskFileSystem extends AbstractFileSystem<Dos3Entry> {
 					reader.setPointerIndex(reader.getPointerIndex() + ENTRY_SIZE - 1);
 					continue;
 				}
-				
+
 				int fileTypeAndFlags = reader.readNextUnsignedByte();
 				boolean isLocked = (fileTypeAndFlags & 0x80) != 0;
 				int fileType = fileTypeAndFlags & 0x7f;
@@ -194,7 +194,7 @@ public class Apple2Dos3DskFileSystem extends AbstractFileSystem<Dos3Entry> {
 					)
 				);
 			}
-			
+
 			catTrack = nextCatalogSectorTrack;
 			catSector = nextCatalogSectorSector;
 		}
