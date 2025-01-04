@@ -32,6 +32,7 @@
 
 ## FileSystems
 - Apple II Binary II file system
+- Apple II Pascal disk images in .do sector order
 - Commodore D80 disk image file system
 
 # In progress
@@ -54,7 +55,6 @@
 ## Filesystems
 - Apple II DOS 3.3 disk images in .do or .po sector order
 - Apple II ProDOS disk images in .do or .po sector order
-- Apple II Pascal disk images in .do sector order
 - Apple II CP/M disk images in .do sector order
 - CP/M (just as KC 85 et al use it for now)
 - Teledisk disk image format (just as KC 85 et al use it for now)
