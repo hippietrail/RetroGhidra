@@ -20,7 +20,6 @@ import java.util.Map;
 
 import ghidra.app.util.bin.BinaryReader;
 import ghidra.app.util.bin.ByteProvider;
-import ghidra.app.util.bin.ByteProviderWrapper;
 import ghidra.app.util.bin.RangeMappedByteProvider;
 import ghidra.formats.gfilesystem.AbstractFileSystem;
 import ghidra.formats.gfilesystem.FSRLRoot;
@@ -29,7 +28,6 @@ import ghidra.formats.gfilesystem.GFile;
 import ghidra.formats.gfilesystem.annotations.FileSystemInfo;
 import ghidra.formats.gfilesystem.fileinfo.FileAttributeType;
 import ghidra.formats.gfilesystem.fileinfo.FileAttributes;
-import ghidra.util.Msg;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 
