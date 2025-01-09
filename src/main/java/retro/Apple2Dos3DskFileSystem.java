@@ -19,12 +19,11 @@ import java.io.IOException;
 
 import ghidra.app.util.bin.BinaryReader;
 import ghidra.app.util.bin.ByteProvider;
-import ghidra.app.util.bin.ByteProviderWrapper;
+import ghidra.app.util.bin.RangeMappedByteProvider;
 import ghidra.formats.gfilesystem.*;
 import ghidra.formats.gfilesystem.annotations.FileSystemInfo;
 import ghidra.formats.gfilesystem.fileinfo.FileAttributeType;
 import ghidra.formats.gfilesystem.fileinfo.FileAttributes;
-import ghidra.util.Msg;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 
@@ -33,6 +32,8 @@ class Dos3Entry {
 	String name;
 	long size;
 	// file attributes
+	int firstTslsTrack;		// TSLS = "Track/Sector List Sector"
+	int firstTslsSector;
 	int fileType;
 	boolean isLocked;
 	int lenInSectors;
@@ -42,18 +43,18 @@ class Dos3Entry {
 	// disk image / filesystem attributes
 	String fileSystem;
 	boolean isDos3Order;
-	// temporary, might or might not be used
-	long offset;
 
 	Dos3Entry(String name, long size,
+			int firstTslsTrack, int firstTslsSector,
 			int fileType, boolean isLocked, int lenInSectors,
 			int entryTrack, int entrySector, int entryNumber,
-			String fileSystem, boolean isDos3Order,
-			long offset) {
+			String fileSystem, boolean isDos3Order) {
 		// standard attributes
 		this.name = name;
 		this.size = size;
 		// file attributes
+		this.firstTslsTrack = firstTslsTrack;
+		this.firstTslsSector = firstTslsSector;
 		this.fileType = fileType;
 		this.isLocked = isLocked;
 		this.lenInSectors = lenInSectors;
@@ -63,17 +64,17 @@ class Dos3Entry {
 		// disk image / filesystem attributes
 		this.fileSystem = fileSystem;
 		this.isDos3Order = isDos3Order;
-		// temporary, might or might not be used
-		this.offset = offset;
 	}
 }
 
 /**
  * TODO: Provide class-level documentation that describes what this file system does.
  */
-@FileSystemInfo(type = "dos3", // ([a-z0-9]+ only)
-		description = "Apple II DOS 3.3", factory = Apple2Dos3DskFileSystemFactory.class)
+@FileSystemInfo(type = Apple2Dos3DskFileSystem.FS_TYPE, description = "Apple II DOS 3.3",
+		factory = Apple2Dos3DskFileSystemFactory.class)
 public class Apple2Dos3DskFileSystem extends AbstractFileSystem<Dos3Entry> {
+
+	public static final String FS_TYPE = "dos3"; // ([a-z0-9]+ only)
 
 	// http://justsolve.archiveteam.org/wiki/Apple_DOS_file_system
 	// https://ciderpress2.com/formatdoc/DOS-notes.html
@@ -81,6 +82,8 @@ public class Apple2Dos3DskFileSystem extends AbstractFileSystem<Dos3Entry> {
     public static final int TRACKS = 35;
     public static final int SECTORS_PER_TRACK = 16;
     public static final int SECTOR_SIZE = 256;
+	public static final int SECTORS_PER_TRACK_SHIFT = 4;
+	public static final int SECTOR_SIZE_SHIFT = 8;
     public static final int DISK_IMAGE_SIZE = TRACKS * SECTORS_PER_TRACK * SECTOR_SIZE;
 	public static final int CATALOG_TRACK = 17;
 	public static final int ENTRIES_PER_SECTOR = 7;
@@ -89,6 +92,8 @@ public class Apple2Dos3DskFileSystem extends AbstractFileSystem<Dos3Entry> {
 	public static final int DELETED = 0xff;
 	public static final int FILE_NAME_LENGTH = 30;
 	public static final int ENTRY_SIZE = 35;
+	// file types look like bits that could be ORed together, but they can't
+	// we can convert from an array index to the bit value though as per the comment fields below:
 	private static final String[] FILE_TYPES = {
 		"TEXT",						// 00 * 0
 		"INTEGER BASIC",			// 01 0 1
@@ -185,12 +190,11 @@ public class Apple2Dos3DskFileSystem extends AbstractFileSystem<Dos3Entry> {
 						// standard attributes
 						name, size,
 						// file attributes
+						firstTslSectorTrack, firstTslSectorSector,
 						fileType, isLocked, lengthInSectors,
 						catTrack, catSector, i,
 						// disk image / filesystem attributes
-						"DOS 3", isDos3Order,
-						// ignoring offset for now
-						offset
+						"DOS 3", isDos3Order
 					)
 				);
 			}
@@ -220,10 +224,49 @@ public class Apple2Dos3DskFileSystem extends AbstractFileSystem<Dos3Entry> {
 			throws IOException, CancelledException {
 
 		Dos3Entry metadata = fsIndex.getMetadata(file);
-		return (metadata != null)
-				// TODO
-				? new ByteProviderWrapper(provider, metadata.offset, metadata.size, file.getFSRL())
-				: null;
+		if (metadata == null) return null;
+
+		BinaryReader r = new BinaryReader(provider, true);
+		RangeMappedByteProvider rmbp = new RangeMappedByteProvider(provider, file.getFSRL());
+		
+		int tslt = metadata.firstTslsTrack; // T=0/255 are special
+		int tsls = metadata.firstTslsSector;
+
+		// the outer loop is like a linked list terminated by tslt == 0
+		while (tslt != 0) {
+			if (!isDos3Order && tsls != 0 && tsls != 15) tsls = 15 - tsls;
+			long tslOff = ((tslt << SECTORS_PER_TRACK_SHIFT) + tsls) << SECTOR_SIZE_SHIFT;
+
+			r.setPointerIndex(tslOff + 1); // skip unused first byte
+			int nextTslTrack = r.readNextUnsignedByte(); // T=0 indicates end of list
+			int nextTslSector = r.readNextUnsignedByte();
+
+			// skip 2 reserved bytes; read short "sector offset in file of the first sector defined by this list"; skip 5 reserved bytes
+			r.readNextUnsignedShort();
+			int firstDataSectorOffset = r.readNextUnsignedShort(); // 0 unless file is really big (> 122 * 256 bytes)
+			r.setPointerIndex(r.getPointerIndex() + 5);
+
+			// the inner loop is like an array of 122 entries
+			// one track/sector list sector can have up to 122 entries after the 12-byte header
+			// TODO so we could break out of the loop when we get to > 122 or the offset is > 254 (0xfe)
+			for (int i = 0; i < 122; i++) {
+				int t = r.readNextUnsignedByte();
+				int s = r.readNextUnsignedByte();
+				// if (t == 0) break; // TODO T=0 indicates "sparse" sector!!
+				if (!isDos3Order && s != 0 && s != 15) s = 15 - s;
+				long dataOff = ((t << SECTORS_PER_TRACK_SHIFT) + s) << SECTOR_SIZE_SHIFT;
+				rmbp.addRange(dataOff, SECTOR_SIZE);
+			}
+			
+			tslt = nextTslTrack;
+			tsls = nextTslSector;
+		}
+
+		return rmbp;
+	}
+
+	public Dos3Entry getMetadata(GFile file) {
+		return fsIndex.getMetadata(file);
 	}
 
 	@Override
@@ -242,7 +285,6 @@ public class Apple2Dos3DskFileSystem extends AbstractFileSystem<Dos3Entry> {
 			// disk image / filesystem attributes
 			result.add("Filesystem", metadata.fileSystem);
 			result.add("Ordering", metadata.isDos3Order ? "DOS 3" : "ProDOS");
-			// ignoring offset for now
 		}
 		return result;
 	}

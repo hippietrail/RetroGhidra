@@ -103,7 +103,7 @@ public class Apple2Dos3DskFileSystemFactory implements GFileSystemFactoryBytePro
                 // Msg.info(this, "DOS 3 VTOC found in ProDOS ordered image");
                 return true;
             } else {
-                Msg.info(this, "DOS 3 VTOC found in unknown ordered image");
+                // Msg.info(this, "DOS 3 VTOC found in unknown ordered image");
             }
 		}
 
