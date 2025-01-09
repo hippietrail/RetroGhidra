@@ -26,6 +26,7 @@ import ghidra.app.util.bin.BinaryReader;
 import ghidra.app.util.bin.ByteArrayProvider;
 import ghidra.app.util.bin.ByteProvider;
 import ghidra.app.util.bin.ByteProviderWrapper;
+import ghidra.app.util.bin.RangeMappedByteProvider;
 import ghidra.formats.gfilesystem.*;
 import ghidra.formats.gfilesystem.annotations.FileSystemInfo;
 import ghidra.formats.gfilesystem.fileinfo.FileAttributeType;
@@ -114,6 +115,8 @@ public class Apple2ProDosDskFileSystem extends AbstractFileSystem<ProDosEntry> {
 		ST_VOLUME_DIRECTORY_HEADER,
 		ST_SUBDIRECTORY_HEADER
 	};
+	public static final int MAX_BLOCKS_PER_SAPLING_KEY = 256;
+	public static final int MAX_BLOCKS_PER_TREE_KEY = 128;
 	public static final int FT_TYPELESS = 0x00;
 	public static final int FT_TEXT = 0x04;
 	public static final int FT_BINARY = 0x06;
@@ -187,7 +190,24 @@ public class Apple2ProDosDskFileSystem extends AbstractFileSystem<ProDosEntry> {
 			String[] newPath = Arrays.copyOf(currentPath, currentPath.length + 1);
 			newPath[currentPath.length] = name;
 
-			long size = storageType == ST_SUBDIRECTORY ? 0 : 16; // TODO 16 is bogus size for now
+			long size = -1; // documented size for directories or when otherwise unknown
+			if (storageType == ST_SEEDLING) {
+				size = BLOCK_SIZE;
+			} else if (storageType == ST_SAPLING) {
+				size = 0;
+				imageReader.setPointerIndex(blockNumberToOffset(keyPointer));
+				for (int i = 0; i < MAX_BLOCKS_PER_SAPLING_KEY; i++) {
+					int b = imageReader.readNextUnsignedByte();
+					if (b == 0) break;
+					size += BLOCK_SIZE;
+				}
+			} else if (storageType == ST_TREE) {
+				size = -1; // TODO
+			} else if (storageType == ST_SUBDIRECTORY) {
+				size = -1;
+			} else {
+				throw new IOException("Unexpected storage type: " + storageType);
+			}
 
 			fsIndex.storeFile(
 				String.join("/", newPath),
@@ -215,14 +235,6 @@ public class Apple2ProDosDskFileSystem extends AbstractFileSystem<ProDosEntry> {
 		if (nextDirBlock != 0) {
 			mountDirectory(monitor, imageReader, nextDirBlock, currentPath);
 		}
-	}
-
-	private String filetypeToString(int fileType) {
-		String result = String.format("0x%02x", fileType);
-		if (FILE_TYPES.containsKey(fileType)) {
-			result += " (" + FILE_TYPES.get(fileType) + ")";
-		}
-		return result;
 	}
 
 	private String dateBytesToString(byte[] dateBytes) {
@@ -258,8 +270,8 @@ public class Apple2ProDosDskFileSystem extends AbstractFileSystem<ProDosEntry> {
 	}
 
 	private long blockNumberToOffset(int blockNum) {
-		int[] trackAndSector = getTrackAndSector(blockNum);
-		return logicalTrackAndSectorToOffset(trackAndSector[0], trackAndSector[1]);
+		int[] ts = getTrackAndSector(blockNum);
+		return logicalTrackAndSectorToOffset(ts[0], ts[1]);
 	}
 
 	private long[] blockNumberToOffsets(int blockNum) {
@@ -307,15 +319,33 @@ public class Apple2ProDosDskFileSystem extends AbstractFileSystem<ProDosEntry> {
 
 		ProDosEntry metadata = fsIndex.getMetadata(file);
 		if (metadata == null) return null;
-		
-		// TODO
-		// metadata.
-		
-		
-		return new ByteProviderWrapper(provider, 0, 24, file.getFSRL());
 
-		
-		// return abp;
+		if (metadata.storageType == ST_SEEDLING) {
+			RangeMappedByteProvider seedling = new RangeMappedByteProvider(provider, file.getFSRL());
+
+			long[] offsets = blockNumberToOffsets(metadata.keyPointer);
+			seedling.addRange(offsets[0], SECTOR_SIZE);
+			seedling.addRange(offsets[1], SECTOR_SIZE);
+			return seedling;
+		} else if (metadata.storageType == ST_SAPLING) {
+			RangeMappedByteProvider sapling = new RangeMappedByteProvider(provider, file.getFSRL());
+			long offset = blockNumberToOffset(metadata.keyPointer);
+			for (int i = 0; i < MAX_BLOCKS_PER_SAPLING_KEY; i++) {
+				int b = provider.readByte(offset + i) & 0xff;
+				if (b == 0) break;
+				long[] offsets = blockNumberToOffsets(b);
+				sapling.addRange(offsets[0], SECTOR_SIZE);
+				sapling.addRange(offsets[1], SECTOR_SIZE);
+			}
+			return sapling;
+		} else if (metadata.storageType == ST_TREE) {
+			// TODO each byte of the first half-sector (so only 128 entries) is a pointer to a sapling as above
+			throw new IOException("ST_TREE not yet implemented");
+		} else {
+			// something must've gone wrong
+			throw new IOException("Unknown storage type: " + metadata.storageType);
+		}
+
 	}
 
 	public ProDosEntry getMetadata(GFile file) {

@@ -113,9 +113,12 @@ public class Apple2ProDosDskFileSystemFactory implements GFileSystemFactoryByteP
                 vdhName[i] != '-' // not in the spec but used in my prodos disk images
             ) return false;
         }
-        for (int i = vdhNameLength; i < 15; i++) {
-            if (vdhName[i] != 0) return false;
-        }
+        // the following test is not true for the disk image "PRODOS402":
+        // https://mirrors.apple2.org.za/landover.no-ip.com/Applications/Prodos%20Basic%20v1.5%20%281992%29%28Apple%29.dsk
+        // it has one more byte 'K' than claimed by the length before the 0 bytes
+        // for (int i = vdhNameLength; i < 15; i++) {
+        //     if (vdhName[i] != 0) return false;
+        // }
         return true;
     }
 
