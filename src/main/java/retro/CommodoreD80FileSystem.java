@@ -54,9 +54,11 @@ class D80Entry {
  * 
  * @see <a href="https://vice-emu.sourceforge.io/vice_16.html#SEC423">VICE Manual - 16  The emulator file formats / 16.9 The D80 disk image format</a>
  */
-@FileSystemInfo(type = "d80", // ([a-z0-9]+ only)
-        description = "Commodore D80 disk image", factory = CommodoreD80FileSystemFactory.class)
+@FileSystemInfo(type = CommodoreD80FileSystem.FS_TYPE, description = "Commodore D80 disk image",
+        factory = CommodoreD80FileSystemFactory.class)
 public class CommodoreD80FileSystem extends AbstractFileSystem<D80Entry> {
+
+    public static final String FS_TYPE = "d80"; // ([a-z0-9]+ only)
 
     // tracks start at 1 so use thus: trackOffset = trackOffsets[trackNumber - 1]
     private static final long[] D80_TRACK_OFFSETS = new long[] {
@@ -256,6 +258,10 @@ public class CommodoreD80FileSystem extends AbstractFileSystem<D80Entry> {
             petFileProvider.addRange(offset + 2, D80_SECTOR_SIZE - 2);
             offset = D80_TRACK_OFFSETS[t - 1] + D80_SECTOR_SIZE * s;
         }
+    }
+
+    public D80Entry getMetadata(GFile file) {
+        return fsIndex.getMetadata(file);
     }
 
     @Override

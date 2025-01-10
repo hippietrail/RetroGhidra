@@ -51,9 +51,11 @@ class BnyEntry {
  * 
  * @see <a href="https://wiki.preterhuman.net/Apple_II_Binary_File_Format">Apple II Binary File Format</a>
  */
-@FileSystemInfo(type = "bny", // ([a-z0-9]+ only)
-        description = "Apple II Binary II", factory = Apple2Binary2FileSystemFactory.class)
+@FileSystemInfo(type = Apple2Binary2FileSystem.FS_TYPE, description = "Apple II Binary II",
+        factory = Apple2Binary2FileSystemFactory.class)
 public class Apple2Binary2FileSystem extends AbstractFileSystem<BnyEntry> {
+
+    public static final String FS_TYPE = "bny"; // ([a-z0-9]+ only)
 
     public static final int BNY_OFF_FILETYPE_CODE = 4;
     public static final int BNY_OFF_AUX_TYPE_CODE = 5; // 16-bit
@@ -175,6 +177,10 @@ public class Apple2Binary2FileSystem extends AbstractFileSystem<BnyEntry> {
         return (metadata != null)
                 ? new ByteProviderWrapper(provider, metadata.offset, metadata.size, file.getFSRL())
                 : null;
+    }
+
+    public BnyEntry getMetadata(GFile file) {
+        return fsIndex.getMetadata(file);
     }
 
     @Override
