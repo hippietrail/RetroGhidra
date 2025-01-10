@@ -271,7 +271,7 @@ public class CommodoreD80FileSystem extends AbstractFileSystem<D80Entry> {
                 : D80_FILETYPES[metadata.filetype & 0x0F]
             );
 
-            // TODO not yet available as of Ghidra 11.2.1
+            // TODO PR 7062 not yet available as of Ghidra 11.2.1
             // att.add(FileAttributeType.FILENAME_EXT_OVERRIDE, "exe");
         }
         return att;

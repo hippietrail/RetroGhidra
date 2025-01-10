@@ -135,14 +135,14 @@ public class Apple2Dos3DskFileSystem extends AbstractFileSystem<Dos3Entry> {
         final int vtocOffset = SECTOR_SIZE * SECTORS_PER_TRACK * CATALOG_TRACK;
         reader.setPointerIndex(vtocOffset);
 
-        reader.readNextUnsignedByte();                                        // unused
-        final int firstCatalogSectorTrack = reader.readNextUnsignedByte();    // always 17
-        final int firstCatalogSectorSector = reader.readNextUnsignedByte();    // NOT always 15
+        reader.readNextUnsignedByte();                                      // unused
+        final int firstCatalogSectorTrack = reader.readNextUnsignedByte();  // always 17
+        final int firstCatalogSectorSector = reader.readNextUnsignedByte(); // NOT always 15
 
         int catTrack = firstCatalogSectorTrack;
         int catSector = firstCatalogSectorSector;
 
-        int gix = 0; // unique inde for Ghidra
+        int gix = 0; // unique index for Ghidra
 
         while (catTrack != 0) {
             if (monitor.isCancelled()) break;

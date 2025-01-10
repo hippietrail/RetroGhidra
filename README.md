@@ -32,7 +32,9 @@
 
 ## FileSystems
 - Apple II Binary II file system
-- Apple II Pascal disk images in .do sector order
+- Apple II DOS 3.3 disk images in .do or .po sector order (no sparse files yet)
+- Apple II Pascal disk images in .do sector order (no .po order yet)
+- Apple II ProDOS disk images in .do or .po sector order
 - Commodore D80 disk image file system
 
 # In progress
@@ -53,8 +55,6 @@
 - TK2000/Microprofessor II: .ct2 tape format - identifies but does not load yet
 
 ## Filesystems
-- Apple II DOS 3.3 disk images in .do or .po sector order
-- Apple II ProDOS disk images in .do or .po sector order
 - Apple II CP/M disk images in .do sector order
 - CP/M (just as KC 85 et al use it for now)
 - Teledisk disk image format (just as KC 85 et al use it for now)
