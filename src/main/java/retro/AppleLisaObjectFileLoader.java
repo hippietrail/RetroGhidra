@@ -86,29 +86,29 @@ public class AppleLisaObjectFileLoader extends AbstractProgramWrapperLoader {
         Map.entry(LISA_TAG_FILES_BLOCK, "FilesBlock")
     );
 
-	private Long codeBlockOffset = null; 
+    private Long codeBlockOffset = null;
 
     String getTypeName(int type) {
         String name = TYPE_NAMES.get(type);
         return String.format("0x%02X", type) + ' ' + (name == null ? "???" : name);
     }
 
-	@Override
-	public String getName() {
-		return LISA_NAME;
-	}
+    @Override
+    public String getName() {
+        return LISA_NAME;
+    }
 
-	// lower numbers have higher priority
-	// 50 seems to be standard, raw uses 100
-	// RetroGhidra Loaders that don't have magic numbers should use 60
+    // lower numbers have higher priority
+    // 50 seems to be standard, raw uses 100
+    // RetroGhidra Loaders that don't have magic numbers should use 60
     @Override
     public int getTierPriority() {
         return 60;
     }
 
-	@Override
-	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
-		List<LoadSpec> loadSpecs = new ArrayList<>();
+    @Override
+    public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
+        List<LoadSpec> loadSpecs = new ArrayList<>();
 
         BinaryReader reader = new BinaryReader(provider, false); // big-endian
 
@@ -125,10 +125,10 @@ public class AppleLisaObjectFileLoader extends AbstractProgramWrapperLoader {
 
             if (type == LISA_TAG_CODE_BLOCK) {
                 if (codeBlockOffset == null) {
-					codeBlockOffset = off;
-				} else {
-					Msg.warn(this, "Lisa: multiple code block offsets: 0x" + Long.toHexString(codeBlockOffset) + " and 0x" + Long.toHexString(off));
-				}
+                    codeBlockOffset = off;
+                } else {
+                    Msg.warn(this, "Lisa: multiple code block offsets: 0x" + Long.toHexString(codeBlockOffset) + " and 0x" + Long.toHexString(off));
+                }
             }
 
             off += len;
@@ -136,8 +136,8 @@ public class AppleLisaObjectFileLoader extends AbstractProgramWrapperLoader {
 
             if (type == 0) break;
         }
-        
-		if (codeBlockOffset == null) return loadSpecs;
+
+        if (codeBlockOffset == null) return loadSpecs;
 
         final int bytesRemaining = Math.toIntExact(reader.length() - off);
         if (bytesRemaining > 0) {
@@ -153,29 +153,29 @@ public class AppleLisaObjectFileLoader extends AbstractProgramWrapperLoader {
         // No other 680x0 has ever been used, so we can hard code this
         loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("68000:BE:32:default", "default"), true));
 
-		return loadSpecs;
-	}
+        return loadSpecs;
+    }
 
-	@Override
-	protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
-			Program program, TaskMonitor monitor, MessageLog log)
-			throws CancelledException, IOException {
+    @Override
+    protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
+            Program program, TaskMonitor monitor, MessageLog log)
+            throws CancelledException, IOException {
 
-		// TODO: Load the bytes from 'provider' into the 'program'.
-		if (codeBlockOffset == null) {
-			Msg.warn(this, "Lisa: no code block found");
-			return;
-		}
-		Msg.info(this, "Lisa: code block at offset 0x" + Long.toHexString(codeBlockOffset));
-		
-		BinaryReader reader = new BinaryReader(provider, false); // big-endian
-		reader.setPointerIndex(codeBlockOffset);
-		reader.readNextByte();                              // record type: code block
-		final long len1 = reader.readNextUnsignedValue(3);  // record length in bytes
-		final long len2 = reader.readNextUnsignedInt();     // code block length in bytes (doesn't match the record length)
-		final long addr = reader.readNextUnsignedInt();     // address to load code block
-		Msg.info(this, "Lisa: code block length 0x" + Long.toHexString(len1) + ", 0x" + Long.toHexString(len2) + ", 0x" + Long.toHexString(addr));
-		
+        // TODO: Load the bytes from 'provider' into the 'program'.
+        if (codeBlockOffset == null) {
+            Msg.warn(this, "Lisa: no code block found");
+            return;
+        }
+        Msg.info(this, "Lisa: code block at offset 0x" + Long.toHexString(codeBlockOffset));
+
+        BinaryReader reader = new BinaryReader(provider, false); // big-endian
+        reader.setPointerIndex(codeBlockOffset);
+        reader.readNextByte();                              // record type: code block
+        final long len1 = reader.readNextUnsignedValue(3);  // record length in bytes
+        final long len2 = reader.readNextUnsignedInt();     // code block length in bytes (doesn't match the record length)
+        final long addr = reader.readNextUnsignedInt();     // address to load code block
+        Msg.info(this, "Lisa: code block length 0x" + Long.toHexString(len1) + ", 0x" + Long.toHexString(len2) + ", 0x" + Long.toHexString(addr));
+
         try {
             Address startAndEntryPoint = program.getAddressFactory().getDefaultAddressSpace().getAddress(addr);
 
@@ -187,12 +187,12 @@ public class AppleLisaObjectFileLoader extends AbstractProgramWrapperLoader {
                 len1 - (4 + 4 + 4),
                 false
             );
-            
+
             SymbolTable st = program.getSymbolTable();
             st.createLabel(startAndEntryPoint, "entry", SourceType.ANALYSIS);
             st.addExternalEntryPoint(startAndEntryPoint);
         } catch (Exception e) {
             log.appendException(e);
         }
-	}
+    }
 }

@@ -41,119 +41,119 @@ import ghidra.util.task.TaskMonitor;
  */
 public class AmstradSnaLoader extends AbstractProgramWrapperLoader {
 
-	public static final String AMS_SNA_NAME = "Amstrad CPC Snapshot (SNA)";
-	public static final int AMS_SNA_HEADER_LEN = 0x100;
-	public static final long AMS_SNA_LENGTH_64K = AMS_SNA_HEADER_LEN + 64 * 1024;
-	public static final long AMS_SNA_LENGTH_128K = AMS_SNA_HEADER_LEN + 1288 * 1024;
-	public static final Long[] AMS_SNA_LENGTHS = {
-		AMS_SNA_LENGTH_64K,
-		AMS_SNA_LENGTH_128K,
-	};
-	public static final String AMS_SNA_MAGIC = "MV - SNA";
+    public static final String AMS_SNA_NAME = "Amstrad CPC Snapshot (SNA)";
+    public static final int AMS_SNA_HEADER_LEN = 0x100;
+    public static final long AMS_SNA_LENGTH_64K = AMS_SNA_HEADER_LEN + 64 * 1024;
+    public static final long AMS_SNA_LENGTH_128K = AMS_SNA_HEADER_LEN + 1288 * 1024;
+    public static final Long[] AMS_SNA_LENGTHS = {
+        AMS_SNA_LENGTH_64K,
+        AMS_SNA_LENGTH_128K,
+    };
+    public static final String AMS_SNA_MAGIC = "MV - SNA";
     public static final int AMS_SNA_OFF_VERSION = 0x10;
-	public static final int AMS_SNA_OFF_SP = 0x21; // 16-bit
-	public static final int AMS_SNA_OFF_PC = 0x23; // 16-bit
+    public static final int AMS_SNA_OFF_SP = 0x21; // 16-bit
+    public static final int AMS_SNA_OFF_PC = 0x23; // 16-bit
     public static final int AMS_SNA_OFF_CURR_RAM_CONFIG = 0x41;
-	public static final int AMS_SNA_OFF_DUMP_SIZE = 0x6b; // 16-bit
-	public static final int AMS_SNA_OFF_CPC_TYPE = 0x6d;
-	public static final String[] AMS_SNA_CPC_TYPES = {
-		"CPC 464", "CPC 664", "CPC 6128"
-	};
+    public static final int AMS_SNA_OFF_DUMP_SIZE = 0x6b; // 16-bit
+    public static final int AMS_SNA_OFF_CPC_TYPE = 0x6d;
+    public static final String[] AMS_SNA_CPC_TYPES = {
+        "CPC 464", "CPC 664", "CPC 6128"
+    };
 
-	@Override
-	public String getName() {
-		return AMS_SNA_NAME;
-	}
+    @Override
+    public String getName() {
+        return AMS_SNA_NAME;
+    }
 
-	@Override
-	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
-		List<LoadSpec> loadSpecs = new ArrayList<>();
+    @Override
+    public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
+        List<LoadSpec> loadSpecs = new ArrayList<>();
 
-		BinaryReader reader = new BinaryReader(provider, true);
+        BinaryReader reader = new BinaryReader(provider, true);
 
-		final long fileLength = reader.length();
+        final long fileLength = reader.length();
         if (fileLength < AMS_SNA_HEADER_LEN) return loadSpecs;
 
-		String magic = reader.readNextAsciiString(AMS_SNA_MAGIC.length());
-		if (!magic.equals(AMS_SNA_MAGIC)) return loadSpecs;
+        String magic = reader.readNextAsciiString(AMS_SNA_MAGIC.length());
+        if (!magic.equals(AMS_SNA_MAGIC)) return loadSpecs;
 
         // prior to version 3, only two file lengths were possible
         // v3 introduced a variable number of optional 'chunks' at the end
         final int version = reader.readUnsignedByte(AMS_SNA_OFF_VERSION) & 0xff;
         if (version < 3 && !Arrays.stream(AMS_SNA_LENGTHS).anyMatch(length -> length.equals(fileLength))) return loadSpecs;
 
-		final int sp = reader.readUnsignedShort(AMS_SNA_OFF_SP);
-		final int pc = reader.readUnsignedShort(AMS_SNA_OFF_PC);
+        final int sp = reader.readUnsignedShort(AMS_SNA_OFF_SP);
+        final int pc = reader.readUnsignedShort(AMS_SNA_OFF_PC);
         final int currRamConfig = reader.readUnsignedByte(AMS_SNA_OFF_CURR_RAM_CONFIG) & 0xff;
-		final int dumpSize = reader.readUnsignedShort(AMS_SNA_OFF_DUMP_SIZE); // in kb: 64 or 128
-		final int cpcType = reader.readUnsignedByte(AMS_SNA_OFF_CPC_TYPE) & 0xff;
+        final int dumpSize = reader.readUnsignedShort(AMS_SNA_OFF_DUMP_SIZE); // in kb: 64 or 128
+        final int cpcType = reader.readUnsignedByte(AMS_SNA_OFF_CPC_TYPE) & 0xff;
 
-		Msg.info(this, "CPC: SNA version " + version
+        Msg.info(this, "CPC: SNA version " + version
             + ", SP: 0x" + Integer.toHexString(sp)
-			+ ", PC: 0x" + Integer.toHexString(pc)
+            + ", PC: 0x" + Integer.toHexString(pc)
             + ", RAM config: 0x" + Integer.toHexString(currRamConfig)
-			+ ", dump size: 0x" + Integer.toHexString(dumpSize)
-			+ " (" + dumpSize
-			+ " bytes), CPC type: " + cpcType
-			+ " (" + AMS_SNA_CPC_TYPES[cpcType] + ")");
+            + ", dump size: 0x" + Integer.toHexString(dumpSize)
+            + " (" + dumpSize
+            + " bytes), CPC type: " + cpcType
+            + " (" + AMS_SNA_CPC_TYPES[cpcType] + ")");
 
-		loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("z80:LE:16:default", "default"), true));
+        loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("z80:LE:16:default", "default"), true));
 
-		return loadSpecs;
-	}
+        return loadSpecs;
+    }
 
-	@Override
-	protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
-			Program program, TaskMonitor monitor, MessageLog log)
-			throws CancelledException, IOException {
+    @Override
+    protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
+            Program program, TaskMonitor monitor, MessageLog log)
+            throws CancelledException, IOException {
 
-		BinaryReader reader = new BinaryReader(provider, true);
+        BinaryReader reader = new BinaryReader(provider, true);
 
-		final int sp = reader.readUnsignedShort(AMS_SNA_OFF_SP);
-		final int pc = reader.readUnsignedShort(AMS_SNA_OFF_PC);
-		final int dumpSize = reader.readUnsignedShort(AMS_SNA_OFF_DUMP_SIZE);
-		final int cpcType = reader.readUnsignedByte(AMS_SNA_OFF_CPC_TYPE);
+        final int sp = reader.readUnsignedShort(AMS_SNA_OFF_SP);
+        final int pc = reader.readUnsignedShort(AMS_SNA_OFF_PC);
+        final int dumpSize = reader.readUnsignedShort(AMS_SNA_OFF_DUMP_SIZE);
+        final int cpcType = reader.readUnsignedByte(AMS_SNA_OFF_CPC_TYPE);
 
-		// I don't know how the paging works, or the mapping from the snapshot's memory dump to physical RAM
-		// the CPC has 64k of RAM so there must be paging of ROM and/or RAM even ignoring 128k snapshots for now
+        // I don't know how the paging works, or the mapping from the snapshot's memory dump to physical RAM
+        // the CPC has 64k of RAM so there must be paging of ROM and/or RAM even ignoring 128k snapshots for now
 
         // in version 3 the dump size can be 0, indicating MEM chunks will follow instead
 
-		// let's try if it's a 64k snapshot
+        // let's try if it's a 64k snapshot
         if (dumpSize == 0) {
             Msg.info(this, "MEM chunks are not supported so far.");
             return;
         }
-		if (dumpSize != 64) {
-			Msg.info(this, "128k snapshots are not supported so far.");
-			return;
-		}
+        if (dumpSize != 64) {
+            Msg.info(this, "128k snapshots are not supported so far.");
+            return;
+        }
 
-		// so load the 64k after the header until the end into address 0x0000
-		final int start = 0x0000;
-		Address startAddress = program.getAddressFactory().getDefaultAddressSpace().getAddress(start);
-		Address spAddress = program.getAddressFactory().getDefaultAddressSpace().getAddress(sp);
-		Address pcAddress = program.getAddressFactory().getDefaultAddressSpace().getAddress(pc);
-		FileBytes fileBytes = MemoryBlockUtils.createFileBytes(program, provider, monitor);
-		SymbolTable st = program.getSymbolTable();
+        // so load the 64k after the header until the end into address 0x0000
+        final int start = 0x0000;
+        Address startAddress = program.getAddressFactory().getDefaultAddressSpace().getAddress(start);
+        Address spAddress = program.getAddressFactory().getDefaultAddressSpace().getAddress(sp);
+        Address pcAddress = program.getAddressFactory().getDefaultAddressSpace().getAddress(pc);
+        FileBytes fileBytes = MemoryBlockUtils.createFileBytes(program, provider, monitor);
+        SymbolTable st = program.getSymbolTable();
 
-		try {
-			program.getMemory().createInitializedBlock(
-				"SNAPSHOT_64K",
-				startAddress,
-				fileBytes,
-				AMS_SNA_HEADER_LEN,
-				AMS_SNA_LENGTH_64K - AMS_SNA_HEADER_LEN,
-				false
-			);
-			// TODO setWrite or not?
+        try {
+            program.getMemory().createInitializedBlock(
+                "SNAPSHOT_64K",
+                startAddress,
+                fileBytes,
+                AMS_SNA_HEADER_LEN,
+                AMS_SNA_LENGTH_64K - AMS_SNA_HEADER_LEN,
+                false
+            );
+            // TODO setWrite or not?
 
-			st.createLabel(pcAddress, "entry", SourceType.IMPORTED);
-			st.createLabel(spAddress, "stack", SourceType.IMPORTED);
-			st.addExternalEntryPoint(pcAddress);
+            st.createLabel(pcAddress, "entry", SourceType.IMPORTED);
+            st.createLabel(spAddress, "stack", SourceType.IMPORTED);
+            st.addExternalEntryPoint(pcAddress);
 
-		} catch (Exception e) {
-			log.appendException(e);
-		}
-	}
+        } catch (Exception e) {
+            log.appendException(e);
+        }
+    }
 }

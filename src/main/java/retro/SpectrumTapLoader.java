@@ -36,60 +36,60 @@ import ghidra.util.task.TaskMonitor;
  */
 public class SpectrumTapLoader extends AbstractProgramWrapperLoader {
 
-	public static final String TAP_NAME = "Sinclair ZX Spectrum TAP";
-	public static final String TAP_EXTENSION = ".tap";
-	public static final int TAP_FIRST_BLOCK_LEN = 0x13;
+    public static final String TAP_NAME = "Sinclair ZX Spectrum TAP";
+    public static final String TAP_EXTENSION = ".tap";
+    public static final int TAP_FIRST_BLOCK_LEN = 0x13;
 
     @Override
-	public String getName() {
-		return TAP_NAME;
-	}
+    public String getName() {
+        return TAP_NAME;
+    }
 
-	// lower numbers have higher priority
-	// 50 seems to be standard, raw uses 100
-	// RetroGhidra Loaders that don't have magic numbers should use 60
+    // lower numbers have higher priority
+    // 50 seems to be standard, raw uses 100
+    // RetroGhidra Loaders that don't have magic numbers should use 60
     @Override
     public int getTierPriority() {
         return 60;
     }
 
-	@Override
-	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
-		List<LoadSpec> loadSpecs = new ArrayList<>();
+    @Override
+    public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
+        List<LoadSpec> loadSpecs = new ArrayList<>();
 
-		String fname = provider.getName();
-		if (fname.indexOf('.') < 0) return loadSpecs;
-		String ext = fname.substring(fname.lastIndexOf('.'));
-		if (!ext.equalsIgnoreCase(TAP_EXTENSION)) return loadSpecs;
+        String fname = provider.getName();
+        if (fname.indexOf('.') < 0) return loadSpecs;
+        String ext = fname.substring(fname.lastIndexOf('.'));
+        if (!ext.equalsIgnoreCase(TAP_EXTENSION)) return loadSpecs;
 
-		// a series of blocks preceded by a 16-bit little-endian size
-		// the first should be 0x13 bytes so the file should be at least 0x15 bytes long
-		// the last byte of the block is the xor checksum of all the bytes in the block
-		// (the length bytes are not included in the checksum)
+        // a series of blocks preceded by a 16-bit little-endian size
+        // the first should be 0x13 bytes so the file should be at least 0x15 bytes long
+        // the last byte of the block is the xor checksum of all the bytes in the block
+        // (the length bytes are not included in the checksum)
 
-		if (provider.length() < TAP_FIRST_BLOCK_LEN + 2) return loadSpecs;
+        if (provider.length() < TAP_FIRST_BLOCK_LEN + 2) return loadSpecs;
 
-		BinaryReader reader = new BinaryReader(provider, true);
+        BinaryReader reader = new BinaryReader(provider, true);
 
-		final int firstBlockSize = reader.readUnsignedShort(0);
-		if (firstBlockSize != TAP_FIRST_BLOCK_LEN) return loadSpecs;
+        final int firstBlockSize = reader.readUnsignedShort(0);
+        if (firstBlockSize != TAP_FIRST_BLOCK_LEN) return loadSpecs;
 
-		int blockChecksum = 0;
-		for (int i = 0; i < firstBlockSize - 1; i++)
-			blockChecksum ^= reader.readUnsignedByte(2 + i) & 0xFF;
+        int blockChecksum = 0;
+        for (int i = 0; i < firstBlockSize - 1; i++)
+            blockChecksum ^= reader.readUnsignedByte(2 + i) & 0xFF;
 
-		if (blockChecksum != (reader.readUnsignedByte(2 + firstBlockSize - 1) & 0xFF)) return loadSpecs;
+        if (blockChecksum != (reader.readUnsignedByte(2 + firstBlockSize - 1) & 0xFF)) return loadSpecs;
 
-		loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("z80:LE:16:default", "default"), true));
+        loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("z80:LE:16:default", "default"), true));
 
-		return loadSpecs;
-	}
+        return loadSpecs;
+    }
 
-	@Override
-	protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
-			Program program, TaskMonitor monitor, MessageLog log)
-			throws CancelledException, IOException {
+    @Override
+    protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
+            Program program, TaskMonitor monitor, MessageLog log)
+            throws CancelledException, IOException {
 
-		// TODO: Load the bytes from 'provider' into the 'program'.
-	}
+        // TODO: Load the bytes from 'provider' into the 'program'.
+    }
 }

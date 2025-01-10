@@ -43,30 +43,30 @@ import ghidra.util.task.TaskMonitor;
  */
 public class Atari8BitXexLoader extends AbstractProgramWrapperLoader {
 
-	public static final String XEX_NAME = "Atari 8-bit program (XEX)";
+    public static final String XEX_NAME = "Atari 8-bit program (XEX)";
     public static final String XEX_EXTENSION = ".xex";
-	public static final int XEX_HEAD = 0xffff;
+    public static final int XEX_HEAD = 0xffff;
     public static final int XEX_RUNAD = 0x02e0;
     public static final int XEX_INITAD = 0x02e2;
 
-	@Override
-	public String getName() {
-		return XEX_NAME;
-	}
+    @Override
+    public String getName() {
+        return XEX_NAME;
+    }
 
-	// lower numbers have higher priority
-	// 50 seems to be standard, raw uses 100
-	// RetroGhidra Loaders that don't have magic numbers should use 60
+    // lower numbers have higher priority
+    // 50 seems to be standard, raw uses 100
+    // RetroGhidra Loaders that don't have magic numbers should use 60
     @Override
     public int getTierPriority() {
         return 60;
     }
 
-	@Override
-	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
-		List<LoadSpec> loadSpecs = new ArrayList<>();
+    @Override
+    public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
+        List<LoadSpec> loadSpecs = new ArrayList<>();
 
-		BinaryReader reader = new BinaryReader(provider, true);
+        BinaryReader reader = new BinaryReader(provider, true);
 
         // check for .xex file extension
         String name = provider.getName();
@@ -75,23 +75,23 @@ public class Atari8BitXexLoader extends AbstractProgramWrapperLoader {
         if (!ext.equalsIgnoreCase(XEX_EXTENSION)) return loadSpecs;
 
         // at least: $ffff, first address, last address
-		if (reader.length() < 6) return loadSpecs;
+        if (reader.length() < 6) return loadSpecs;
 
         final int magic = reader.readUnsignedShort(0);
-		if (magic != XEX_HEAD) return loadSpecs;
-        
+        if (magic != XEX_HEAD) return loadSpecs;
+
         // TODO we could iterate through the first few blocks to check that the start < the end
         // TODO if false positives prove to be a problem
 
-		loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("6502:LE:16:default", "default"), true));
+        loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("6502:LE:16:default", "default"), true));
 
-		return loadSpecs;
-	}
+        return loadSpecs;
+    }
 
-	@Override
-	protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
-			Program program, TaskMonitor monitor, MessageLog log)
-			throws CancelledException, IOException {
+    @Override
+    protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
+            Program program, TaskMonitor monitor, MessageLog log)
+            throws CancelledException, IOException {
 
         BinaryReader reader = new BinaryReader(provider, true);
         reader.setPointerIndex(0);
@@ -141,11 +141,11 @@ public class Atari8BitXexLoader extends AbstractProgramWrapperLoader {
                 // otherwise it's just a normal overlap (this block is inside a previous block)
                 else
                     Msg.info(this, blockNum + " NORMAL OVERLAP: 0x" + Long.toHexString(thisStart) + " - 0x" + Long.toHexString(thisEnd) + " vs. 0x" + Long.toHexString(thatStart) + " - 0x" + Long.toHexString(thatEnd));
-                
+
                 isOverlay = true;
                 break;
             }
-                            
+
             // now check if this block hits RUNAD or INITAD exactly
             if (thisStart == XEX_RUNAD && thisEnd == XEX_RUNAD + 1)
                 Msg.info(this, blockNum + " EXACT RUNAD");

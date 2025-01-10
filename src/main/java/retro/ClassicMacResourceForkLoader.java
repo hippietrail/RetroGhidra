@@ -55,22 +55,22 @@ public class ClassicMacResourceForkLoader extends AbstractProgramWrapperLoader {
     long resourceTypeListOffset = -1;
     long resourceTypeListCodeResourceOffset = -1;
 
-	@Override
-	public String getName() {
-		return RSRC_NAME;
-	}
+    @Override
+    public String getName() {
+        return RSRC_NAME;
+    }
 
-	// lower numbers have higher priority
-	// 50 seems to be standard, raw uses 100
-	// RetroGhidra Loaders that don't have magic numbers should use 60
+    // lower numbers have higher priority
+    // 50 seems to be standard, raw uses 100
+    // RetroGhidra Loaders that don't have magic numbers should use 60
     @Override
     public int getTierPriority() {
         return 60;
     }
 
-	@Override
-	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
-		List<LoadSpec> loadSpecs = new ArrayList<>();
+    @Override
+    public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
+        List<LoadSpec> loadSpecs = new ArrayList<>();
 
         final long fileSize = provider.length();
         if (fileSize < RSRC_HEADER_LEN) return loadSpecs;
@@ -91,8 +91,8 @@ public class ClassicMacResourceForkLoader extends AbstractProgramWrapperLoader {
 
         // header fields within the bounds of the file, otherwise false positive
         if (fileSize < dataOffset + dataLen
-        		|| fileSize < mapOffset + mapLen
-        		|| fileSize < mapOffset + RSRC_HEADER_LEN)
+                || fileSize < mapOffset + mapLen
+                || fileSize < mapOffset + RSRC_HEADER_LEN)
             return loadSpecs;
 
         // header matches dupe header at offset mapOffset, otherwise false positive
@@ -129,12 +129,12 @@ public class ClassicMacResourceForkLoader extends AbstractProgramWrapperLoader {
         }
 
         return loadSpecs;
-	}
+    }
 
-	@Override
-	protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
-			Program program, TaskMonitor monitor, MessageLog log)
-			throws CancelledException, IOException {
+    @Override
+    protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
+            Program program, TaskMonitor monitor, MessageLog log)
+            throws CancelledException, IOException {
 
         OptionalLong maybeOffsetOfCode0Resource = OptionalLong.empty();
         int nextLoadAddress = 0x0000;
@@ -180,27 +180,27 @@ public class ClassicMacResourceForkLoader extends AbstractProgramWrapperLoader {
                 continue;
             }
 
-			// offset of 1st jump table entry for near model, or 0xffff for far model
-			if (reader.readNextUnsignedShort() == 0xffff) {
-			    Msg.error(this, "Far model not supported yet.");
-			    continue;
-			}
+            // offset of 1st jump table entry for near model, or 0xffff for far model
+            if (reader.readNextUnsignedShort() == 0xffff) {
+                Msg.error(this, "Far model not supported yet.");
+                continue;
+            }
 
             final int thisResHeaderSize = RSRC_CODE_NEAR_HEADER_SIZE;
             final int thisResFooterSize = 0;
 
             long codeSize = resourceLen - thisResHeaderSize - thisResFooterSize;
-                
+
             try {
                 FileBytes fileBytes = MemoryBlockUtils.createFileBytes(program, provider, monitor);
 
                 MemoryBlock block = program.getMemory().createInitializedBlock(
-                    "CODE " + id,   					                    // name
+                    "CODE " + id,                                           // name
                     addressSpace.getAddress(nextLoadAddress),               // start
-                    fileBytes,							                    // filebytes
+                    fileBytes,                                              // filebytes
                     dataOffset + offsetToResData + 4 + thisResHeaderSize,   // offset
                     codeSize,                                               // size
-                    false);								                    // overlay
+                    false);                                                 // overlay
                 block.setWrite(true);
             } catch (Exception e) {
                 log.appendException(e);
@@ -208,7 +208,7 @@ public class ClassicMacResourceForkLoader extends AbstractProgramWrapperLoader {
 
             // we need this later when we process the jump table
             resourceIdToLoadAddress.put(id, nextLoadAddress);
-            
+
             // round up to the next 16-bit / 2-byte boundary
             nextLoadAddress += (codeSize + 0x01) & ~0x01;
         }
@@ -238,7 +238,7 @@ public class ClassicMacResourceForkLoader extends AbstractProgramWrapperLoader {
             final int trapOpcode = reader.readNextUnsignedShort();
 
             if (pushOpcode != 0x3f3c || trapOpcode != 0xa9f0) continue;
-        
+
             // before we can add the symbol we have to find the CODE resource
             // this entry refers to, get its offset field, and add this offset field
             for (int cri = 0; cri < countOfCodeResources; cri++) {

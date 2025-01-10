@@ -42,18 +42,18 @@ public class AgonMosBinLoader extends AbstractProgramWrapperLoader {
     public static final int MOS_VERSION = 0;
     public static final int MOS_FLAGS_ADL = 1; // not sure this field is named
 
-	@Override
-	public String getName() {
-		return MOS_NAME;
-	}
+    @Override
+    public String getName() {
+        return MOS_NAME;
+    }
 
-	@Override
-	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
-		List<LoadSpec> loadSpecs = new ArrayList<>();
+    @Override
+    public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
+        List<LoadSpec> loadSpecs = new ArrayList<>();
 
         if (provider.length() < MOS_HEADER_OFFSET + MOS_HEADER_LENGTH) return loadSpecs;
 
-		BinaryReader reader = new BinaryReader(provider, true);
+        BinaryReader reader = new BinaryReader(provider, true);
 
         reader.setPointerIndex(MOS_HEADER_OFFSET);
         String magic = reader.readNextAsciiString(MOS_MAGIC.length());
@@ -66,16 +66,16 @@ public class AgonMosBinLoader extends AbstractProgramWrapperLoader {
         // TODO it's actually an eZ80 with a 24-bit address bus, but Ghidra doesn't support that yet
         loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("z80:LE:16:default", "default"), true));
 
-		return loadSpecs;
-	}
+        return loadSpecs;
+    }
 
-	@Override
-	protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
-			Program program, TaskMonitor monitor, MessageLog log)
-			throws CancelledException, IOException {
+    @Override
+    protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
+            Program program, TaskMonitor monitor, MessageLog log)
+            throws CancelledException, IOException {
 
-		// TODO Load the bytes from 'provider' into the 'program'.
+        // TODO Load the bytes from 'provider' into the 'program'.
         // TODO MOS programs are always loaded at 0x40000 but it uses an eZ80, which Ghidra doesn't support
         // TODO and normal Z80 only has a 16-bit address bus, so this address is not valid
-	}
+    }
 }

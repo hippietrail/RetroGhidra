@@ -49,20 +49,20 @@ public class Ti994TiFilesLoader extends AbstractProgramWrapperLoader {
 
     public static final int TIF_LOAD_ADDR = 0x6000;
 
-	@Override
-	public String getName() {
-		return TIF_NAME;
-	}
+    @Override
+    public String getName() {
+        return TIF_NAME;
+    }
 
-	@Override
-	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
-		List<LoadSpec> loadSpecs = new ArrayList<>();
+    @Override
+    public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
+        List<LoadSpec> loadSpecs = new ArrayList<>();
 
-		// can't be larger than header size + 64kb (TODO: there's probably a lower limit)
-		// if (provider.length() < TIF_HEADER_LEN || provider.length() > TIF_HEADER_LEN + 64 * 1024) return loadSpecs;
-		// Msg.info(this, "File size: 0x" + Long.toHexString(provider.length()));
-		// Msg.info(this, "Max size: 0x" + Long.toHexString(TIF_HEADER_LEN + 64 * 1024));
-		if (provider.length() < TIF_HEADER_LEN) return loadSpecs;
+        // can't be larger than header size + 64kb (TODO: there's probably a lower limit)
+        // if (provider.length() < TIF_HEADER_LEN || provider.length() > TIF_HEADER_LEN + 64 * 1024) return loadSpecs;
+        // Msg.info(this, "File size: 0x" + Long.toHexString(provider.length()));
+        // Msg.info(this, "Max size: 0x" + Long.toHexString(TIF_HEADER_LEN + 64 * 1024));
+        if (provider.length() < TIF_HEADER_LEN) return loadSpecs;
 
         BinaryReader reader = new BinaryReader(provider, false);
 
@@ -75,12 +75,12 @@ public class Ti994TiFilesLoader extends AbstractProgramWrapperLoader {
          int statusFlags = reader.readUnsignedByte(TIF_OFF_FILE_STATUS_FLAGS);
          if ((statusFlags & ~0b1011_1011) != 0) return loadSpecs;
 
-		// if bit 0 is set, "program", then bits 1 and 7 have no meaning so should be 0
-		if ((statusFlags & 0b0000_0001) != 0 && ((statusFlags & 0b1000_0010) != 0)) return loadSpecs;
+        // if bit 0 is set, "program", then bits 1 and 7 have no meaning so should be 0
+        if ((statusFlags & 0b0000_0001) != 0 && ((statusFlags & 0b1000_0010) != 0)) return loadSpecs;
 
         // check that offset 16 up to 128 are all 0 or [0xca, 0x53]
-		// TODO for FIAD filler starts at 20, but for TIFILES it starts at 16
-		// TODO but 16 to 26 can also be the native filename
+        // TODO for FIAD filler starts at 20, but for TIFILES it starts at 16
+        // TODO but 16 to 26 can also be the native filename
         // https://hexbus.com/ti99geek/Doc/Ti99_dsk1_fdr.html
         // TELCO fills these bytes up to 0x7f with 0xca53.
         for (int i = 26; i < 128; i += 2) {
@@ -88,42 +88,42 @@ public class Ti994TiFilesLoader extends AbstractProgramWrapperLoader {
             if (val != 0 && val != 0xca53) return loadSpecs;
         }
 
-		Ti994LoaderHelper.addLoadSpecs(this, getLanguageService(), loadSpecs);
+        Ti994LoaderHelper.addLoadSpecs(this, getLanguageService(), loadSpecs);
 
-		return loadSpecs;
-	}
+        return loadSpecs;
+    }
 
-	@Override
-	protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
-			Program program, TaskMonitor monitor, MessageLog log)
-			throws CancelledException, IOException {
+    @Override
+    protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
+            Program program, TaskMonitor monitor, MessageLog log)
+            throws CancelledException, IOException {
 
-		Memory memory = program.getMemory();
-		FileBytes fileBytes = MemoryBlockUtils.createFileBytes(program, provider, monitor);
-		Address headerAddress = AddressSpace.OTHER_SPACE.getAddress(0x0000);
+        Memory memory = program.getMemory();
+        FileBytes fileBytes = MemoryBlockUtils.createFileBytes(program, provider, monitor);
+        Address headerAddress = AddressSpace.OTHER_SPACE.getAddress(0x0000);
         AddressSpace addresssSpace = program.getAddressFactory().getDefaultAddressSpace();
-		Address loadAddress = addresssSpace.getAddress(TIF_LOAD_ADDR);
+        Address loadAddress = addresssSpace.getAddress(TIF_LOAD_ADDR);
 
-		try {
-			memory.createInitializedBlock(
-				"TIFILES",
-				headerAddress,
-				fileBytes,
-				0,
+        try {
+            memory.createInitializedBlock(
+                "TIFILES",
+                headerAddress,
+                fileBytes,
+                0,
                 TIF_HEADER_LEN,
-				false);
+                false);
 
-		    // FDR, FIAD (V9T9), and TIFILES (XMODEM) headers are described here: https://hexbus.com/ti99geek/
-			Ti994LoaderHelper.commentFiadOrTifilesHeader(new HeaderField[] {
-				HeaderField.TIFILES_MAGIC,
-				HeaderField.NUMBER_OF_SECTORS_CURRENTLY_ALLOCATED,
-				HeaderField.FILE_STATUS_FLAGS,
-				HeaderField.NUMBER_OF_RECS_SEC,
-				HeaderField.END_OF_FILE_OFFSET,
-				HeaderField.LOGICAL_RECORD_LENGTH,
-				HeaderField.NUMBER_OF_LEVEL_3_RECORDS_ALLOCATED, // LE
-				HeaderField.TIFILES_FILLER
-			}, program, headerAddress, loadAddress, provider);
+            // FDR, FIAD (V9T9), and TIFILES (XMODEM) headers are described here: https://hexbus.com/ti99geek/
+            Ti994LoaderHelper.commentFiadOrTifilesHeader(new HeaderField[] {
+                HeaderField.TIFILES_MAGIC,
+                HeaderField.NUMBER_OF_SECTORS_CURRENTLY_ALLOCATED,
+                HeaderField.FILE_STATUS_FLAGS,
+                HeaderField.NUMBER_OF_RECS_SEC,
+                HeaderField.END_OF_FILE_OFFSET,
+                HeaderField.LOGICAL_RECORD_LENGTH,
+                HeaderField.NUMBER_OF_LEVEL_3_RECORDS_ALLOCATED, // LE
+                HeaderField.TIFILES_FILLER
+            }, program, headerAddress, loadAddress, provider);
 
             // last letter of the filename to determine where to load a file:
             // xxxxxC.BIN - loads as CPU cartridge ROM at >6000
@@ -132,9 +132,9 @@ public class Ti994TiFilesLoader extends AbstractProgramWrapperLoader {
             // xxxxx3.BIN - Classic99 extension, loads as a 379/Jon Guidry style cartridge ROM at >6000
             // xxxxx8.BIN - A newer extension
             // xxxxx9.BIN - A newer extension
-            
-			// TODO overflows with the INT/FIX 128 files "GPLMAN1", "GPLMAN2", and "RYTEDATA"
-			memory.createInitializedBlock(
+
+            // TODO overflows with the INT/FIX 128 files "GPLMAN1", "GPLMAN2", and "RYTEDATA"
+            memory.createInitializedBlock(
                 "TMS9900",
                 loadAddress,
                 fileBytes,
@@ -144,7 +144,7 @@ public class Ti994TiFilesLoader extends AbstractProgramWrapperLoader {
 
                 Ti994LoaderHelper.loadAndComment(program, loadAddress, provider, TIF_HEADER_LEN, log);
             } catch (Exception e) {
-			log.appendException(e);
-		}
-	}
+            log.appendException(e);
+        }
+    }
 }

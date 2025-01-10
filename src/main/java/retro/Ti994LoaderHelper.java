@@ -49,11 +49,11 @@ public class Ti994LoaderHelper {
 
     public static final int FLAG_TYPE_MASK = FLAG_DATA_PROGRAM | FLAG_DIS_INT | FLAG_FIX_VAR;
 
-	public static final int DIS_FIX = 0;
-	public static final int DIS_VAR = FLAG_FIX_VAR;
-	public static final int INT_FIX = FLAG_DIS_INT;
-	public static final int INT_VAR = FLAG_DIS_INT | FLAG_FIX_VAR;
-    
+    public static final int DIS_FIX = 0;
+    public static final int DIS_VAR = FLAG_FIX_VAR;
+    public static final int INT_FIX = FLAG_DIS_INT;
+    public static final int INT_VAR = FLAG_DIS_INT | FLAG_FIX_VAR;
+
     // for FIAD and TIFILES headers, both based on FDR
     public enum HeaderField {
         FIAD_FILENAME(10),
@@ -87,7 +87,7 @@ public class Ti994LoaderHelper {
 
     /*
      * // public enum StatusFlagType {
-    // 	PROGRAM(false, false),
+    //  PROGRAM(false, false),
     //     DIS_FIX(false, false),
     //     DIS_VAR(false, true),
     //     INT_FIX(true, false),
@@ -130,7 +130,7 @@ public class Ti994LoaderHelper {
         "9900", "TMS 9900 CPU",
         "GPL", "TI-99/4A GPL"
     );
-    
+
     static void addLoadSpecs(AbstractProgramWrapperLoader loader, LanguageService languageService, List<LoadSpec> loadSpecs) {
         addLoadSpecsExt(loader, languageService, loadSpecs, new String[] { "9900", "GPL" });
     }
@@ -165,9 +165,9 @@ public class Ti994LoaderHelper {
 
         // MF can only be 0x00, 0x80, or 0xFF - no more files, load UTIL file next, more files to load
         // Type can only be 0x01 to 0x0a or 0x00 or 0xff:
-		// >01 to >08 = GROM >0000 to >E000
-		// >09, >0A = ROM1, ROM2 >6000
-		// >00, >FF = RAM expansion
+        // >01 to >08 = GROM >0000 to >E000
+        // >09, >0A = ROM1, ROM2 >6000
+        // >00, >FF = RAM expansion
         final boolean validMf = mf == 0x00 || mf == 0x80 || mf == 0xff;
         final boolean validType = (type >= 0x01 && type <= 0x0a) || type == 0x00 || type == 0xff;
         final boolean isGramKrackerHeader = validMf && validType && length > 0 && address > 0;
@@ -183,7 +183,7 @@ public class Ti994LoaderHelper {
         // the address here is not related to the address in the standard header. my test files has A000 here but 6000 in the standard header
         return isGramKrackerHeader;
     }
-    
+
     static void commentFiadOrTifilesHeader(HeaderField[] fields, Program program, Address headerAddress, Address loadAddress, ByteProvider provider) throws Exception {
         BinaryReader reader = new BinaryReader(provider, false); // big-endian BUT little-endian needed for NUMBER OF LEVEL 3 RECORDS ALLOCATED
         Listing listing = program.getListing();
@@ -197,14 +197,14 @@ public class Ti994LoaderHelper {
         int endOfFileOffset = -1;
 
         for (HeaderField field : fields) {
-        	// create the data for the field based on its size and type
+            // create the data for the field based on its size and type
             final int size = field.getSize();
 
             if (size == 1) {
-				Data data = listing.createData(ha, ByteDataType.dataType);
-				if (field == HeaderField.LOGICAL_RECORD_LENGTH) {
-					FormatSettingsDefinition.DEF.setChoice(data, FormatSettingsDefinition.DECIMAL);
-				}
+                Data data = listing.createData(ha, ByteDataType.dataType);
+                if (field == HeaderField.LOGICAL_RECORD_LENGTH) {
+                    FormatSettingsDefinition.DEF.setChoice(data, FormatSettingsDefinition.DECIMAL);
+                }
             } else if (size == 2) {
                 listing.createData(ha, UnsignedShortDataType.dataType);
             } else {
@@ -224,13 +224,13 @@ public class Ti994LoaderHelper {
                         break;
                 }
             }
-            
-			// set the field's comment based on its type and calculations with previous fields
+
+            // set the field's comment based on its type and calculations with previous fields
 
             String comment = field.toString();
             switch (field) {
             case FILE_STATUS_FLAGS:
-            	int sf = reader.readByte(ha.getOffset()) & 0xff;
+                int sf = reader.readByte(ha.getOffset()) & 0xff;
                 Map.Entry<String, String> typePair = parseStatusFlags(sf);
                 statusFlagType = typePair.getKey();
                 statusFlagExtra = typePair.getValue();
@@ -284,9 +284,9 @@ public class Ti994LoaderHelper {
                 }
             }
             appendComment(listing, headerAddress, CodeUnit.PRE_COMMENT, comment);
-		}
+        }
     }
-    
+
     static Map.Entry<String, String> parseStatusFlags(int flags) {
         String typeString = "";
         String extraComment = "";
@@ -321,32 +321,32 @@ public class Ti994LoaderHelper {
     }
 
     static void appendComment(Listing listing, Address addr, int type, String newComment) {
-		String maybeOldComment = listing.getComment(type, addr);
-		String oldComment = maybeOldComment == null ? "" : maybeOldComment + "\n";
-		listing.setComment(addr, type, oldComment + newComment);
-	}
+        String maybeOldComment = listing.getComment(type, addr);
+        String oldComment = maybeOldComment == null ? "" : maybeOldComment + "\n";
+        listing.setComment(addr, type, oldComment + newComment);
+    }
 
-	static void loadAndComment(Program program, Address addr, ByteProvider provider, long startOffset, MessageLog log)
-			throws CodeUnitInsertionException, IOException {
-		// Listing listing = program.getListing();
+    static void loadAndComment(Program program, Address addr, ByteProvider provider, long startOffset, MessageLog log)
+            throws CodeUnitInsertionException, IOException {
+        // Listing listing = program.getListing();
 
         BinaryReader reader = new BinaryReader(provider, false);
 
         // The type of file is determined by looking at the first six to ten bytes
 
-		reader.setPointerIndex(startOffset);
+        reader.setPointerIndex(startOffset);
         int first = reader.readNextUnsignedShort() & 0xffff;
-		int second = reader.readNextUnsignedShort() & 0xffff;
-		int third = reader.readNextUnsignedShort() & 0xffff;
+        int second = reader.readNextUnsignedShort() & 0xffff;
+        int third = reader.readNextUnsignedShort() & 0xffff;
 
         // BASIC (Texas Instruments)
-		if ((first ^ second) == third) {
+        if ((first ^ second) == third) {
             handleTiBasic(program, addr, reader, third, log);
             return;
         }
 
         // MEMORY IMAGE E/A MODULE (Texas Instruments)
-		else if (first == 0xffff) {
+        else if (first == 0xffff) {
             handleEaModule(program, addr, reader, third, log);
             return;
         }
@@ -361,7 +361,7 @@ public class Ti994LoaderHelper {
     // https://www.unige.ch/medecine/nouspikel/ti99/headers.htm
     // https://forums.atariage.com/topic/159642-assembly-guidance/
     static void loadAndCommentStandardHeader(Program program, Address addr, BinaryReader reader, long readerIndex, MessageLog log)
-    		throws CodeUnitInsertionException, IOException {
+            throws CodeUnitInsertionException, IOException {
         Listing listing = program.getListing();
         appendComment(listing, addr, CodeUnit.PRE_COMMENT, "AA: Standard header");
         listing.createData(addr, ByteDataType.dataType);
@@ -375,9 +375,9 @@ public class Ti994LoaderHelper {
 
         // TODO this documentation is inconsistent: https://www.unige.ch/medecine/nouspikel/ti99/headers.htm
         // summary says
-        // >x006	Pointer to program list (>0000 if none)
-        // >x008	Pointer the DSR list (>0000 if none)
-        // >x00A	Pointer to subprogram list (>0000 if none)
+        // >x006    Pointer to program list (>0000 if none)
+        // >x008    Pointer the DSR list (>0000 if none)
+        // >x00A    Pointer to subprogram list (>0000 if none)
         // but example says
         // >4006: >0000        Ptr to program list (none)
         // >4008: >4018        Ptr to subprogram list
@@ -406,7 +406,7 @@ public class Ti994LoaderHelper {
         listing.setComment(addr.add(8), CodeUnit.EOL_COMMENT, "Pointer to DSR list (or subprogram list?)");
         listing.createData(addr.add(10), UnsignedShortDataType.dataType);
         listing.setComment(addr.add(10), CodeUnit.EOL_COMMENT, "Pointer to subprogram list (or DSR list?)");
-        
+
         // TODO there can be another field in the standard header, Pointer to ISR list
         // TODO in cartridges this field does not exist and the program list can point to the area it would occupy
 
@@ -443,14 +443,14 @@ public class Ti994LoaderHelper {
                 long programAddressOffset = firstProg.subtract(addr) + 2;
                 int progAddr = reader.readUnsignedShort(readerIndex + programAddressOffset);
                 Address programAddress = space.getAddress(progAddr);
-	            
+
                 SymbolTable st = program.getSymbolTable();
-				st.createLabel(programAddress, "GPL_entry", SourceType.IMPORTED);
-	            st.addExternalEntryPoint(programAddress);
-    		} catch (Exception e) {
-    			log.appendException(e);
-    		}
-            
+                st.createLabel(programAddress, "GPL_entry", SourceType.IMPORTED);
+                st.addExternalEntryPoint(programAddress);
+            } catch (Exception e) {
+                log.appendException(e);
+            }
+
             long nextProgramOffset = firstProg.subtract(addr); // the field before 'Program address'
             Msg.info(Ti994LoaderHelper.class, "Next program offset is 0x" + Long.toHexString(nextProgramOffset));
             // the next line gets 'Attempted to read bytes that were already read.' exception on some files
@@ -489,5 +489,5 @@ public class Ti994LoaderHelper {
         listing.setComment(addr.add(4), CodeUnit.EOL_COMMENT, "load address (for the first file also the start address)");
         listing.setComment(addr.add(4), CodeUnit.POST_COMMENT, " ");
     }
-    
+
 }

@@ -46,154 +46,154 @@ import ghidra.util.task.TaskMonitor;
  */
 public class AtariStLoader extends AbstractProgramWrapperLoader {
 
-	// normal extensions: .prg (executable program), .tos (TOS program), .ttp (TOS program that takes parameters)
-	// other extensions: .app (multiTOS application), .ovl ("recovery executable"? probably overlay), .acc (desk accessory)
-	// more extensions: .cpx (control panel)
+    // normal extensions: .prg (executable program), .tos (TOS program), .ttp (TOS program that takes parameters)
+    // other extensions: .app (multiTOS application), .ovl ("recovery executable"? probably overlay), .acc (desk accessory)
+    // more extensions: .cpx (control panel)
     public static final String ST_NAME = "Atari ST";
-	// ST_OFF_MAGIC = 0x00;
-	public static final int ST_OFF_TSIZE = 0x02; // size of text segment
-	public static final int ST_OFF_DSIZE = 0x06; // size of data segment
-	public static final int ST_OFF_BSIZE = 0x0a; // size of bss segment
-	public static final int ST_OFF_SSIZE = 0x0e; // size of symbol table
-	public static final int ST_OFF_RESRV = 0x12; // reserved
-	public static final int ST_OFF_FLAGS = 0x16; // flags
-	// ST_OFF_ABSFLAGS = 0x1a; // absolute flags
-	public static final int ST_HEADER_LEN = 0x1c;
+    // ST_OFF_MAGIC = 0x00;
+    public static final int ST_OFF_TSIZE = 0x02; // size of text segment
+    public static final int ST_OFF_DSIZE = 0x06; // size of data segment
+    public static final int ST_OFF_BSIZE = 0x0a; // size of bss segment
+    public static final int ST_OFF_SSIZE = 0x0e; // size of symbol table
+    public static final int ST_OFF_RESRV = 0x12; // reserved
+    public static final int ST_OFF_FLAGS = 0x16; // flags
+    // ST_OFF_ABSFLAGS = 0x1a; // absolute flags
+    public static final int ST_HEADER_LEN = 0x1c;
 
-	public static final int ST_MAGIC = 0x601a; // bra.s +26
-	public static final int ST_MAGIC_2 = 0x601b; // bra.s +27 "If data and BSS are not contiguous"
+    public static final int ST_MAGIC = 0x601a; // bra.s +26
+    public static final int ST_MAGIC_2 = 0x601b; // bra.s +27 "If data and BSS are not contiguous"
 
-	public static final long ST_LOAD_ADDRESS = 0x10000;	// arbitrary, same as Python ST loader uses
+    public static final long ST_LOAD_ADDRESS = 0x10000;    // arbitrary, same as Python ST loader uses
 
-	@Override
-	public String getName() {
-        return ST_NAME;		
-	}
+    @Override
+    public String getName() {
+        return ST_NAME;
+    }
 
-	// lower numbers have higher priority
-	// 50 seems to be standard, raw uses 100
-	// RetroGhidra Loaders that don't have proper magic numbers should use 60
+    // lower numbers have higher priority
+    // 50 seems to be standard, raw uses 100
+    // RetroGhidra Loaders that don't have proper magic numbers should use 60
     @Override
     public int getTierPriority() {
         return 60;
     }
 
-	@Override
-	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
-		List<LoadSpec> loadSpecs = new ArrayList<>();
+    @Override
+    public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
+        List<LoadSpec> loadSpecs = new ArrayList<>();
 
-		if (provider.length() < ST_HEADER_LEN) return loadSpecs;
+        if (provider.length() < ST_HEADER_LEN) return loadSpecs;
 
-		BinaryReader reader = new BinaryReader(provider, false);
+        BinaryReader reader = new BinaryReader(provider, false);
 
         final long magic = reader.readUnsignedShort(0);
         if (magic != ST_MAGIC && magic != ST_MAGIC_2) return loadSpecs;
-		if (reader.readUnsignedInt(ST_OFF_RESRV) != 0) return loadSpecs;
-		if ((reader.readUnsignedInt(ST_OFF_FLAGS) & ~0b00000000_00110111) != 0) return loadSpecs;
+        if (reader.readUnsignedInt(ST_OFF_RESRV) != 0) return loadSpecs;
+        if ((reader.readUnsignedInt(ST_OFF_FLAGS) & ~0b00000000_00110111) != 0) return loadSpecs;
 
         // 68020 etc are treated as 'variants'
-		List<QueryResult> queryResults = QueryOpinionService.query(getName(), "68000", null);
-		queryResults.stream().map(result -> new LoadSpec(this, 0, result)).forEach(loadSpecs::add);
+        List<QueryResult> queryResults = QueryOpinionService.query(getName(), "68000", null);
+        queryResults.stream().map(result -> new LoadSpec(this, 0, result)).forEach(loadSpecs::add);
 
-		return loadSpecs;
-	}
+        return loadSpecs;
+    }
 
-	@Override
-	protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
-			Program program, TaskMonitor monitor, MessageLog log)
-			throws CancelledException, IOException {
+    @Override
+    protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
+            Program program, TaskMonitor monitor, MessageLog log)
+            throws CancelledException, IOException {
 
-		BinaryReader reader = new BinaryReader(provider, false);
-		final long textSegmentSize = reader.readUnsignedInt(ST_OFF_TSIZE);
-		final long dataSegmentSize = reader.readUnsignedInt(ST_OFF_DSIZE);
-		final long bssSegmentSize = reader.readUnsignedInt(ST_OFF_BSIZE);
-		final long symbolsSize = reader.readUnsignedInt(ST_OFF_SSIZE);
-		
-		try {
-			Memory memory = program.getMemory();
-			AddressSpace addressSpace = program.getAddressFactory().getDefaultAddressSpace();
-			FileBytes fileBytes = MemoryBlockUtils.createFileBytes(program, provider, monitor);
+        BinaryReader reader = new BinaryReader(provider, false);
+        final long textSegmentSize = reader.readUnsignedInt(ST_OFF_TSIZE);
+        final long dataSegmentSize = reader.readUnsignedInt(ST_OFF_DSIZE);
+        final long bssSegmentSize = reader.readUnsignedInt(ST_OFF_BSIZE);
+        final long symbolsSize = reader.readUnsignedInt(ST_OFF_SSIZE);
 
-			long textOffset = ST_HEADER_LEN;
-			long dataOffset = textOffset + textSegmentSize;
-			long symbolOffset = dataOffset + dataSegmentSize;
-			long fixupOffset = symbolOffset + symbolsSize;
+        try {
+            Memory memory = program.getMemory();
+            AddressSpace addressSpace = program.getAddressFactory().getDefaultAddressSpace();
+            FileBytes fileBytes = MemoryBlockUtils.createFileBytes(program, provider, monitor);
 
-			Address textAddress = addressSpace.getAddress(ST_LOAD_ADDRESS + textOffset);
-			Address dataAddress = textAddress.add(textSegmentSize);
-			Address bssAddress = dataAddress.add(dataSegmentSize);
+            long textOffset = ST_HEADER_LEN;
+            long dataOffset = textOffset + textSegmentSize;
+            long symbolOffset = dataOffset + dataSegmentSize;
+            long fixupOffset = symbolOffset + symbolsSize;
 
-			memory.createInitializedBlock(
-				"TEXT",
-				textAddress,
-				fileBytes,
-				textOffset,
-				textSegmentSize,
-				false
-			);
+            Address textAddress = addressSpace.getAddress(ST_LOAD_ADDRESS + textOffset);
+            Address dataAddress = textAddress.add(textSegmentSize);
+            Address bssAddress = dataAddress.add(dataSegmentSize);
 
-			SymbolTable st = program.getSymbolTable();
-			st.createLabel(textAddress, "entry", SourceType.ANALYSIS);
-			st.addExternalEntryPoint(textAddress);
+            memory.createInitializedBlock(
+                "TEXT",
+                textAddress,
+                fileBytes,
+                textOffset,
+                textSegmentSize,
+                false
+            );
 
-			if (dataSegmentSize > 0) {
-				memory.createInitializedBlock(
-					"DATA",
-					dataAddress,
-					fileBytes,
-					ST_HEADER_LEN + textSegmentSize,
-					dataSegmentSize,
-					false
-				);
-			}
+            SymbolTable st = program.getSymbolTable();
+            st.createLabel(textAddress, "entry", SourceType.ANALYSIS);
+            st.addExternalEntryPoint(textAddress);
 
-			if (bssSegmentSize > 0) {
-				memory.createInitializedBlock(
-					"BSS",
-					bssAddress,
-					bssSegmentSize,
-					(byte) 0,
-					monitor,
-					false
-				);
-			}
+            if (dataSegmentSize > 0) {
+                memory.createInitializedBlock(
+                    "DATA",
+                    dataAddress,
+                    fileBytes,
+                    ST_HEADER_LEN + textSegmentSize,
+                    dataSegmentSize,
+                    false
+                );
+            }
 
-			if (symbolsSize > 0) {
-				memory.createInitializedBlock(
-					"SYMBOLS",
-					AddressSpace.OTHER_SPACE.getAddress(0x10000000),
-					fileBytes,
-					symbolOffset,
-					symbolsSize,
-					false
-				);
-			}
+            if (bssSegmentSize > 0) {
+                memory.createInitializedBlock(
+                    "BSS",
+                    bssAddress,
+                    bssSegmentSize,
+                    (byte) 0,
+                    monitor,
+                    false
+                );
+            }
 
-			if (reader.length() - fixupOffset > 0) {
-				reader.setPointerIndex(fixupOffset);
-				long offs = reader.readNextUnsignedInt();
-				
-				Address a = textAddress.add(offs);
-				long v = memory.getInt(a) & 0xffff_ffff;
-				memory.setInt(a, (int)(v + ST_LOAD_ADDRESS + ST_HEADER_LEN));
+            if (symbolsSize > 0) {
+                memory.createInitializedBlock(
+                    "SYMBOLS",
+                    AddressSpace.OTHER_SPACE.getAddress(0x10000000),
+                    fileBytes,
+                    symbolOffset,
+                    symbolsSize,
+                    false
+                );
+            }
 
-				while (true) {
-					final int delta = reader.readNextUnsignedByte();
+            if (reader.length() - fixupOffset > 0) {
+                reader.setPointerIndex(fixupOffset);
+                long offs = reader.readNextUnsignedInt();
 
-					if (delta == 0) break;
-					if (delta == 1) {
-						offs += 254;
-						continue;
-					}
-					offs += delta;
-					
-					a = textAddress.add(offs);
-					v = memory.getInt(a) & 0xffff_ffff;
-					memory.setInt(a, (int)(v + ST_LOAD_ADDRESS + ST_HEADER_LEN));
-				}
-			}
-		} catch (Exception e) {
-			log.appendException(e);
-		}
-	}
+                Address a = textAddress.add(offs);
+                long v = memory.getInt(a) & 0xffff_ffff;
+                memory.setInt(a, (int)(v + ST_LOAD_ADDRESS + ST_HEADER_LEN));
+
+                while (true) {
+                    final int delta = reader.readNextUnsignedByte();
+
+                    if (delta == 0) break;
+                    if (delta == 1) {
+                        offs += 254;
+                        continue;
+                    }
+                    offs += delta;
+
+                    a = textAddress.add(offs);
+                    v = memory.getInt(a) & 0xffff_ffff;
+                    memory.setInt(a, (int)(v + ST_LOAD_ADDRESS + ST_HEADER_LEN));
+                }
+            }
+        } catch (Exception e) {
+            log.appendException(e);
+        }
+    }
 }

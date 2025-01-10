@@ -40,69 +40,69 @@ import ghidra.util.task.TaskMonitor;
 public class CocoCccLoader extends AbstractProgramWrapperLoader {
 
     public static final String CCC_NAME = "Tandy Coco Cartridge (CCC)";
-	public static final String CCC_EXTENSION = ".ccc";
+    public static final String CCC_EXTENSION = ".ccc";
 
-	@Override
-	public String getName() {
-		return CCC_NAME;
-	}
+    @Override
+    public String getName() {
+        return CCC_NAME;
+    }
 
-	// lower numbers have higher priority
-	// 50 seems to be standard, raw uses 100
-	// RetroGhidra Loaders that don't have magic numbers should use 60
+    // lower numbers have higher priority
+    // 50 seems to be standard, raw uses 100
+    // RetroGhidra Loaders that don't have magic numbers should use 60
     @Override
     public int getTierPriority() {
         return 60;
     }
 
-	@Override
-	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
-		List<LoadSpec> loadSpecs = new ArrayList<>();
+    @Override
+    public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
+        List<LoadSpec> loadSpecs = new ArrayList<>();
 
-		BinaryReader reader = new BinaryReader(provider, true);
+        BinaryReader reader = new BinaryReader(provider, true);
 
-		// must have .ccc extension
+        // must have .ccc extension
         String name = provider.getName();
         if (name.indexOf('.') < 0) return loadSpecs;
         String ext = name.substring(name.lastIndexOf('.'));
         if (!ext.equalsIgnoreCase(CCC_EXTENSION)) return loadSpecs;
 
-		// no header, no magic word, just a raw dump
-		// but must it be a certain size?
-		// some say 8kb or 4kb but 2kb and odd-sized CCC files are common enough
-		if (reader.length() != 2 * 1024
-			&& reader.length() != 4 * 1024
-			&& reader.length() != 8 * 1024)
-			return loadSpecs;
+        // no header, no magic word, just a raw dump
+        // but must it be a certain size?
+        // some say 8kb or 4kb but 2kb and odd-sized CCC files are common enough
+        if (reader.length() != 2 * 1024
+            && reader.length() != 4 * 1024
+            && reader.length() != 8 * 1024)
+            return loadSpecs;
 
-		loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("6809:BE:16:default", "default"), true));
+        loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("6809:BE:16:default", "default"), true));
 
         return loadSpecs;
-	}
+    }
 
-	@Override
-	protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
-			Program program, TaskMonitor monitor, MessageLog log)
-			throws CancelledException, IOException {
+    @Override
+    protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
+            Program program, TaskMonitor monitor, MessageLog log)
+            throws CancelledException, IOException {
 
-		try {
-			Address loadAndEntryAddress = program.getAddressFactory().getDefaultAddressSpace().getAddress(0xc000);
-			
-			program.getMemory().createInitializedBlock(
-				"CODE",  														// name
-				loadAndEntryAddress,              								// start
-				MemoryBlockUtils.createFileBytes(program, provider, monitor),	// filebytes
-				0,             													// offset
-				provider.length(),									            // size
-				false
-			);
+        try {
+            Address loadAndEntryAddress = program.getAddressFactory().getDefaultAddressSpace().getAddress(0xc000);
 
-			SymbolTable st = program.getSymbolTable();
-			st.createLabel(loadAndEntryAddress, "entry", SourceType.ANALYSIS);
+            program.getMemory().createInitializedBlock(
+                "CODE",                                                         // name
+                loadAndEntryAddress,                                            // start
+                MemoryBlockUtils.createFileBytes(program, provider, monitor),   // filebytes
+                0,                                                              // offset
+                provider.length(),                                              // size
+                false                                                           // isCode
+            );
 
-			st.addExternalEntryPoint(loadAndEntryAddress);
-		} catch (Exception e) {
-			log.appendException(e);
-		}
-	}
+            SymbolTable st = program.getSymbolTable();
+            st.createLabel(loadAndEntryAddress, "entry", SourceType.ANALYSIS);
+
+            st.addExternalEntryPoint(loadAndEntryAddress);
+        } catch (Exception e) {
+            log.appendException(e);
+        }
+    }
 }

@@ -39,31 +39,31 @@ public class Tk2000Ct2Loader extends AbstractProgramWrapperLoader {
     public static final String CT2_MAGIC = "CTK2";
 
     @Override
-	public String getName() {
-		return CT2_NAME;
-	}
+    public String getName() {
+        return CT2_NAME;
+    }
 
-	@Override
-	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
-		List<LoadSpec> loadSpecs = new ArrayList<>();
+    @Override
+    public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
+        List<LoadSpec> loadSpecs = new ArrayList<>();
 
-		if (provider.length() < CT2_MAGIC.length()) return loadSpecs;
+        if (provider.length() < CT2_MAGIC.length()) return loadSpecs;
 
         BinaryReader reader = new BinaryReader(provider, false);
 
         String magic = reader.readAsciiString(0, CT2_MAGIC.length());
         if (!magic.equals(CT2_MAGIC)) return loadSpecs;
 
-		loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("6502:LE:16:default", "default"), true));
+        loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("6502:LE:16:default", "default"), true));
 
-		return loadSpecs;
-	}
+        return loadSpecs;
+    }
 
-	@Override
-	protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
-			Program program, TaskMonitor monitor, MessageLog log)
-			throws CancelledException, IOException {
+    @Override
+    protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
+            Program program, TaskMonitor monitor, MessageLog log)
+            throws CancelledException, IOException {
 
-		// TODO: Load the bytes from 'provider' into the 'program'.
-	}
+        // TODO: Load the bytes from 'provider' into the 'program'.
+    }
 }

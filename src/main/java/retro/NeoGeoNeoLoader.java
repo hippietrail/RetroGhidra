@@ -39,16 +39,16 @@ public class NeoGeoNeoLoader extends AbstractProgramWrapperLoader {
     public static final String NEO_MAGIC = "NEO\1";
     public static final int NEO_HEADER_LEN = 0x5e;
 
-	@Override
-	public String getName() {
-		return NEO_NAME;
-	}
+    @Override
+    public String getName() {
+        return NEO_NAME;
+    }
 
-	@Override
-	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
-		List<LoadSpec> loadSpecs = new ArrayList<>();
+    @Override
+    public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
+        List<LoadSpec> loadSpecs = new ArrayList<>();
 
-		if (provider.length() < NEO_HEADER_LEN) return loadSpecs;
+        if (provider.length() < NEO_HEADER_LEN) return loadSpecs;
 
         BinaryReader reader = new BinaryReader(provider, false);
 
@@ -58,14 +58,14 @@ public class NeoGeoNeoLoader extends AbstractProgramWrapperLoader {
         // Only ever used plain 68000 and didn't use A-line or F-line traps
         loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("68000:BE:32:default", "default"), true));
 
-		return loadSpecs;
-	}
+        return loadSpecs;
+    }
 
-	@Override
-	protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
-			Program program, TaskMonitor monitor, MessageLog log)
-			throws CancelledException, IOException {
+    @Override
+    protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
+            Program program, TaskMonitor monitor, MessageLog log)
+            throws CancelledException, IOException {
 
-		// TODO: Load the bytes from 'provider' into the 'program'.
-	}
+        // TODO: Load the bytes from 'provider' into the 'program'.
+    }
 }

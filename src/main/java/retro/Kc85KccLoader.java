@@ -49,24 +49,24 @@ public class Kc85KccLoader extends AbstractProgramWrapperLoader {
     private int endAddress; // end of code but data may follow
     private int execAddress;
 
-	@Override
-	public String getName() {
+    @Override
+    public String getName() {
         return KCC_NAME;
-	}
+    }
 
-	// lower numbers have higher priority
-	// 50 seems to be standard, raw uses 100
-	// RetroGhidra Loaders that don't have magic numbers should use 60
+    // lower numbers have higher priority
+    // 50 seems to be standard, raw uses 100
+    // RetroGhidra Loaders that don't have magic numbers should use 60
     @Override
     public int getTierPriority() {
         return 60;
     }
 
-	@Override
-	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
-		List<LoadSpec> loadSpecs = new ArrayList<>();
+    @Override
+    public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
+        List<LoadSpec> loadSpecs = new ArrayList<>();
 
-		if (provider.length() < KCC_HEADER_SIZE) return loadSpecs;
+        if (provider.length() < KCC_HEADER_SIZE) return loadSpecs;
 
         BinaryReader reader = new BinaryReader(provider, true);
 
@@ -85,8 +85,8 @@ public class Kc85KccLoader extends AbstractProgramWrapperLoader {
 
         loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("z80:LE:16:default", "default"), true));
 
-		return loadSpecs;
-	}
+        return loadSpecs;
+    }
 
     // filenames seem to be a pair of 8-char null-padded ASCII strings
     private static boolean isValidFilename(byte[] filename) {
@@ -112,10 +112,10 @@ public class Kc85KccLoader extends AbstractProgramWrapperLoader {
         return true;
     }
 
-	@Override
-	protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
-			Program program, TaskMonitor monitor, MessageLog log)
-			throws CancelledException, IOException {
+    @Override
+    protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
+            Program program, TaskMonitor monitor, MessageLog log)
+            throws CancelledException, IOException {
 
         BinaryReader reader = new BinaryReader(provider, true);
         reader.setPointerIndex(KCC_HEADER_SIZE);
@@ -134,7 +134,7 @@ public class Kc85KccLoader extends AbstractProgramWrapperLoader {
             st.createLabel(entryAddress, "entry", SourceType.IMPORTED);
             st.addExternalEntryPoint(entryAddress);
         } catch (Exception e) {
-			log.appendException(e);
+            log.appendException(e);
         }
-	}
+    }
 }

@@ -45,22 +45,22 @@ public class Atari2600Loader extends AbstractProgramWrapperLoader {
     public static final String VCS_NAME = "Atari 2600";
     public static final int VCS_RESET_VECTOR = 0xfffc;
 
-	@Override
-	public String getName() {
-		return VCS_NAME;
-	}
+    @Override
+    public String getName() {
+        return VCS_NAME;
+    }
 
-	// lower numbers have higher priority
-	// 50 seems to be standard, raw uses 100
-	// RetroGhidra Loaders that don't have magic numbers should use 60
+    // lower numbers have higher priority
+    // 50 seems to be standard, raw uses 100
+    // RetroGhidra Loaders that don't have magic numbers should use 60
     @Override
     public int getTierPriority() {
         return 60;
     }
 
-	@Override
-	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
-		List<LoadSpec> loadSpecs = new ArrayList<>();
+    @Override
+    public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
+        List<LoadSpec> loadSpecs = new ArrayList<>();
 
         // check for .a26 or .rom file extension
         String name = provider.getName();
@@ -78,13 +78,13 @@ public class Atari2600Loader extends AbstractProgramWrapperLoader {
 
         loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("6502:LE:16:default", "default"), true));
 
-		return loadSpecs;
-	}
+        return loadSpecs;
+    }
 
-	@Override
-	protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
-			Program program, TaskMonitor monitor, MessageLog log)
-			throws CancelledException, IOException {
+    @Override
+    protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
+            Program program, TaskMonitor monitor, MessageLog log)
+            throws CancelledException, IOException {
 
         final long romLen = provider.length();
         AddressSpace addrSpace = program.getAddressFactory().getDefaultAddressSpace();
@@ -100,9 +100,9 @@ public class Atari2600Loader extends AbstractProgramWrapperLoader {
                 final int base = i * 8 * 1024;
 
                 // includes some RAM, hardware registers, etc
-            	final int ramEtcAddress = base;
+                final int ramEtcAddress = base;
                 final int ramLen = 4 * 1024;
-            	final int romAddress = base + 4 * 1024;
+                final int romAddress = base + 4 * 1024;
 
                 // leave out the 0x0000 block, Ghidra fills it in
                 if (i != 0) {
@@ -138,5 +138,5 @@ public class Atari2600Loader extends AbstractProgramWrapperLoader {
         } catch (Exception e) {
             log.appendException(e);
         }
-	}
+    }
 }

@@ -41,7 +41,7 @@ public class Apple2ProDosDskFileSystemFactory implements GFileSystemFactoryByteP
 
     @Override
     public boolean probe(ByteProvider provider, FileSystemService fsService, TaskMonitor monitor)
-    		throws IOException {
+            throws IOException {
 
         if (provider.length() != DISK_IMAGE_SIZE) return false;
 

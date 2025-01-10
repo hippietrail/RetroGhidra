@@ -36,38 +36,38 @@ import ghidra.util.task.TaskMonitor;
  */
 public class X68KZLoader extends AbstractProgramWrapperLoader {
 
-	public static final String XZ_NAME = "Sharp X68000 .Z";
-	public static final int XZ_MAGIC_1 = 0x601a;
-	public static final int XZ_MAGIC_2 = 0xffff;
+    public static final String XZ_NAME = "Sharp X68000 .Z";
+    public static final int XZ_MAGIC_1 = 0x601a;
+    public static final int XZ_MAGIC_2 = 0xffff;
 
-	@Override
-	public String getName() {
-		return XZ_NAME;
-	}
+    @Override
+    public String getName() {
+        return XZ_NAME;
+    }
 
-	@Override
-	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
-		List<LoadSpec> loadSpecs = new ArrayList<>();
+    @Override
+    public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
+        List<LoadSpec> loadSpecs = new ArrayList<>();
 
-		BinaryReader reader = new BinaryReader(provider, false);
+        BinaryReader reader = new BinaryReader(provider, false);
 
         int magic1 = reader.readUnsignedShort(0x00);
         if (magic1 != XZ_MAGIC_1) return loadSpecs;
 
-		int magic2 = reader.readUnsignedShort(0x1a);
-		if (magic2 != XZ_MAGIC_2) return loadSpecs;
+        int magic2 = reader.readUnsignedShort(0x1a);
+        if (magic2 != XZ_MAGIC_2) return loadSpecs;
 
-		List<QueryResult> queryResults = QueryOpinionService.query(getName(), "68000", null);
-		queryResults.stream().map(result -> new LoadSpec(this, 0, result)).forEach(loadSpecs::add);
+        List<QueryResult> queryResults = QueryOpinionService.query(getName(), "68000", null);
+        queryResults.stream().map(result -> new LoadSpec(this, 0, result)).forEach(loadSpecs::add);
 
-		return loadSpecs;
-	}
+        return loadSpecs;
+    }
 
-	@Override
-	protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
-			Program program, TaskMonitor monitor, MessageLog log)
-			throws CancelledException, IOException {
+    @Override
+    protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
+            Program program, TaskMonitor monitor, MessageLog log)
+            throws CancelledException, IOException {
 
-		// TODO: Load the bytes from 'provider' into the 'program'.
-	}
+        // TODO: Load the bytes from 'provider' into the 'program'.
+    }
 }

@@ -35,35 +35,35 @@ import ghidra.util.task.TaskMonitor;
 public class Ti994TiCtgLoader extends AbstractProgramWrapperLoader {
 
     public static final String CTG_NAME = "TI-99/4A CTG";
-	public static final String CTG_EXTENSION = ".ctg";
+    public static final String CTG_EXTENSION = ".ctg";
     public static final String CTG_MAGIC = "TI-99/4A Module - ";
 
     @Override
-	public String getName() {
-		return CTG_NAME;
-	}
+    public String getName() {
+        return CTG_NAME;
+    }
 
-	@Override
-	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
-		List<LoadSpec> loadSpecs = new ArrayList<>();
+    @Override
+    public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
+        List<LoadSpec> loadSpecs = new ArrayList<>();
 
-		if (provider.length() < 80) return loadSpecs;
+        if (provider.length() < 80) return loadSpecs;
 
         BinaryReader reader = new BinaryReader(provider, false);
 
         String magic = reader.readAsciiString(0, CTG_MAGIC.length());
         if (!magic.equals(CTG_MAGIC)) return loadSpecs;
 
-		Ti994LoaderHelper.addLoadSpecs(this, getLanguageService(), loadSpecs);
+        Ti994LoaderHelper.addLoadSpecs(this, getLanguageService(), loadSpecs);
 
-		return loadSpecs;
-	}
+        return loadSpecs;
+    }
 
-	@Override
-	protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
-			Program program, TaskMonitor monitor, MessageLog log)
-			throws CancelledException, IOException {
+    @Override
+    protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
+            Program program, TaskMonitor monitor, MessageLog log)
+            throws CancelledException, IOException {
 
-		// TODO: Load the bytes from 'provider' into the 'program'.
-	}
+        // TODO: Load the bytes from 'provider' into the 'program'.
+    }
 }

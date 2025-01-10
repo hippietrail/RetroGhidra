@@ -39,39 +39,39 @@ public class AmigaLoader extends AbstractProgramWrapperLoader {
 
     public static final String AMIGA_NAME = "Amiga Hunk";
 
-	@Override
-	public String getName() {
+    @Override
+    public String getName() {
         return AMIGA_NAME;
-	}
+    }
 
-	// lower numbers have higher priority
-	// 50 seems to be standard, raw uses 100
-	// RetroGhidra Loaders that don't have proper magic numbers should use 60
+    // lower numbers have higher priority
+    // 50 seems to be standard, raw uses 100
+    // RetroGhidra Loaders that don't have proper magic numbers should use 60
     @Override
     public int getTierPriority() {
         return 60;
     }
 
-	@Override
-	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
-		List<LoadSpec> loadSpecs = new ArrayList<>();
+    @Override
+    public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
+        List<LoadSpec> loadSpecs = new ArrayList<>();
 
-		BinaryReader reader = new BinaryReader(provider, false);
+        BinaryReader reader = new BinaryReader(provider, false);
 
         long firstHunkType = reader.readUnsignedInt(0);
         if (firstHunkType != 0x000003f3 && firstHunkType != 0x000003e7) return loadSpecs;
 
-		List<QueryResult> queryResults = QueryOpinionService.query(getName(), "68000", null);
-		queryResults.stream().map(result -> new LoadSpec(this, 0, result)).forEach(loadSpecs::add);
+        List<QueryResult> queryResults = QueryOpinionService.query(getName(), "68000", null);
+        queryResults.stream().map(result -> new LoadSpec(this, 0, result)).forEach(loadSpecs::add);
 
-		return loadSpecs;
-	}
+        return loadSpecs;
+    }
 
-	@Override
-	protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
-			Program program, TaskMonitor monitor, MessageLog log)
-			throws CancelledException, IOException {
+    @Override
+    protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
+            Program program, TaskMonitor monitor, MessageLog log)
+            throws CancelledException, IOException {
 
-		// TODO: Load the bytes from 'provider' into the 'program'.
-	}
+        // TODO: Load the bytes from 'provider' into the 'program'.
+    }
 }

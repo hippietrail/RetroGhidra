@@ -35,32 +35,32 @@ import ghidra.util.task.TaskMonitor;
  */
 public class SpectrumTzxLoader extends AbstractProgramWrapperLoader {
 
-	public static final String TZX_NAME = "Sinclair ZX Spectrum TZX";
+    public static final String TZX_NAME = "Sinclair ZX Spectrum TZX";
     public static final String TZX_MAGIC = "ZXTape!";
 
     @Override
-	public String getName() {
-		return TZX_NAME;
-	}
+    public String getName() {
+        return TZX_NAME;
+    }
 
-	@Override
-	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
-		List<LoadSpec> loadSpecs = new ArrayList<>();
+    @Override
+    public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
+        List<LoadSpec> loadSpecs = new ArrayList<>();
 
         BinaryReader reader = new BinaryReader(provider, false);
         String magic = reader.readAsciiString(0, TZX_MAGIC.length());
         if (!magic.equals(TZX_MAGIC)) return loadSpecs;
 
-		loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("z80:LE:16:default", "default"), true));
+        loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("z80:LE:16:default", "default"), true));
 
-		return loadSpecs;
-	}
+        return loadSpecs;
+    }
 
-	@Override
-	protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
-			Program program, TaskMonitor monitor, MessageLog log)
-			throws CancelledException, IOException {
+    @Override
+    protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
+            Program program, TaskMonitor monitor, MessageLog log)
+            throws CancelledException, IOException {
 
-		// TODO: Load the bytes from 'provider' into the 'program'.
-	}
+        // TODO: Load the bytes from 'provider' into the 'program'.
+    }
 }

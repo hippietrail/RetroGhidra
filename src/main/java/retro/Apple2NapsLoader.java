@@ -41,18 +41,18 @@ public class Apple2NapsLoader extends AbstractProgramWrapperLoader {
 
     public static final String NAPS_NAME = "Apple II binary with NAPS";
 
-	@Override
-	public String getName() {
+    @Override
+    public String getName() {
         return NAPS_NAME;
-	}
+    }
 
-	@Override
-	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
-		List<LoadSpec> loadSpecs = new ArrayList<>();
+    @Override
+    public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
+        List<LoadSpec> loadSpecs = new ArrayList<>();
 
-		// TODO the NAPS tag can come either before or after the filename extension
-		// TOOO the code currently only supports the NAPS tag after the filename
-		// TODO add support for NAPS tag before the the filename extension
+        // TODO the NAPS tag can come either before or after the filename extension
+        // TOOO the code currently only supports the NAPS tag after the filename
+        // TODO add support for NAPS tag before the the filename extension
         String name = provider.getName();
         if (name.indexOf('#') < 0) return loadSpecs;
         String naps = name.substring(name.lastIndexOf('#') + 1);
@@ -62,13 +62,13 @@ public class Apple2NapsLoader extends AbstractProgramWrapperLoader {
 
         loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("6502:LE:16:default", "default"), true));
 
-		return loadSpecs;
-	}
+        return loadSpecs;
+    }
 
-	@Override
-	protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
-			Program program, TaskMonitor monitor, MessageLog log)
-			throws CancelledException, IOException {
+    @Override
+    protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
+            Program program, TaskMonitor monitor, MessageLog log)
+            throws CancelledException, IOException {
 
         String name = provider.getName();
         String naps = name.substring(name.lastIndexOf('#') + 1);
@@ -93,5 +93,5 @@ public class Apple2NapsLoader extends AbstractProgramWrapperLoader {
         } catch (Exception e) {
             log.appendException(e);
         }
-	}
+    }
 }

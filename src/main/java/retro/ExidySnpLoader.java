@@ -41,78 +41,78 @@ import ghidra.util.task.TaskMonitor;
  */
 public class ExidySnpLoader extends AbstractProgramWrapperLoader {
 
-	public static final String SNP_NAME = "Exidy Sorcerer Snapshot (SNP)";
-	public static final long SNP_LENGTH = 28 + 64 * 1024;
-	public static final int SNP_OFF_IFF2 = 19; // 0x13
-	public static final int SNP_OFF_SP = 23; // 0x17
-	public static final int SNP_OFF_INT_MODE = 25; // 0x19
-	public static final int SNP_OFF_PC = 26; // 0x1a
-	public static final int SNP_HEADER_LEN = 0x1c;
+    public static final String SNP_NAME = "Exidy Sorcerer Snapshot (SNP)";
+    public static final long SNP_LENGTH = 28 + 64 * 1024;
+    public static final int SNP_OFF_IFF2 = 19; // 0x13
+    public static final int SNP_OFF_SP = 23; // 0x17
+    public static final int SNP_OFF_INT_MODE = 25; // 0x19
+    public static final int SNP_OFF_PC = 26; // 0x1a
+    public static final int SNP_HEADER_LEN = 0x1c;
 
     public static final int SNP_DISPLAY_START = 0xf080;
-	public static final int SNP_DISPLAY_END = 0xf800;
+    public static final int SNP_DISPLAY_END = 0xf800;
 
-	@Override
-	public String getName() {
-		return SNP_NAME;
-	}
+    @Override
+    public String getName() {
+        return SNP_NAME;
+    }
 
-	// lower numbers have higher priority
-	// 50 seems to be standard, raw uses 100
-	// RetroGhidra Loaders that don't have magic numbers should use 60
+    // lower numbers have higher priority
+    // 50 seems to be standard, raw uses 100
+    // RetroGhidra Loaders that don't have magic numbers should use 60
     @Override
     public int getTierPriority() {
         return 60;
     }
 
-	@Override
-	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
-		List<LoadSpec> loadSpecs = new ArrayList<>();
+    @Override
+    public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
+        List<LoadSpec> loadSpecs = new ArrayList<>();
 
-		BinaryReader reader = new BinaryReader(provider, true);
-		
-		// use a temp since .length() can throw and .anyMatch() is a lambda (no 'throws' clause)
-		final Long fileLength = reader.length();
-		if (fileLength != SNP_LENGTH) return loadSpecs;
+        BinaryReader reader = new BinaryReader(provider, true);
 
-		// only 2 bits of this field are defined, 0x02 and 0x04. anything else probably a false positive
-		final int iff2 = reader.readUnsignedByte(SNP_OFF_IFF2);
-		if ((iff2 & ~0b0000_0110) != 0) return loadSpecs;
+        // use a temp since .length() can throw and .anyMatch() is a lambda (no 'throws' clause)
+        final Long fileLength = reader.length();
+        if (fileLength != SNP_LENGTH) return loadSpecs;
 
-		// only 0 to 2 are valid, anything else probably a false positive
-		final int interruptMode = reader.readUnsignedByte(SNP_OFF_INT_MODE);
-		if (interruptMode > 2) return loadSpecs;
+        // only 2 bits of this field are defined, 0x02 and 0x04. anything else probably a false positive
+        final int iff2 = reader.readUnsignedByte(SNP_OFF_IFF2);
+        if ((iff2 & ~0b0000_0110) != 0) return loadSpecs;
+
+        // only 0 to 2 are valid, anything else probably a false positive
+        final int interruptMode = reader.readUnsignedByte(SNP_OFF_INT_MODE);
+        if (interruptMode > 2) return loadSpecs;
 
         loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("z80:LE:16:default", "default"), true));
 
-		return loadSpecs;
-	}
+        return loadSpecs;
+    }
 
-	@Override
-	protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
-			Program program, TaskMonitor monitor, MessageLog log)
-			throws CancelledException, IOException {
+    @Override
+    protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
+            Program program, TaskMonitor monitor, MessageLog log)
+            throws CancelledException, IOException {
 
-		BinaryReader reader = new BinaryReader(provider, true);
+        BinaryReader reader = new BinaryReader(provider, true);
 
-		int sp = reader.readUnsignedShort(SNP_OFF_SP);
-		int pc = reader.readUnsignedShort(SNP_OFF_PC);
+        int sp = reader.readUnsignedShort(SNP_OFF_SP);
+        int pc = reader.readUnsignedShort(SNP_OFF_PC);
 
-		try {
-			Address memoryAdd = program.getAddressFactory().getDefaultAddressSpace().getAddress(0x0000);
-			FileBytes fileBytes = MemoryBlockUtils.createFileBytes(program, provider, monitor);
-			
-			program.getMemory().createInitializedBlock(
-				"memory",						// name
-				memoryAdd, 						// start
-				fileBytes,			            // filebytes
-				SNP_HEADER_LEN,                 // offset
+        try {
+            Address memoryAdd = program.getAddressFactory().getDefaultAddressSpace().getAddress(0x0000);
+            FileBytes fileBytes = MemoryBlockUtils.createFileBytes(program, provider, monitor);
+
+            program.getMemory().createInitializedBlock(
+                "memory",                       // name
+                memoryAdd,                      // start
+                fileBytes,                      // filebytes
+                SNP_HEADER_LEN,                 // offset
                 SNP_LENGTH - SNP_HEADER_LEN,    // size
-				false);							// overlay
+                false);                         // overlay
 
             SymbolTable st = program.getSymbolTable();
 
-            Address ep = program.getAddressFactory().getDefaultAddressSpace().getAddress(pc);	
+            Address ep = program.getAddressFactory().getDefaultAddressSpace().getAddress(pc);
             st.createLabel(ep, "entry", SourceType.ANALYSIS);
             st.addExternalEntryPoint(ep);
 
@@ -125,8 +125,8 @@ public class ExidySnpLoader extends AbstractProgramWrapperLoader {
 
             addr = program.getAddressFactory().getDefaultAddressSpace().getAddress(SNP_DISPLAY_END);
             st.createLabel(addr, "display_end", SourceType.ANALYSIS);
-		} catch (Exception e) {
-			log.appendException(e);
-		}
-	}
+        } catch (Exception e) {
+            log.appendException(e);
+        }
+    }
 }

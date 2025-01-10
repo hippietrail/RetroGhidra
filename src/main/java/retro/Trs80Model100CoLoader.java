@@ -47,26 +47,26 @@ public class Trs80Model100CoLoader extends AbstractProgramWrapperLoader {
     public static final String CO_EXTENSION = ".co";
     public static final int CO_HEADER_LENGTH = 6;
 
-	private int start;
-	private int length;
-	private int entry;
+    private int start;
+    private int length;
+    private int entry;
 
-	@Override
-	public String getName() {
-		return CO_NAME;
-	}
+    @Override
+    public String getName() {
+        return CO_NAME;
+    }
 
-	// lower numbers have higher priority
-	// 50 seems to be standard, raw uses 100
-	// RetroGhidra Loaders that don't have magic numbers should use 60
+    // lower numbers have higher priority
+    // 50 seems to be standard, raw uses 100
+    // RetroGhidra Loaders that don't have magic numbers should use 60
     // @Override
     // public int getTierPriority() {
     //     return 60;
     // }
 
-	@Override
-	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
-		List<LoadSpec> loadSpecs = new ArrayList<>();
+    @Override
+    public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
+        List<LoadSpec> loadSpecs = new ArrayList<>();
 
         if (provider.length() < CO_HEADER_LENGTH) return loadSpecs;
 
@@ -75,13 +75,13 @@ public class Trs80Model100CoLoader extends AbstractProgramWrapperLoader {
         String ext = name.substring(name.lastIndexOf('.'));
         if (!ext.equalsIgnoreCase(CO_EXTENSION)) return loadSpecs;
 
-		BinaryReader reader = new BinaryReader(provider, true);
+        BinaryReader reader = new BinaryReader(provider, true);
 
         start = reader.readNextUnsignedShort();
         length = reader.readNextUnsignedShort();
         entry = reader.readNextUnsignedShort();
 
-		final int lengthIncludingHeader = length + CO_HEADER_LENGTH;
+        final int lengthIncludingHeader = length + CO_HEADER_LENGTH;
         final int end = start + length;
 
         if (provider.length() != lengthIncludingHeader) return loadSpecs;
@@ -90,24 +90,24 @@ public class Trs80Model100CoLoader extends AbstractProgramWrapperLoader {
 
         loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("8085:LE:16:default", "default"), true));
 
-		return loadSpecs;
-	}
+        return loadSpecs;
+    }
 
-	@Override
-	protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
-			Program program, TaskMonitor monitor, MessageLog log)
-			throws CancelledException, IOException {
+    @Override
+    protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
+            Program program, TaskMonitor monitor, MessageLog log)
+            throws CancelledException, IOException {
 
-		try {
-			RetroGhidra.createInitializedBlockFromByteProvider(program, provider, monitor,
-				"memory", start, CO_HEADER_LENGTH, length).setWrite(true);
+        try {
+            RetroGhidra.createInitializedBlockFromByteProvider(program, provider, monitor,
+                "memory", start, CO_HEADER_LENGTH, length).setWrite(true);
 
-			Address entryAddress = program.getAddressFactory().getDefaultAddressSpace().getAddress(entry);
-			SymbolTable st = program.getSymbolTable();
-			st.createLabel(entryAddress, "entry", SourceType.ANALYSIS);
-			st.addExternalEntryPoint(entryAddress);
-		} catch (Exception e) {
-			log.appendException(e);
-		}
-	}
+            Address entryAddress = program.getAddressFactory().getDefaultAddressSpace().getAddress(entry);
+            SymbolTable st = program.getSymbolTable();
+            st.createLabel(entryAddress, "entry", SourceType.ANALYSIS);
+            st.addExternalEntryPoint(entryAddress);
+        } catch (Exception e) {
+            log.appendException(e);
+        }
+    }
 }

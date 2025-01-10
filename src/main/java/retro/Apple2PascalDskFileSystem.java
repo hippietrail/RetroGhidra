@@ -64,7 +64,7 @@ class PascalEntry {
  * TODO: Provide class-level documentation that describes what this file system does.
  */
 @FileSystemInfo(type = "apple2pascal", // ([a-z0-9]+ only)
-		description = "Apple II Pascal", factory = Apple2PascalDskFileSystemFactory.class)
+        description = "Apple II Pascal", factory = Apple2PascalDskFileSystemFactory.class)
 public class Apple2PascalDskFileSystem extends AbstractFileSystem<PascalEntry> {
 
     public static final int SECTORS_PER_TRACK = 16;
@@ -246,12 +246,12 @@ public class Apple2PascalDskFileSystem extends AbstractFileSystem<PascalEntry> {
         return result;
     }
 
-	private String filetypeToString(int fileType) {
-		String result = String.format("0x%02x", fileType);
-		if (FILE_TYPES.containsKey(fileType)) {
-			result += " (" + FILE_TYPES.get(fileType) + ")";
-		}
-		return result;
-	}
+    private String filetypeToString(int fileType) {
+        String result = String.format("0x%02x", fileType);
+        if (FILE_TYPES.containsKey(fileType)) {
+            result += " (" + FILE_TYPES.get(fileType) + ")";
+        }
+        return result;
+    }
 
 }

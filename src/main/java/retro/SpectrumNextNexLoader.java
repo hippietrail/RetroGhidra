@@ -39,16 +39,16 @@ public class SpectrumNextNexLoader extends AbstractProgramWrapperLoader {
     public static final int NEX_HEADER_LEN = 0x200;
     public static final String NEX_MAGIC = "Next";
 
-	@Override
-	public String getName() {
+    @Override
+    public String getName() {
         return NEX_NAME;
-	}
+    }
 
-	@Override
-	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
-		List<LoadSpec> loadSpecs = new ArrayList<>();
+    @Override
+    public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
+        List<LoadSpec> loadSpecs = new ArrayList<>();
 
-		if (provider.length() < NEX_HEADER_LEN) return loadSpecs;
+        if (provider.length() < NEX_HEADER_LEN) return loadSpecs;
 
         BinaryReader reader = new BinaryReader(provider, false);
 
@@ -59,17 +59,17 @@ public class SpectrumNextNexLoader extends AbstractProgramWrapperLoader {
         if (version.charAt(1) < '1' || version.charAt(1) > '9') return loadSpecs;
         if (version.charAt(2) != '.') return loadSpecs;
         if (version.charAt(3) < '0' || version.charAt(2) > '9') return loadSpecs;
-        
+
         loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("z80:LE:16:default", "default"), true));
 
-		return loadSpecs;
-	}
+        return loadSpecs;
+    }
 
-	@Override
-	protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
-			Program program, TaskMonitor monitor, MessageLog log)
-			throws CancelledException, IOException {
+    @Override
+    protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
+            Program program, TaskMonitor monitor, MessageLog log)
+            throws CancelledException, IOException {
 
-		// TODO: Load the bytes from 'provider' into the 'program'.
-	}
+        // TODO: Load the bytes from 'provider' into the 'program'.
+    }
 }

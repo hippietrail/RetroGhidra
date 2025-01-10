@@ -42,143 +42,143 @@ import ghidra.util.task.TaskMonitor;
  */
 public class SpectrumSnaLoader extends AbstractProgramWrapperLoader {
 
-	public static final String ZX_SNA_NAME = "Sinclair ZX Spectrum Snapshot (SNA)";
-	public static final long ZX_SNA_LENGTH_48K = 27 + 48 * 1024;
-	public static final long ZX_SNA_LENGTH_128K_S = 27 + 48 * 1024 + 4 + 5 * 16 * 1024;
-	public static final long ZX_SNA_LENGTH_128K_L = 27 + 48 * 1024 + 4 + 6 * 16 * 1024;
-	public static final Long[] ZX_SNA_LENGTHS = {
-		ZX_SNA_LENGTH_48K,
-		ZX_SNA_LENGTH_128K_S, // short: no repeated 16k bank
-		ZX_SNA_LENGTH_128K_L, // long: has repeated 16k bank
-	};
-	public static final int ZX_SNA_OFF_IFF2 = 0x13;
-	public static final int ZX_SNA_OFF_SP = 0x17;
-	public static final int ZX_SNA_OFF_INT_MODE = 0x19;
-	public static final int ZX_SNA_OFF_BORDER = 0x1a;
-	public static final int ZX_SNA_HEADER_LEN = 0x1b;
+    public static final String ZX_SNA_NAME = "Sinclair ZX Spectrum Snapshot (SNA)";
+    public static final long ZX_SNA_LENGTH_48K = 27 + 48 * 1024;
+    public static final long ZX_SNA_LENGTH_128K_S = 27 + 48 * 1024 + 4 + 5 * 16 * 1024;
+    public static final long ZX_SNA_LENGTH_128K_L = 27 + 48 * 1024 + 4 + 6 * 16 * 1024;
+    public static final Long[] ZX_SNA_LENGTHS = {
+        ZX_SNA_LENGTH_48K,
+        ZX_SNA_LENGTH_128K_S, // short: no repeated 16k bank
+        ZX_SNA_LENGTH_128K_L, // long: has repeated 16k bank
+    };
+    public static final int ZX_SNA_OFF_IFF2 = 0x13;
+    public static final int ZX_SNA_OFF_SP = 0x17;
+    public static final int ZX_SNA_OFF_INT_MODE = 0x19;
+    public static final int ZX_SNA_OFF_BORDER = 0x1a;
+    public static final int ZX_SNA_HEADER_LEN = 0x1b;
 
-	public static final int ZX_SNA_ROM_PAGED_SPEC = 0x71;
-	public static final int ZX_SNA_ROM_PAGED_INT1 = 0xc9;
+    public static final int ZX_SNA_ROM_PAGED_SPEC = 0x71;
+    public static final int ZX_SNA_ROM_PAGED_INT1 = 0xc9;
 
-	public static final int ZX_SNA_RAM_START = 0x4000; // 16384
-	public static final int ZX_SNA_DISPLAY_START = ZX_SNA_RAM_START;
-	public static final int ZX_SNA_DISPLAY_SIZE = 32 * 192;
-	public static final int ZX_SNA_ATTR_START = ZX_SNA_DISPLAY_START + ZX_SNA_DISPLAY_SIZE;
-	public static final int ZX_SNA_ATTR_SIZE = 32 * 24;
-	public static final int ZX_SNA_RAM_END = 0x10000;
+    public static final int ZX_SNA_RAM_START = 0x4000; // 16384
+    public static final int ZX_SNA_DISPLAY_START = ZX_SNA_RAM_START;
+    public static final int ZX_SNA_DISPLAY_SIZE = 32 * 192;
+    public static final int ZX_SNA_ATTR_START = ZX_SNA_DISPLAY_START + ZX_SNA_DISPLAY_SIZE;
+    public static final int ZX_SNA_ATTR_SIZE = 32 * 24;
+    public static final int ZX_SNA_RAM_END = 0x10000;
 
-	@Override
-	public String getName() {
-		return ZX_SNA_NAME;
-	}
+    @Override
+    public String getName() {
+        return ZX_SNA_NAME;
+    }
 
-	// lower numbers have higher priority
-	// 50 seems to be standard, raw uses 100
-	// RetroGhidra Loaders that don't have magic numbers should use 60
+    // lower numbers have higher priority
+    // 50 seems to be standard, raw uses 100
+    // RetroGhidra Loaders that don't have magic numbers should use 60
     @Override
     public int getTierPriority() {
         return 60;
     }
 
-	@Override
-	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
-		List<LoadSpec> loadSpecs = new ArrayList<>();
+    @Override
+    public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
+        List<LoadSpec> loadSpecs = new ArrayList<>();
 
-		BinaryReader reader = new BinaryReader(provider, true);
-		
-		// use a temp since .length() can throw and .anyMatch() is a lambda (no 'throws' clause)
-		final Long fileLength = reader.length();
-		if (!Arrays.stream(ZX_SNA_LENGTHS).anyMatch(length -> length.equals(fileLength))) return loadSpecs;
+        BinaryReader reader = new BinaryReader(provider, true);
 
-		// only 1 bit of this field is defined, anything else probably a false positive
-		final int iff2 = reader.readUnsignedByte(ZX_SNA_OFF_IFF2);
-		if ((iff2 & ~0b0000_0100) != 0) return loadSpecs;
+        // use a temp since .length() can throw and .anyMatch() is a lambda (no 'throws' clause)
+        final Long fileLength = reader.length();
+        if (!Arrays.stream(ZX_SNA_LENGTHS).anyMatch(length -> length.equals(fileLength))) return loadSpecs;
 
-		// stack pointer can't be in ROM, probably a false positive
-		final int sp = reader.readUnsignedShort(ZX_SNA_OFF_SP);
-		if (sp < ZX_SNA_RAM_START) Msg.warn(this, "Stack pointer in ROM");
+        // only 1 bit of this field is defined, anything else probably a false positive
+        final int iff2 = reader.readUnsignedByte(ZX_SNA_OFF_IFF2);
+        if ((iff2 & ~0b0000_0100) != 0) return loadSpecs;
 
-		// only 0 to 2 are valid, anything else probably a false positive
-		final int interruptMode = reader.readUnsignedByte(ZX_SNA_OFF_INT_MODE);
-		if (interruptMode > 2) return loadSpecs;
+        // stack pointer can't be in ROM, probably a false positive
+        final int sp = reader.readUnsignedShort(ZX_SNA_OFF_SP);
+        if (sp < ZX_SNA_RAM_START) Msg.warn(this, "Stack pointer in ROM");
 
-		// .SNA was originally used by a hardware device. This field indicated Sinclair Interface 1 presence
-		// As an emulator format, this field indicates border colour, only 0 to 7
-		// Anything besides these 8 values probably a false positive
-		final int borderColourOrInt1 = reader.readUnsignedByte(ZX_SNA_OFF_BORDER);
-		if (borderColourOrInt1 > 7
-				&& borderColourOrInt1 != ZX_SNA_ROM_PAGED_SPEC && borderColourOrInt1 != ZX_SNA_ROM_PAGED_INT1)
-			return loadSpecs;
+        // only 0 to 2 are valid, anything else probably a false positive
+        final int interruptMode = reader.readUnsignedByte(ZX_SNA_OFF_INT_MODE);
+        if (interruptMode > 2) return loadSpecs;
 
-		loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("z80:LE:16:default", "default"), true));
+        // .SNA was originally used by a hardware device. This field indicated Sinclair Interface 1 presence
+        // As an emulator format, this field indicates border colour, only 0 to 7
+        // Anything besides these 8 values probably a false positive
+        final int borderColourOrInt1 = reader.readUnsignedByte(ZX_SNA_OFF_BORDER);
+        if (borderColourOrInt1 > 7
+                && borderColourOrInt1 != ZX_SNA_ROM_PAGED_SPEC && borderColourOrInt1 != ZX_SNA_ROM_PAGED_INT1)
+            return loadSpecs;
 
-		return loadSpecs;
-	}
+        loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("z80:LE:16:default", "default"), true));
 
-	@Override
-	protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
-			Program program, TaskMonitor monitor, MessageLog log)
-			throws CancelledException, IOException {
+        return loadSpecs;
+    }
 
-		if (provider.length() != ZX_SNA_LENGTH_48K) {
-			Msg.error(this, "Only 48K SNA snapshots are supported so far.");
-			return;
-		}
+    @Override
+    protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
+            Program program, TaskMonitor monitor, MessageLog log)
+            throws CancelledException, IOException {
 
-		BinaryReader reader = new BinaryReader(provider, true);
+        if (provider.length() != ZX_SNA_LENGTH_48K) {
+            Msg.error(this, "Only 48K SNA snapshots are supported so far.");
+            return;
+        }
 
-		// in 48k snapshots, pc is on the stack
-		// if sp is in rom, we can't get the pc from the stack since we don't include the rom
-		int sp = reader.readUnsignedShort(ZX_SNA_OFF_SP);
-		OptionalInt pc = OptionalInt.empty();
-		if (sp >= ZX_SNA_RAM_START) {
-			pc = OptionalInt.of(reader.readUnsignedShort(ZX_SNA_HEADER_LEN + sp - ZX_SNA_RAM_START));
-			sp = (sp + 2) & 0xffff;
-		}
+        BinaryReader reader = new BinaryReader(provider, true);
 
-		Msg.info(this, program.getName() + ": SP = " +
-			Integer.toHexString(sp)
-			+ ", PC = " +
-			(pc.isPresent() ? "0x" + Integer.toHexString(pc.getAsInt()) : "?")
-		);
+        // in 48k snapshots, pc is on the stack
+        // if sp is in rom, we can't get the pc from the stack since we don't include the rom
+        int sp = reader.readUnsignedShort(ZX_SNA_OFF_SP);
+        OptionalInt pc = OptionalInt.empty();
+        if (sp >= ZX_SNA_RAM_START) {
+            pc = OptionalInt.of(reader.readUnsignedShort(ZX_SNA_HEADER_LEN + sp - ZX_SNA_RAM_START));
+            sp = (sp + 2) & 0xffff;
+        }
 
-		try {
-			Address ramAdd = program.getAddressFactory().getDefaultAddressSpace().getAddress(ZX_SNA_DISPLAY_START);
-			FileBytes fileBytes = MemoryBlockUtils.createFileBytes(program, provider, monitor);
-			
-			MemoryBlock block = program.getMemory().createInitializedBlock(
-				"display",							// name
-				ramAdd, 							// start
-				fileBytes,							// filebytes
-				ZX_SNA_HEADER_LEN,                  // offset
-				ZX_SNA_RAM_END - ZX_SNA_RAM_START,	// size
-				false);								// overlay
-			block.setWrite(true);
+        Msg.info(this, program.getName() + ": SP = " +
+            Integer.toHexString(sp)
+            + ", PC = " +
+            (pc.isPresent() ? "0x" + Integer.toHexString(pc.getAsInt()) : "?")
+        );
 
-			Address attrEnd = program.getAddressFactory().getDefaultAddressSpace().getAddress(ZX_SNA_DISPLAY_START + ZX_SNA_DISPLAY_SIZE + ZX_SNA_ATTR_SIZE);
-			program.getMemory().split(block, attrEnd);
+        try {
+            Address ramAdd = program.getAddressFactory().getDefaultAddressSpace().getAddress(ZX_SNA_DISPLAY_START);
+            FileBytes fileBytes = MemoryBlockUtils.createFileBytes(program, provider, monitor);
 
-			Address displayEnd = program.getAddressFactory().getDefaultAddressSpace().getAddress(ZX_SNA_DISPLAY_START + ZX_SNA_DISPLAY_SIZE);
-			program.getMemory().split(block, displayEnd);
+            MemoryBlock block = program.getMemory().createInitializedBlock(
+                "display",                          // name
+                ramAdd,                             // start
+                fileBytes,                          // filebytes
+                ZX_SNA_HEADER_LEN,                  // offset
+                ZX_SNA_RAM_END - ZX_SNA_RAM_START,  // size
+                false);                             // overlay
+            block.setWrite(true);
 
-			MemoryBlock[] blocks = program.getMemory().getBlocks();
-			blocks[1].setName("attributes");
-			blocks[2].setName("rest");
+            Address attrEnd = program.getAddressFactory().getDefaultAddressSpace().getAddress(ZX_SNA_DISPLAY_START + ZX_SNA_DISPLAY_SIZE + ZX_SNA_ATTR_SIZE);
+            program.getMemory().split(block, attrEnd);
 
-			if (pc.isPresent() && pc.getAsInt() >= ZX_SNA_RAM_START) {
-				Address ep = program.getAddressFactory().getDefaultAddressSpace().getAddress(pc.getAsInt());	
-				SymbolTable st = program.getSymbolTable();
-				st.createLabel(ep, "entry", SourceType.ANALYSIS);
-				st.addExternalEntryPoint(ep);
-			}
+            Address displayEnd = program.getAddressFactory().getDefaultAddressSpace().getAddress(ZX_SNA_DISPLAY_START + ZX_SNA_DISPLAY_SIZE);
+            program.getMemory().split(block, displayEnd);
 
-			if (sp >= ZX_SNA_RAM_START) {
-				Address spAdd = program.getAddressFactory().getDefaultAddressSpace().getAddress(sp);
-				SymbolTable st = program.getSymbolTable();
-				st.createLabel(spAdd, "stack", SourceType.ANALYSIS);
-			}
-		} catch (Exception e) {
-			log.appendException(e);
-		}
-	}
+            MemoryBlock[] blocks = program.getMemory().getBlocks();
+            blocks[1].setName("attributes");
+            blocks[2].setName("rest");
+
+            if (pc.isPresent() && pc.getAsInt() >= ZX_SNA_RAM_START) {
+                Address ep = program.getAddressFactory().getDefaultAddressSpace().getAddress(pc.getAsInt());
+                SymbolTable st = program.getSymbolTable();
+                st.createLabel(ep, "entry", SourceType.ANALYSIS);
+                st.addExternalEntryPoint(ep);
+            }
+
+            if (sp >= ZX_SNA_RAM_START) {
+                Address spAdd = program.getAddressFactory().getDefaultAddressSpace().getAddress(sp);
+                SymbolTable st = program.getSymbolTable();
+                st.createLabel(spAdd, "stack", SourceType.ANALYSIS);
+            }
+        } catch (Exception e) {
+            log.appendException(e);
+        }
+    }
 }

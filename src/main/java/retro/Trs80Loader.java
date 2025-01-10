@@ -65,22 +65,22 @@ public class Trs80Loader extends AbstractProgramWrapperLoader {
     // TODO make this an optional, how to add as comment / program name in Ghidra?
     String filename = "";
 
-	@Override
-	public String getName() {
+    @Override
+    public String getName() {
         return TRS_NAME;
-	}
+    }
 
-	// lower numbers have higher priority
-	// 50 seems to be standard, raw uses 100
-	// RetroGhidra Loaders that don't have magic numbers should use 60
+    // lower numbers have higher priority
+    // 50 seems to be standard, raw uses 100
+    // RetroGhidra Loaders that don't have magic numbers should use 60
     @Override
     public int getTierPriority() {
         return 60;
     }
 
-	@Override
-	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
-		List<LoadSpec> loadSpecs = new ArrayList<>();
+    @Override
+    public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
+        List<LoadSpec> loadSpecs = new ArrayList<>();
 
         BinaryReader reader = new BinaryReader(provider, true);
 
@@ -91,7 +91,7 @@ public class Trs80Loader extends AbstractProgramWrapperLoader {
                 // hit EOF after processing load records, all went well
                 if (seenTransferAddress) break loop;
                 // hit EOF before processing a 'transfer address' record, probably not a TRS-80 file
-				return loadSpecs;
+                return loadSpecs;
             }
             byte typeCode = (byte) reader.readNextUnsignedByte();
             offset++;
@@ -156,18 +156,18 @@ public class Trs80Loader extends AbstractProgramWrapperLoader {
 
         loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("z80:LE:16:default", "default"), true));
 
-		return loadSpecs;
-	}
+        return loadSpecs;
+    }
 
-	@Override
-	protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
-			Program program, TaskMonitor monitor, MessageLog log)
-			throws CancelledException, IOException {
+    @Override
+    protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
+            Program program, TaskMonitor monitor, MessageLog log)
+            throws CancelledException, IOException {
 
         BinaryReader reader = new BinaryReader(provider, true);
 
         int ramNum = 0;
-        
+
         int offset = 0;
         boolean seenTransferAddress = false;
         loop: while (true) {
@@ -224,10 +224,10 @@ public class Trs80Loader extends AbstractProgramWrapperLoader {
                     seenTransferAddress = true;
 
                     try {
-	                    Address entryPoint = program.getAddressFactory().getDefaultAddressSpace().getAddress(address);
-	                    SymbolTable st = program.getSymbolTable();
-	                    st.createLabel(entryPoint, "entry", SourceType.ANALYSIS);
-	                    st.addExternalEntryPoint(entryPoint);
+                        Address entryPoint = program.getAddressFactory().getDefaultAddressSpace().getAddress(address);
+                        SymbolTable st = program.getSymbolTable();
+                        st.createLabel(entryPoint, "entry", SourceType.ANALYSIS);
+                        st.addExternalEntryPoint(entryPoint);
                     } catch (Exception e) {
                         log.appendException(e);
                     }
@@ -245,5 +245,5 @@ public class Trs80Loader extends AbstractProgramWrapperLoader {
                 }
             }
         }
-	}
+    }
 }

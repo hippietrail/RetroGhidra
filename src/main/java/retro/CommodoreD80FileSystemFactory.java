@@ -32,12 +32,12 @@ import ghidra.util.task.TaskMonitor;
 
 public class CommodoreD80FileSystemFactory implements GFileSystemFactoryByteProvider<CommodoreD80FileSystem>, GFileSystemProbeByteProvider {
 
-	public static final int D80_FILE_SIZE = 533248;
+    public static final int D80_FILE_SIZE = 533248;
     public static final int D80_TRACK_39_OFFSET = 0x44E00;
 
     @Override
-	public boolean probe(ByteProvider byteProvider, FileSystemService fsService,
-			TaskMonitor monitor) throws IOException, CancelledException {
+    public boolean probe(ByteProvider byteProvider, FileSystemService fsService,
+            TaskMonitor monitor) throws IOException, CancelledException {
 
         if (byteProvider.length() != D80_FILE_SIZE) return false;
 
@@ -54,15 +54,15 @@ public class CommodoreD80FileSystemFactory implements GFileSystemFactoryByteProv
         int unused = reader.readNextUnsignedShort();
         // not always 0: https://milasoft64.itch.io/petaxian = 0x0xA0A0
 
-        // $06-$16	Disk name, padded with 0xA0
+        // $06-$16    Disk name, padded with 0xA0
         final byte[] name = reader.readNextByteArray(0x11);
         int len = -1;
         for (int i = 0; i < name.length; i++) {
-        	int c = name[i] & 0xff;
+            int c = name[i] & 0xff;
             if (len == -1) {
                 if (c == 0xA0) {
-                	len = i;
-                	break;
+                    len = i;
+                    break;
                 } else if (!isPrintable(name[i])) return false;
             } else if (c != 0xA0) return false;
         }
@@ -93,9 +93,9 @@ public class CommodoreD80FileSystemFactory implements GFileSystemFactoryByteProv
     }
 
     // May have to customize for PETSCII etc
-	private boolean isPrintable(final int dosFormatVersion) {
-		return dosFormatVersion >= ' ' && dosFormatVersion <= '~';
-	}
+    private boolean isPrintable(final int dosFormatVersion) {
+        return dosFormatVersion >= ' ' && dosFormatVersion <= '~';
+    }
 
     @Override
     public GFileSystem create(FSRLRoot fsFSRL, ByteProvider provider, FileSystemService fsService, TaskMonitor monitor)
