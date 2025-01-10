@@ -16,16 +16,13 @@
 package retro;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.text.NumberFormat;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.stream.IntStream;
 
 import ghidra.app.util.bin.BinaryReader;
 import ghidra.app.util.bin.ByteArrayProvider;
 import ghidra.app.util.bin.ByteProvider;
-import ghidra.app.util.bin.ByteProviderWrapper;
 import ghidra.app.util.bin.RangeMappedByteProvider;
 import ghidra.formats.gfilesystem.*;
 import ghidra.formats.gfilesystem.annotations.FileSystemInfo;
@@ -46,6 +43,7 @@ class ProDosEntry {
 	int fileType;
 	int keyPointer;
 	int blocksUsed;
+	long eof;
 	int auxType;
 	// disk image / filesystem attributes
 	String fileSystem;
@@ -53,7 +51,7 @@ class ProDosEntry {
 
 	ProDosEntry(String name, long size,
 			int entryBlock, int entryNumber,
-			int storageType, int fileType, int keyPointer, int blocksUsed, int auxType,
+			int storageType, int fileType, int keyPointer, int blocksUsed, long eof, int auxType,
 			String fileSystem, boolean isProDosOrder) {
 		// standard attributes
 		this.name = name;
@@ -65,6 +63,7 @@ class ProDosEntry {
 		this.fileType = fileType;
 		this.keyPointer = keyPointer;
 		this.blocksUsed = blocksUsed;
+		this.eof = eof;
 		this.auxType = auxType;
 		// disk image / filesystem attributes
 		this.fileSystem = fileSystem;
@@ -115,8 +114,8 @@ public class Apple2ProDosDskFileSystem extends AbstractFileSystem<ProDosEntry> {
 		ST_VOLUME_DIRECTORY_HEADER,
 		ST_SUBDIRECTORY_HEADER
 	};
-	public static final int MAX_BLOCKS_PER_SAPLING_KEY = 256;
-	public static final int MAX_BLOCKS_PER_TREE_KEY = 128;
+	public static final int MAX_BLOCKS_PER_SAPLING_INDEX = 256;
+	public static final int MAX_BLOCKS_PER_MASTER_INDEX = 128;
 	public static final int FT_TYPELESS = 0x00;
 	public static final int FT_TEXT = 0x04;
 	public static final int FT_BINARY = 0x06;
@@ -185,28 +184,15 @@ public class Apple2ProDosDskFileSystem extends AbstractFileSystem<ProDosEntry> {
 			int fileType = blockReader.readUnsignedByte(offset + 0x10);
 			int keyPointer = blockReader.readUnsignedShort(offset + 0x11);
 			int blocksUsed = blockReader.readUnsignedShort(offset + 0x13);
+			long eof = blockReader.readUnsignedValue(offset + 0x15, 3);
 			int auxType = blockReader.readUnsignedShort(offset + 0x1f);
 
 			String[] newPath = Arrays.copyOf(currentPath, currentPath.length + 1);
 			newPath[currentPath.length] = name;
 
 			long size = -1; // documented size for directories or when otherwise unknown
-			if (storageType == ST_SEEDLING) {
-				size = BLOCK_SIZE;
-			} else if (storageType == ST_SAPLING) {
-				size = 0;
-				imageReader.setPointerIndex(blockNumberToOffset(keyPointer));
-				for (int i = 0; i < MAX_BLOCKS_PER_SAPLING_KEY; i++) {
-					int b = imageReader.readNextUnsignedByte();
-					if (b == 0) break;
-					size += BLOCK_SIZE;
-				}
-			} else if (storageType == ST_TREE) {
-				size = -1; // TODO
-			} else if (storageType == ST_SUBDIRECTORY) {
-				size = -1;
-			} else {
-				throw new IOException("Unexpected storage type: " + storageType);
+			if (storageType == ST_SEEDLING || storageType == ST_SAPLING || storageType == ST_TREE) {
+				size = eof;
 			}
 
 			fsIndex.storeFile(
@@ -219,7 +205,7 @@ public class Apple2ProDosDskFileSystem extends AbstractFileSystem<ProDosEntry> {
 					name, size,
 					// file attributes
 					blockNumber, e,
-					storageType, fileType, keyPointer, blocksUsed, auxType,
+					storageType, fileType, keyPointer, blocksUsed, eof, auxType,
 					// disk image / filesystem attributes
 					"ProDOS", isProDosOrder
 				)
@@ -322,30 +308,58 @@ public class Apple2ProDosDskFileSystem extends AbstractFileSystem<ProDosEntry> {
 
 		if (metadata.storageType == ST_SEEDLING) {
 			RangeMappedByteProvider seedling = new RangeMappedByteProvider(provider, file.getFSRL());
+			long[] dataSectors = blockNumberToOffsets(metadata.keyPointer);
 
-			long[] offsets = blockNumberToOffsets(metadata.keyPointer);
-			seedling.addRange(offsets[0], SECTOR_SIZE);
-			seedling.addRange(offsets[1], SECTOR_SIZE);
+			seedling.addRange(dataSectors[0], SECTOR_SIZE);
+			seedling.addRange(dataSectors[1], SECTOR_SIZE);
 			return seedling;
 		} else if (metadata.storageType == ST_SAPLING) {
 			RangeMappedByteProvider sapling = new RangeMappedByteProvider(provider, file.getFSRL());
-			long offset = blockNumberToOffset(metadata.keyPointer);
-			for (int i = 0; i < MAX_BLOCKS_PER_SAPLING_KEY; i++) {
-				int b = provider.readByte(offset + i) & 0xff;
-				if (b == 0) break;
-				long[] offsets = blockNumberToOffsets(b);
-				sapling.addRange(offsets[0], SECTOR_SIZE);
-				sapling.addRange(offsets[1], SECTOR_SIZE);
+			long indexBlockSectors[] = blockNumberToOffsets(metadata.keyPointer);
+
+			for (int i = 1; i < metadata.blocksUsed; i++) {
+				int b = (provider.readByte(indexBlockSectors[1] + i) & 0xff) << 8;
+				b |= (provider.readByte(indexBlockSectors[0] + i) & 0xff);
+				if (b == 0) {
+					sapling.addSparseRange(BLOCK_SIZE);
+				} else {
+					long[] dataBlockSectors = blockNumberToOffsets(b);
+					sapling.addRange(dataBlockSectors[0], SECTOR_SIZE);
+					sapling.addRange(dataBlockSectors[1], SECTOR_SIZE);
+				}
+				if (sapling.length() >= metadata.eof) return sapling;
 			}
-			return sapling;
+			throw new IOException("Size: " + sapling.length() + ", Expected: " + metadata.eof);
 		} else if (metadata.storageType == ST_TREE) {
-			// TODO each byte of the first half-sector (so only 128 entries) is a pointer to a sapling as above
-			throw new IOException("ST_TREE not yet implemented");
+			RangeMappedByteProvider tree = new RangeMappedByteProvider(provider, file.getFSRL());
+			long masterIndexBlockSectors[] = blockNumberToOffsets(metadata.keyPointer);
+
+			for (int i = 0; i < MAX_BLOCKS_PER_MASTER_INDEX; i++) {
+				int b = (provider.readByte(masterIndexBlockSectors[1] + i) & 0xff) << 8;
+				b |= (provider.readByte(masterIndexBlockSectors[0] + i) & 0xff);
+				if (b == 0) {
+					tree.addSparseRange(MAX_BLOCKS_PER_SAPLING_INDEX * BLOCK_SIZE);
+				} else {
+					long[] indexBlockSectors = blockNumberToOffsets(b);
+					for (int j = 0; j < MAX_BLOCKS_PER_SAPLING_INDEX; j++) {
+						b = (provider.readByte(indexBlockSectors[1] + j) & 0xff) << 8;
+						b |= (provider.readByte(indexBlockSectors[0] + j) & 0xff);
+						if (b == 0) {
+							tree.addSparseRange(BLOCK_SIZE);
+						} else {
+							long[] dataBlockSectors = blockNumberToOffsets(b);
+							tree.addRange(dataBlockSectors[0], SECTOR_SIZE);
+							tree.addRange(dataBlockSectors[1], SECTOR_SIZE);
+						}
+						if (tree.length() >= metadata.eof) return tree;
+					}
+				}
+				if (tree.length() >= metadata.eof) return tree;
+			}
+			throw new IOException("Size: " + tree.length() + ", Expected: " + metadata.eof);
 		} else {
-			// something must've gone wrong
 			throw new IOException("Unknown storage type: " + metadata.storageType);
 		}
-
 	}
 
 	public ProDosEntry getMetadata(GFile file) {
