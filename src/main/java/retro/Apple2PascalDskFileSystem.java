@@ -20,7 +20,6 @@ import java.util.Map;
 
 import ghidra.app.util.bin.BinaryReader;
 import ghidra.app.util.bin.ByteProvider;
-import ghidra.app.util.bin.ByteProviderWrapper;
 import ghidra.app.util.bin.RangeMappedByteProvider;
 import ghidra.formats.gfilesystem.AbstractFileSystem;
 import ghidra.formats.gfilesystem.FSRLRoot;
@@ -29,7 +28,6 @@ import ghidra.formats.gfilesystem.GFile;
 import ghidra.formats.gfilesystem.annotations.FileSystemInfo;
 import ghidra.formats.gfilesystem.fileinfo.FileAttributeType;
 import ghidra.formats.gfilesystem.fileinfo.FileAttributes;
-import ghidra.util.Msg;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 
@@ -63,9 +61,11 @@ class PascalEntry {
 /**
  * TODO: Provide class-level documentation that describes what this file system does.
  */
-@FileSystemInfo(type = "apple2pascal", // ([a-z0-9]+ only)
-        description = "Apple II Pascal", factory = Apple2PascalDskFileSystemFactory.class)
+@FileSystemInfo(type = Apple2PascalDskFileSystem.FS_TYPE, description = "Apple II Pascal",
+        factory = Apple2PascalDskFileSystemFactory.class)
 public class Apple2PascalDskFileSystem extends AbstractFileSystem<PascalEntry> {
+
+    public static final String FS_TYPE = "apple2pascal"; // ([a-z0-9]+ only)
 
     public static final int SECTORS_PER_TRACK = 16;
     public static final int SECTOR_SIZE = 256;
@@ -226,6 +226,10 @@ public class Apple2PascalDskFileSystem extends AbstractFileSystem<PascalEntry> {
         }
 
         return rmbp;
+    }
+
+    public PascalEntry getMetadata(GFile file) {
+        return fsIndex.getMetadata(file);
     }
 
     @Override

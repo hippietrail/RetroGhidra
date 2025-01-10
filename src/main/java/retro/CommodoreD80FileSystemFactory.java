@@ -26,7 +26,6 @@ import ghidra.formats.gfilesystem.FileSystemService;
 import ghidra.formats.gfilesystem.GFileSystem;
 import ghidra.formats.gfilesystem.factory.GFileSystemFactoryByteProvider;
 import ghidra.formats.gfilesystem.factory.GFileSystemProbeByteProvider;
-import ghidra.util.Msg;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 
