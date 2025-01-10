@@ -39,16 +39,16 @@ import ghidra.util.task.TaskMonitor;
  */
 public class ExidySnpLoader extends AbstractProgramWrapperLoader {
 
-    public static final String SNP_NAME = "Exidy Sorcerer Snapshot (SNP)";
-    public static final long SNP_LENGTH = 28 + 64 * 1024;
-    public static final int SNP_OFF_IFF2 = 19; // 0x13
-    public static final int SNP_OFF_SP = 23; // 0x17
-    public static final int SNP_OFF_INT_MODE = 25; // 0x19
-    public static final int SNP_OFF_PC = 26; // 0x1a
-    public static final int SNP_HEADER_LEN = 0x1c;
+    private static final String SNP_NAME = "Exidy Sorcerer Snapshot (SNP)";
+    private static final long SNP_LENGTH = 28 + 64 * 1024;
+    private static final int SNP_OFF_IFF2 = 19; // 0x13
+    private static final int SNP_OFF_SP = 23; // 0x17
+    private static final int SNP_OFF_INT_MODE = 25; // 0x19
+    private static final int SNP_OFF_PC = 26; // 0x1a
+    private static final int SNP_HEADER_LEN = 0x1c;
 
-    public static final int SNP_DISPLAY_START = 0xf080;
-    public static final int SNP_DISPLAY_END = 0xf800;
+    private static final int SNP_DISPLAY_START = 0xf080;
+    private static final int SNP_DISPLAY_END = 0xf800;
 
     @Override
     public String getName() {

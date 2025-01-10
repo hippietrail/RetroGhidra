@@ -51,9 +51,9 @@ import ghidra.util.task.TaskMonitor;
  */
 public class Ti994RpkLoader extends AbstractProgramWrapperLoader {
 
-    public static final String RPK_NAME = "TI-99/4A RPK";
-    public static final String RPK_EXTENSION = ".rpk";
-    public static final long RPK_LOAD_ADDRESS = 0x6000;
+    private static final String RPK_NAME = "TI-99/4A RPK";
+    private static final String RPK_EXTENSION = ".rpk";
+    private static final long RPK_LOAD_ADDRESS = 0x6000;
 
     public List<String> binFiles = new ArrayList<>();
 

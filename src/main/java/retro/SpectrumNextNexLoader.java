@@ -34,9 +34,9 @@ import ghidra.util.task.TaskMonitor;
  */
 public class SpectrumNextNexLoader extends AbstractProgramWrapperLoader {
 
-    public static final String NEX_NAME = "Spectrum Next .nex";
-    public static final int NEX_HEADER_LEN = 0x200;
-    public static final String NEX_MAGIC = "Next";
+    private static final String NEX_NAME = "Spectrum Next .nex";
+    private static final int NEX_HEADER_LEN = 0x200;
+    private static final String NEX_MAGIC = "Next";
 
     @Override
     public String getName() {

@@ -37,7 +37,7 @@ import ghidra.util.task.TaskMonitor;
  */
 public class Apple2NapsLoader extends AbstractProgramWrapperLoader {
 
-    public static final String NAPS_NAME = "Apple II binary with NAPS";
+    private static final String NAPS_NAME = "Apple II binary with NAPS";
 
     @Override
     public String getName() {

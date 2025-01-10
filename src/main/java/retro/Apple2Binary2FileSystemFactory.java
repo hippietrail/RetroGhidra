@@ -29,9 +29,9 @@ import ghidra.util.task.TaskMonitor;
 
 public class Apple2Binary2FileSystemFactory implements GFileSystemFactoryByteProvider<Apple2Binary2FileSystem>, GFileSystemProbeBytesOnly {
 
-    public static final int BIN2_START_BYTES_REQUIRED = 3;
+    private static final int BIN2_START_BYTES_REQUIRED = 3;
 
-    public static final String BIN2_MAGIC = "\nGL"; // Binary II was developed by Gary B. Little
+    private static final String BIN2_MAGIC = "\nGL"; // Binary II was developed by Gary B. Little
 
     @Override
     public int getBytesRequired() {

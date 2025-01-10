@@ -36,23 +36,23 @@ import ghidra.util.Msg;
 
 public class Ti994LoaderHelper {
 
-    public static final int TIF_OFF_FILE_STATUS_FLAGS = 0x0a;
-    public static final int FIAD_OFF_FILE_STATUS_FLAGS = 0x0c;
-    //public static final int TIF_OFF_NUM_L3_RECS = 0x0e; // same for tifiles? 18 = 0x12
+    private static final int TIF_OFF_FILE_STATUS_FLAGS = 0x0a;
+    private static final int FIAD_OFF_FILE_STATUS_FLAGS = 0x0c;
+    //private static final int TIF_OFF_NUM_L3_RECS = 0x0e; // same for tifiles? 18 = 0x12
 
-    public static final int FLAG_DATA_PROGRAM = 1 << 0;
-    public static final int FLAG_DIS_INT = 1 << 1;
-    public static final int FLAG_PROTECTED = 1 << 3;
-    public static final int TIF_FLAG_MODIFIED = 1 << 4;
-    public static final int TIF_FLAG_NORMAL_EMULATED = 1 << 5;
-    public static final int FLAG_FIX_VAR = 1 << 7;
+    private static final int FLAG_DATA_PROGRAM = 1 << 0;
+    private static final int FLAG_DIS_INT = 1 << 1;
+    private static final int FLAG_PROTECTED = 1 << 3;
+    private static final int TIF_FLAG_MODIFIED = 1 << 4;
+    private static final int TIF_FLAG_NORMAL_EMULATED = 1 << 5;
+    private static final int FLAG_FIX_VAR = 1 << 7;
 
-    public static final int FLAG_TYPE_MASK = FLAG_DATA_PROGRAM | FLAG_DIS_INT | FLAG_FIX_VAR;
+    private static final int FLAG_TYPE_MASK = FLAG_DATA_PROGRAM | FLAG_DIS_INT | FLAG_FIX_VAR;
 
-    public static final int DIS_FIX = 0;
-    public static final int DIS_VAR = FLAG_FIX_VAR;
-    public static final int INT_FIX = FLAG_DIS_INT;
-    public static final int INT_VAR = FLAG_DIS_INT | FLAG_FIX_VAR;
+    private static final int DIS_FIX = 0;
+    private static final int DIS_VAR = FLAG_FIX_VAR;
+    private static final int INT_FIX = FLAG_DIS_INT;
+    private static final int INT_VAR = FLAG_DIS_INT | FLAG_FIX_VAR;
 
     // for FIAD and TIFILES headers, both based on FDR
     public enum HeaderField {

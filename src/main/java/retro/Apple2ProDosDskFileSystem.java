@@ -81,24 +81,24 @@ public class Apple2ProDosDskFileSystem extends AbstractFileSystem<ProDosEntry> {
 
     // http://www.easy68k.com/paulrsm/6502/PDOS8TRM.HTM
     // https://ciderpress2.com/formatdoc/ProDOS-notes.html
-    public static final int TRACKS = 35;
-    public static final int SECTORS_PER_TRACK = 16;
-    public static final int BLOCKS_PER_TRACK = SECTORS_PER_TRACK / 2;
-    public static final int SECTOR_SIZE = 256;
-    public static final int BLOCK_SIZE = SECTOR_SIZE * 2;
-    public static final int DISK_IMAGE_SIZE = TRACKS * SECTORS_PER_TRACK * SECTOR_SIZE;
-    public static final int VOLUME_DIRECTORY_START_BLOCK = 2;
-    public static final int ENTRY_SIZE = 39;
-    public static final int NUM_ENTRIES_PER_BLOCK = (BLOCK_SIZE - 2 * 2) / ENTRY_SIZE; // 2 u16 fields are prev/next block links
-    public static final int ST_INACTIVE = 0x0; // deleted
-    public static final int ST_SEEDLING = 0x1;
-    public static final int ST_SAPLING = 0x2;
-    public static final int ST_TREE = 0x3;
-    public static final int ST_PASCAL = 0x4;
-    public static final int ST_SUBDIRECTORY = 0xD;
-    public static final int ST_SUBDIRECTORY_HEADER = 0xE;
-    public static final int ST_VOLUME_DIRECTORY_HEADER = 0xF;
-    public static final Map<Integer, String> STORAGE_TYPES = Map.of(
+    private static final int TRACKS = 35;
+    private static final int SECTORS_PER_TRACK = 16;
+    private static final int BLOCKS_PER_TRACK = SECTORS_PER_TRACK / 2;
+    private static final int SECTOR_SIZE = 256;
+    private static final int BLOCK_SIZE = SECTOR_SIZE * 2;
+    private static final int DISK_IMAGE_SIZE = TRACKS * SECTORS_PER_TRACK * SECTOR_SIZE;
+    private static final int VOLUME_DIRECTORY_START_BLOCK = 2;
+    private static final int ENTRY_SIZE = 39;
+    private static final int NUM_ENTRIES_PER_BLOCK = (BLOCK_SIZE - 2 * 2) / ENTRY_SIZE; // 2 u16 fields are prev/next block links
+    private static final int ST_INACTIVE = 0x0; // deleted
+    private static final int ST_SEEDLING = 0x1;
+    private static final int ST_SAPLING = 0x2;
+    private static final int ST_TREE = 0x3;
+    private static final int ST_PASCAL = 0x4;
+    private static final int ST_SUBDIRECTORY = 0xD;
+    private static final int ST_SUBDIRECTORY_HEADER = 0xE;
+    private static final int ST_VOLUME_DIRECTORY_HEADER = 0xF;
+    private static final Map<Integer, String> STORAGE_TYPES = Map.of(
         ST_INACTIVE, "inactive file entry",
         ST_SEEDLING, "seedling file entry",
         ST_SAPLING, "sapling file entry",
@@ -108,22 +108,22 @@ public class Apple2ProDosDskFileSystem extends AbstractFileSystem<ProDosEntry> {
         ST_SUBDIRECTORY_HEADER, "subdirectory header",
         ST_VOLUME_DIRECTORY_HEADER, "volume directory header"
     );
-    public static final int[] skipTypes = new int[] {
+    private static final int[] skipTypes = new int[] {
         ST_INACTIVE,
         ST_VOLUME_DIRECTORY_HEADER,
         ST_SUBDIRECTORY_HEADER
     };
-    public static final int MAX_BLOCKS_PER_SAPLING_INDEX = 256;
-    public static final int MAX_BLOCKS_PER_MASTER_INDEX = 128;
-    public static final int FT_TYPELESS = 0x00;
-    public static final int FT_TEXT = 0x04;
-    public static final int FT_BINARY = 0x06;
-    public static final int FT_DIRECTORY = 0x0f;
-    public static final int FT_INTEGER_BASIC = 0xfa;
-    public static final int FT_APPLESOFT_BASIC = 0xfc;
-    public static final int FT_RELOCATABLE = 0xfe;
-    public static final int FT_SYSTEM = 0xff;
-    public static final Map<Integer, String> FILE_TYPES = Map.of(
+    private static final int MAX_BLOCKS_PER_SAPLING_INDEX = 256;
+    private static final int MAX_BLOCKS_PER_MASTER_INDEX = 128;
+    private static final int FT_TYPELESS = 0x00;
+    private static final int FT_TEXT = 0x04;
+    private static final int FT_BINARY = 0x06;
+    private static final int FT_DIRECTORY = 0x0f;
+    private static final int FT_INTEGER_BASIC = 0xfa;
+    private static final int FT_APPLESOFT_BASIC = 0xfc;
+    private static final int FT_RELOCATABLE = 0xfe;
+    private static final int FT_SYSTEM = 0xff;
+    private static final Map<Integer, String> FILE_TYPES = Map.of(
         FT_TYPELESS, "typeless",
         FT_TEXT, "ASCII text",
         FT_BINARY, "binary",

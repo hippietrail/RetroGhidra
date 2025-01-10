@@ -30,12 +30,12 @@ import ghidra.util.task.TaskMonitor;
 
 public class Apple2ProDosDskFileSystemFactory implements GFileSystemFactoryByteProvider<Apple2ProDosDskFileSystem>, GFileSystemProbeByteProvider {
 
-    public static final int TRACKS = 35;
-    public static final int SECTORS_PER_TRACK = 16;
-    public static final int BLOCKS_PER_TRACK = SECTORS_PER_TRACK / 2;
-    public static final int SECTOR_SIZE = 256;
-    public static final int BLOCK_SIZE = SECTOR_SIZE * 2;
-    public static final int DISK_IMAGE_SIZE = TRACKS * SECTORS_PER_TRACK * SECTOR_SIZE;
+    private static final int TRACKS = 35;
+    private static final int SECTORS_PER_TRACK = 16;
+    private static final int BLOCKS_PER_TRACK = SECTORS_PER_TRACK / 2;
+    private static final int SECTOR_SIZE = 256;
+    private static final int BLOCK_SIZE = SECTOR_SIZE * 2;
+    private static final int DISK_IMAGE_SIZE = TRACKS * SECTORS_PER_TRACK * SECTOR_SIZE;
 
     private boolean isProDosOrder;
 

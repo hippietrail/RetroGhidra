@@ -49,25 +49,25 @@ import ghidra.util.task.TaskMonitor;
  */
 public class X68KXLoader extends AbstractProgramWrapperLoader {
 
-    public static final String XX_NAME = "Sharp X68000 .X";
+    private static final String XX_NAME = "Sharp X68000 .X";
 
-    public static final int XX_OFF_BASE_ADDR = 0x04;
-    public static final int XX_OFF_RUN_ADDR = 0x08;
-    public static final int XX_OFF_TEXT_SIZE = 0x0C;
-    public static final int XX_OFF_DATA_SIZE = 0x10;
-    public static final int XX_OFF_BLOCK_SIZE = 0x14; // Block storage section size (Contains .comm .stack)
-    public static final int XX_OFF_REALLOC_SIZE = 0x18;
-    public static final int XX_OFF_SYMTAB_SIZE = 0x1C;
-    public static final int XX_OFF_SCD_LINE_NO_TAB_SIZE = 0x20;
-    public static final int XX_OFF_SCD_SYMTAB_SIZE = 0x24;
-    public static final int XX_OFF_SCD_STR_TAB_SIZE = 0x28;
+    private static final int XX_OFF_BASE_ADDR = 0x04;
+    private static final int XX_OFF_RUN_ADDR = 0x08;
+    private static final int XX_OFF_TEXT_SIZE = 0x0C;
+    private static final int XX_OFF_DATA_SIZE = 0x10;
+    private static final int XX_OFF_BLOCK_SIZE = 0x14; // Block storage section size (Contains .comm .stack)
+    private static final int XX_OFF_REALLOC_SIZE = 0x18;
+    private static final int XX_OFF_SYMTAB_SIZE = 0x1C;
+    private static final int XX_OFF_SCD_LINE_NO_TAB_SIZE = 0x20;
+    private static final int XX_OFF_SCD_SYMTAB_SIZE = 0x24;
+    private static final int XX_OFF_SCD_STR_TAB_SIZE = 0x28;
     // 16 bytes reserved 0x2c
     // Position from bound module list top-of-file 0x3c
-    public static final int XX_HEADER_LEN = 0x40;
+    private static final int XX_HEADER_LEN = 0x40;
 
-    public static final int XX_MAGIC_NORMAL = 0x48550000; // HU\0\0
-    public static final int XX_MAGIC_SMALLEST = 0x48550001; // HU\0\1
-    public static final int XX_MAGIC_HIGH = 0x48550002; // HU\0\2
+    private static final int XX_MAGIC_NORMAL = 0x48550000; // HU\0\0
+    private static final int XX_MAGIC_SMALLEST = 0x48550001; // HU\0\1
+    private static final int XX_MAGIC_HIGH = 0x48550002; // HU\0\2
 
     @Override
     public String getName() {

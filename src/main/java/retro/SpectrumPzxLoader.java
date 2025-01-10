@@ -34,8 +34,8 @@ import ghidra.util.task.TaskMonitor;
  */
 public class SpectrumPzxLoader extends AbstractProgramWrapperLoader {
 
-    public static final String PZX_NAME = "Sinclair ZX Spectrum Perfect ZX Tape (PZX)";
-    public static final String PZX_MAGIC = "PZXT";
+    private static final String PZX_NAME = "Sinclair ZX Spectrum Perfect ZX Tape (PZX)";
+    private static final String PZX_MAGIC = "PZXT";
 
     @Override
     public String getName() {

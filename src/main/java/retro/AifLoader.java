@@ -40,7 +40,7 @@ import ghidra.util.task.TaskMonitor;
  */
 public class AifLoader extends AbstractProgramWrapperLoader {
 
-    public static final String AIF_NAME = "Arm Image Format (AIF)";
+    private static final String AIF_NAME = "Arm Image Format (AIF)";
     private static final int AIF_HEADER_LEN = 0x40; // 64
     private static final int AIF_OFF_EXIT_CODE = 0x10;
     private static final int AIF_OFF_IMAGE_DEBUG_TYPE = 0x24;

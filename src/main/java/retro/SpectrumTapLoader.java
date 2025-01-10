@@ -34,9 +34,9 @@ import ghidra.util.task.TaskMonitor;
  */
 public class SpectrumTapLoader extends AbstractProgramWrapperLoader {
 
-    public static final String TAP_NAME = "Sinclair ZX Spectrum TAP";
-    public static final String TAP_EXTENSION = ".tap";
-    public static final int TAP_FIRST_BLOCK_LEN = 0x13;
+    private static final String TAP_NAME = "Sinclair ZX Spectrum TAP";
+    private static final String TAP_EXTENSION = ".tap";
+    private static final int TAP_FIRST_BLOCK_LEN = 0x13;
 
     @Override
     public String getName() {

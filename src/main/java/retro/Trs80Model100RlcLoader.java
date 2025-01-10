@@ -49,12 +49,12 @@ import ghidra.util.task.TaskMonitor;
  */
 public class Trs80Model100RlcLoader extends AbstractProgramWrapperLoader {
 
-    public static final String RLC_NAME = "TRS-80 Model 100 RLC";
-    public static final int RLC_MIN_HEADER_LINE_LENGTH = 7;    // " 1  0 \n"
-    //public static final int RLC_MAX_HEADER_LINE_LENGTH = 16; // " 65536  65535 \r\n" - but this fact isn't easy to make use of
-    public static final String RLC_HEX = "0123456789:;<=>?";
-    public static final String RLC_START_OPTION_NAME = "Start address";
-    public static final int RLC_DEFAULT_START_OPTION = 0x0000;
+    private static final String RLC_NAME = "TRS-80 Model 100 RLC";
+    private static final int RLC_MIN_HEADER_LINE_LENGTH = 7;    // " 1  0 \n"
+    //private static final int RLC_MAX_HEADER_LINE_LENGTH = 16; // " 65536  65535 \r\n" - but this fact isn't easy to make use of
+    private static final String RLC_HEX = "0123456789:;<=>?";
+    private static final String RLC_START_OPTION_NAME = "Start address";
+    private static final int RLC_DEFAULT_START_OPTION = 0x0000;
 
     private long endOfHeaderOffset;
 

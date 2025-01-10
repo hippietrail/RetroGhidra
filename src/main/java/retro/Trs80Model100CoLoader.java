@@ -37,9 +37,9 @@ import ghidra.util.task.TaskMonitor;
  */
 public class Trs80Model100CoLoader extends AbstractProgramWrapperLoader {
 
-    public static final String CO_NAME = "TRS-80 Model 100 .co";
-    public static final String CO_EXTENSION = ".co";
-    public static final int CO_HEADER_LENGTH = 6;
+    private static final String CO_NAME = "TRS-80 Model 100 .co";
+    private static final String CO_EXTENSION = ".co";
+    private static final int CO_HEADER_LENGTH = 6;
 
     private int start;
     private int length;

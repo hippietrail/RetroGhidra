@@ -45,21 +45,21 @@ public class AtariStLoader extends AbstractProgramWrapperLoader {
     // normal extensions: .prg (executable program), .tos (TOS program), .ttp (TOS program that takes parameters)
     // other extensions: .app (multiTOS application), .ovl ("recovery executable"? probably overlay), .acc (desk accessory)
     // more extensions: .cpx (control panel)
-    public static final String ST_NAME = "Atari ST";
+    private static final String ST_NAME = "Atari ST";
     // ST_OFF_MAGIC = 0x00;
-    public static final int ST_OFF_TSIZE = 0x02; // size of text segment
-    public static final int ST_OFF_DSIZE = 0x06; // size of data segment
-    public static final int ST_OFF_BSIZE = 0x0a; // size of bss segment
-    public static final int ST_OFF_SSIZE = 0x0e; // size of symbol table
-    public static final int ST_OFF_RESRV = 0x12; // reserved
-    public static final int ST_OFF_FLAGS = 0x16; // flags
+    private static final int ST_OFF_TSIZE = 0x02; // size of text segment
+    private static final int ST_OFF_DSIZE = 0x06; // size of data segment
+    private static final int ST_OFF_BSIZE = 0x0a; // size of bss segment
+    private static final int ST_OFF_SSIZE = 0x0e; // size of symbol table
+    private static final int ST_OFF_RESRV = 0x12; // reserved
+    private static final int ST_OFF_FLAGS = 0x16; // flags
     // ST_OFF_ABSFLAGS = 0x1a; // absolute flags
-    public static final int ST_HEADER_LEN = 0x1c;
+    private static final int ST_HEADER_LEN = 0x1c;
 
-    public static final int ST_MAGIC = 0x601a; // bra.s +26
-    public static final int ST_MAGIC_2 = 0x601b; // bra.s +27 "If data and BSS are not contiguous"
+    private static final int ST_MAGIC = 0x601a; // bra.s +26
+    private static final int ST_MAGIC_2 = 0x601b; // bra.s +27 "If data and BSS are not contiguous"
 
-    public static final long ST_LOAD_ADDRESS = 0x10000;    // arbitrary, same as Python ST loader uses
+    private static final long ST_LOAD_ADDRESS = 0x10000;    // arbitrary, same as Python ST loader uses
 
     @Override
     public String getName() {

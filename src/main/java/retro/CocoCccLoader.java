@@ -38,8 +38,8 @@ import ghidra.util.task.TaskMonitor;
  */
 public class CocoCccLoader extends AbstractProgramWrapperLoader {
 
-    public static final String CCC_NAME = "Tandy Coco Cartridge (CCC)";
-    public static final String CCC_EXTENSION = ".ccc";
+    private static final String CCC_NAME = "Tandy Coco Cartridge (CCC)";
+    private static final String CCC_EXTENSION = ".ccc";
 
     @Override
     public String getName() {

@@ -40,22 +40,22 @@ import ghidra.util.task.TaskMonitor;
  */
 public class AmstradSnaLoader extends AbstractProgramWrapperLoader {
 
-    public static final String AMS_SNA_NAME = "Amstrad CPC Snapshot (SNA)";
-    public static final int AMS_SNA_HEADER_LEN = 0x100;
-    public static final long AMS_SNA_LENGTH_64K = AMS_SNA_HEADER_LEN + 64 * 1024;
-    public static final long AMS_SNA_LENGTH_128K = AMS_SNA_HEADER_LEN + 1288 * 1024;
-    public static final Long[] AMS_SNA_LENGTHS = {
+    private static final String AMS_SNA_NAME = "Amstrad CPC Snapshot (SNA)";
+    private static final int AMS_SNA_HEADER_LEN = 0x100;
+    private static final long AMS_SNA_LENGTH_64K = AMS_SNA_HEADER_LEN + 64 * 1024;
+    private static final long AMS_SNA_LENGTH_128K = AMS_SNA_HEADER_LEN + 1288 * 1024;
+    private static final Long[] AMS_SNA_LENGTHS = {
         AMS_SNA_LENGTH_64K,
         AMS_SNA_LENGTH_128K,
     };
-    public static final String AMS_SNA_MAGIC = "MV - SNA";
-    public static final int AMS_SNA_OFF_VERSION = 0x10;
-    public static final int AMS_SNA_OFF_SP = 0x21; // 16-bit
-    public static final int AMS_SNA_OFF_PC = 0x23; // 16-bit
-    public static final int AMS_SNA_OFF_CURR_RAM_CONFIG = 0x41;
-    public static final int AMS_SNA_OFF_DUMP_SIZE = 0x6b; // 16-bit
-    public static final int AMS_SNA_OFF_CPC_TYPE = 0x6d;
-    public static final String[] AMS_SNA_CPC_TYPES = {
+    private static final String AMS_SNA_MAGIC = "MV - SNA";
+    private static final int AMS_SNA_OFF_VERSION = 0x10;
+    private static final int AMS_SNA_OFF_SP = 0x21; // 16-bit
+    private static final int AMS_SNA_OFF_PC = 0x23; // 16-bit
+    private static final int AMS_SNA_OFF_CURR_RAM_CONFIG = 0x41;
+    private static final int AMS_SNA_OFF_DUMP_SIZE = 0x6b; // 16-bit
+    private static final int AMS_SNA_OFF_CPC_TYPE = 0x6d;
+    private static final String[] AMS_SNA_CPC_TYPES = {
         "CPC 464", "CPC 664", "CPC 6128"
     };
 

@@ -34,9 +34,9 @@ import ghidra.util.task.TaskMonitor;
  */
 public class NeoGeoNeoLoader extends AbstractProgramWrapperLoader {
 
-    public static final String NEO_NAME = "Neo Geo .neo";
-    public static final String NEO_MAGIC = "NEO\1";
-    public static final int NEO_HEADER_LEN = 0x5e;
+    private static final String NEO_NAME = "Neo Geo .neo";
+    private static final String NEO_MAGIC = "NEO\1";
+    private static final int NEO_HEADER_LEN = 0x5e;
 
     @Override
     public String getName() {

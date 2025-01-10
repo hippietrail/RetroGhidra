@@ -42,12 +42,12 @@ import ghidra.util.task.TaskMonitor;
  */
 public class ClassicMacResourceForkLoader extends AbstractProgramWrapperLoader {
 
-    public static final String RSRC_NAME = "Classic Macintosh Resource Fork";
-    public static final int RSRC_HEADER_LEN = 16;
-    public static final int RSRC_MAP_HEADER_OFFSET_TO_TYPE_LIST_OFFSET = 8;
-    public static final int RSRC_TYPE_LIST_ENTRY_SIZE = 8;
-    public static final int RSRC_RESOURCE_LIST_ENTRY_SIZE = 12;
-    public static final int RSRC_CODE_NEAR_HEADER_SIZE = 4;
+    private static final String RSRC_NAME = "Classic Macintosh Resource Fork";
+    private static final int RSRC_HEADER_LEN = 16;
+    private static final int RSRC_MAP_HEADER_OFFSET_TO_TYPE_LIST_OFFSET = 8;
+    private static final int RSRC_TYPE_LIST_ENTRY_SIZE = 8;
+    private static final int RSRC_RESOURCE_LIST_ENTRY_SIZE = 12;
+    private static final int RSRC_CODE_NEAR_HEADER_SIZE = 4;
 
     // store these in findSupportedLoadSpecs() for use in load()
     long dataOffset = -1;

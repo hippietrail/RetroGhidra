@@ -41,11 +41,11 @@ import retro.Ti994LoaderHelper.HeaderField;
  */
 public class Ti994FiadLoader extends AbstractProgramWrapperLoader {
 
-    public static final String FIAD_NAME = "TI-99/4A FIAD";
-    public static final int FIAD_OFF_FILE_STATUS_FLAGS = 0x0c;
-    public static final int FIAD_HEADER_LEN = 128;
+    private static final String FIAD_NAME = "TI-99/4A FIAD";
+    private static final int FIAD_OFF_FILE_STATUS_FLAGS = 0x0c;
+    private static final int FIAD_HEADER_LEN = 128;
 
-    public static final int FIAD_LOAD_ADDR = 0x6000;
+    private static final int FIAD_LOAD_ADDR = 0x6000;
 
     @Override
     public String getName() {

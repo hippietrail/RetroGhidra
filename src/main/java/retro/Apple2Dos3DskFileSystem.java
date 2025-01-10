@@ -79,19 +79,19 @@ public class Apple2Dos3DskFileSystem extends AbstractFileSystem<Dos3Entry> {
     // http://justsolve.archiveteam.org/wiki/Apple_DOS_file_system
     // https://ciderpress2.com/formatdoc/DOS-notes.html
     // https://mirrors.apple2.org.za/ftp.apple.asimov.net/documentation/misc/apple2_disk_format.doc.txt
-    public static final int TRACKS = 35;
-    public static final int SECTORS_PER_TRACK = 16;
-    public static final int SECTOR_SIZE = 256;
-    public static final int SECTORS_PER_TRACK_SHIFT = 4;
-    public static final int SECTOR_SIZE_SHIFT = 8;
-    public static final int DISK_IMAGE_SIZE = TRACKS * SECTORS_PER_TRACK * SECTOR_SIZE;
-    public static final int CATALOG_TRACK = 17;
-    public static final int ENTRIES_PER_SECTOR = 7;
-    public static final int ENTRIES_START_OFFSET = 0x0b;
-    public static final int UNUSED = 0;
-    public static final int DELETED = 0xff;
-    public static final int FILE_NAME_LENGTH = 30;
-    public static final int ENTRY_SIZE = 35;
+    private static final int TRACKS = 35;
+    private static final int SECTORS_PER_TRACK = 16;
+    private static final int SECTOR_SIZE = 256;
+    private static final int SECTORS_PER_TRACK_SHIFT = 4;
+    private static final int SECTOR_SIZE_SHIFT = 8;
+    private static final int DISK_IMAGE_SIZE = TRACKS * SECTORS_PER_TRACK * SECTOR_SIZE;
+    private static final int CATALOG_TRACK = 17;
+    private static final int ENTRIES_PER_SECTOR = 7;
+    private static final int ENTRIES_START_OFFSET = 0x0b;
+    private static final int UNUSED = 0;
+    private static final int DELETED = 0xff;
+    private static final int FILE_NAME_LENGTH = 30;
+    private static final int ENTRY_SIZE = 35;
     // file types look like bits that could be ORed together, but they can't
     // we can convert from an array index to the bit value though as per the comment fields below:
     private static final String[] FILE_TYPES = {

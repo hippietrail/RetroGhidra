@@ -42,11 +42,11 @@ import ghidra.util.task.TaskMonitor;
  */
 public class Atari8BitXexLoader extends AbstractProgramWrapperLoader {
 
-    public static final String XEX_NAME = "Atari 8-bit program (XEX)";
-    public static final String XEX_EXTENSION = ".xex";
-    public static final int XEX_HEAD = 0xffff;
-    public static final int XEX_RUNAD = 0x02e0;
-    public static final int XEX_INITAD = 0x02e2;
+    private static final String XEX_NAME = "Atari 8-bit program (XEX)";
+    private static final String XEX_EXTENSION = ".xex";
+    private static final int XEX_HEAD = 0xffff;
+    private static final int XEX_RUNAD = 0x02e0;
+    private static final int XEX_INITAD = 0x02e2;
 
     @Override
     public String getName() {

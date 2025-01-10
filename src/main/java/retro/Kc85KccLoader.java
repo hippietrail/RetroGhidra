@@ -40,9 +40,9 @@ import ghidra.util.task.TaskMonitor;
  */
 public class Kc85KccLoader extends AbstractProgramWrapperLoader {
 
-    public static final String KCC_NAME = "KC 85 .kcc";
-    public static final int KCC_NAME_LEN = 16;
-    public static final int KCC_HEADER_SIZE = 128;
+    private static final String KCC_NAME = "KC 85 .kcc";
+    private static final int KCC_NAME_LEN = 16;
+    private static final int KCC_HEADER_SIZE = 128;
 
     private int numAddresses;
     private int loadAddress;

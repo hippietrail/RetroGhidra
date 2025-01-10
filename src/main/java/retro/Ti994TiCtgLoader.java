@@ -33,9 +33,9 @@ import ghidra.util.task.TaskMonitor;
  */
 public class Ti994TiCtgLoader extends AbstractProgramWrapperLoader {
 
-    public static final String CTG_NAME = "TI-99/4A CTG";
-    public static final String CTG_EXTENSION = ".ctg";
-    public static final String CTG_MAGIC = "TI-99/4A Module - ";
+    private static final String CTG_NAME = "TI-99/4A CTG";
+    private static final String CTG_EXTENSION = ".ctg";
+    private static final String CTG_MAGIC = "TI-99/4A Module - ";
 
     @Override
     public String getName() {

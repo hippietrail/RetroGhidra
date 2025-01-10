@@ -47,20 +47,20 @@ import ghidra.util.task.TaskMonitor;
  */
 public class Ti83fLoader extends AbstractProgramWrapperLoader {
 
-    public static final String TI83F_NAME = "TI .8xp";
-    public static final String TI83F_MAGIC = "**TI83F*";
-    //public static final String TI83F_EXTENSION = ".8xp"; // "TI-83+ program"
-    public static final byte[] TI83F_MAGIC_BYTES = { 0x1a, 0x0a };
-    public static final int TI83F_OFF_COMMENT = 11;
-    public static final int TI83F_COMMENT_LEN = 42;
-    public static final int TI83F_HEADER_LEN = 55;
-    public static final int TI83F_METADATA_LEN = 19;
-    public static final int TI83F_FILETYPE_PROGRAM = 0x05;
-    public static final int TI83F_FILETYPE_EDIT_LOCKED_PROGRAM = 0x06;
-    public static final int TI83F_FILETYPE_FLASH_PROGRAM = 0x24;
-    public static final int TI83F_PROGRAM_FLAG_ASM_SOURCE = 0x6cbb;
-    public static final int TI83F_PROGRAM_FLAG_MACHINE_CODE = 0x6dbb;
-    public static final int TI83F_START_ADDRESS = 0x9d95;
+    private static final String TI83F_NAME = "TI .8xp";
+    private static final String TI83F_MAGIC = "**TI83F*";
+    //private static final String TI83F_EXTENSION = ".8xp"; // "TI-83+ program"
+    private static final byte[] TI83F_MAGIC_BYTES = { 0x1a, 0x0a };
+    private static final int TI83F_OFF_COMMENT = 11;
+    private static final int TI83F_COMMENT_LEN = 42;
+    private static final int TI83F_HEADER_LEN = 55;
+    private static final int TI83F_METADATA_LEN = 19;
+    private static final int TI83F_FILETYPE_PROGRAM = 0x05;
+    private static final int TI83F_FILETYPE_EDIT_LOCKED_PROGRAM = 0x06;
+    private static final int TI83F_FILETYPE_FLASH_PROGRAM = 0x24;
+    private static final int TI83F_PROGRAM_FLAG_ASM_SOURCE = 0x6cbb;
+    private static final int TI83F_PROGRAM_FLAG_MACHINE_CODE = 0x6dbb;
+    private static final int TI83F_START_ADDRESS = 0x9d95;
 
     @Override
     public String getName() {

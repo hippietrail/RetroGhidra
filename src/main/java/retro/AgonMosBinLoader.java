@@ -34,12 +34,12 @@ import ghidra.util.task.TaskMonitor;
  */
 public class AgonMosBinLoader extends AbstractProgramWrapperLoader {
 
-    public static final String MOS_NAME = "Agon Light MOS .bin";
-    public static final int MOS_HEADER_OFFSET = 0x40;
-    public static final int MOS_HEADER_LENGTH = 5;
-    public static final String MOS_MAGIC = "MOS";
-    public static final int MOS_VERSION = 0;
-    public static final int MOS_FLAGS_ADL = 1; // not sure this field is named
+    private static final String MOS_NAME = "Agon Light MOS .bin";
+    private static final int MOS_HEADER_OFFSET = 0x40;
+    private static final int MOS_HEADER_LENGTH = 5;
+    private static final String MOS_MAGIC = "MOS";
+    private static final int MOS_VERSION = 0;
+    private static final int MOS_FLAGS_ADL = 1; // not sure this field is named
 
     @Override
     public String getName() {

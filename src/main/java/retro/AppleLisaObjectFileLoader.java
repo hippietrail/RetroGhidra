@@ -40,26 +40,26 @@ import ghidra.util.task.TaskMonitor;
  */
 public class AppleLisaObjectFileLoader extends AbstractProgramWrapperLoader {
 
-    public static final String LISA_NAME = "Apple Lisa Object File";
+    private static final String LISA_NAME = "Apple Lisa Object File";
 
-    public static final int LISA_TAG_EOF_MARK = 0x00;
-    public static final int LISA_TAG_MODULE_NAME = 0x80;
-    public static final int LISA_TAG_END_BLOCK = 0x81;
-    public static final int LISA_TAG_ENTRY_POINT = 0x82;
-    public static final int LISA_TAG_EXTERNAL = 0x83;
-    public static final int LISA_TAG_START_ADDRESS = 0x84;
-    public static final int LISA_TAG_CODE_BLOCK = 0x85;
-    public static final int LISA_TAG_RELOCATION = 0x86;
-    public static final int LISA_TAG_COMMON_RELOC = 0x87;
-    public static final int LISA_TAG_SHORT_EXTERNAL = 0x89;
-    public static final int LISA_TAG_UNIT_BLOCK = 0x92;
-    public static final int LISA_TAG_EXECUTABLE = 0x98;
-    public static final int LISA_TAG_VERSION_CTRL = 0x99;
-    public static final int LISA_TAG_SEGMENT_TABLE = 0x9A;
-    public static final int LISA_TAG_UNIT_TABLE = 0x9B;
-    public static final int LISA_TAG_SEG_LOCATION = 0x9C;
-    public static final int LISA_TAG_UNIT_LOCATION = 0x9D;
-    public static final int LISA_TAG_FILES_BLOCK = 0x9E;
+    private static final int LISA_TAG_EOF_MARK = 0x00;
+    private static final int LISA_TAG_MODULE_NAME = 0x80;
+    private static final int LISA_TAG_END_BLOCK = 0x81;
+    private static final int LISA_TAG_ENTRY_POINT = 0x82;
+    private static final int LISA_TAG_EXTERNAL = 0x83;
+    private static final int LISA_TAG_START_ADDRESS = 0x84;
+    private static final int LISA_TAG_CODE_BLOCK = 0x85;
+    private static final int LISA_TAG_RELOCATION = 0x86;
+    private static final int LISA_TAG_COMMON_RELOC = 0x87;
+    private static final int LISA_TAG_SHORT_EXTERNAL = 0x89;
+    private static final int LISA_TAG_UNIT_BLOCK = 0x92;
+    private static final int LISA_TAG_EXECUTABLE = 0x98;
+    private static final int LISA_TAG_VERSION_CTRL = 0x99;
+    private static final int LISA_TAG_SEGMENT_TABLE = 0x9A;
+    private static final int LISA_TAG_UNIT_TABLE = 0x9B;
+    private static final int LISA_TAG_SEG_LOCATION = 0x9C;
+    private static final int LISA_TAG_UNIT_LOCATION = 0x9D;
+    private static final int LISA_TAG_FILES_BLOCK = 0x9E;
 
     // InterfLoc is misprinted in http://pascal.hansotten.com/uploads/lisa/Lisa_Develpment_System_Internals_Documentation_198402.pdf
     // 86 and 92 are given in different places, but both are used for other things.

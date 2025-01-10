@@ -34,8 +34,8 @@ import ghidra.util.task.TaskMonitor;
  */
 public class Tk2000Ct2Loader extends AbstractProgramWrapperLoader {
 
-    public static final String CT2_NAME = "TK 2000 / MPF II CT2";
-    public static final String CT2_MAGIC = "CTK2";
+    private static final String CT2_NAME = "TK 2000 / MPF II CT2";
+    private static final String CT2_MAGIC = "CTK2";
 
     @Override
     public String getName() {

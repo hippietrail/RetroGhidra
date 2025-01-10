@@ -41,30 +41,30 @@ import ghidra.util.task.TaskMonitor;
  */
 public class SpectrumSnaLoader extends AbstractProgramWrapperLoader {
 
-    public static final String ZX_SNA_NAME = "Sinclair ZX Spectrum Snapshot (SNA)";
-    public static final long ZX_SNA_LENGTH_48K = 27 + 48 * 1024;
-    public static final long ZX_SNA_LENGTH_128K_S = 27 + 48 * 1024 + 4 + 5 * 16 * 1024;
-    public static final long ZX_SNA_LENGTH_128K_L = 27 + 48 * 1024 + 4 + 6 * 16 * 1024;
-    public static final Long[] ZX_SNA_LENGTHS = {
+    private static final String ZX_SNA_NAME = "Sinclair ZX Spectrum Snapshot (SNA)";
+    private static final long ZX_SNA_LENGTH_48K = 27 + 48 * 1024;
+    private static final long ZX_SNA_LENGTH_128K_S = 27 + 48 * 1024 + 4 + 5 * 16 * 1024;
+    private static final long ZX_SNA_LENGTH_128K_L = 27 + 48 * 1024 + 4 + 6 * 16 * 1024;
+    private static final Long[] ZX_SNA_LENGTHS = {
         ZX_SNA_LENGTH_48K,
         ZX_SNA_LENGTH_128K_S, // short: no repeated 16k bank
         ZX_SNA_LENGTH_128K_L, // long: has repeated 16k bank
     };
-    public static final int ZX_SNA_OFF_IFF2 = 0x13;
-    public static final int ZX_SNA_OFF_SP = 0x17;
-    public static final int ZX_SNA_OFF_INT_MODE = 0x19;
-    public static final int ZX_SNA_OFF_BORDER = 0x1a;
-    public static final int ZX_SNA_HEADER_LEN = 0x1b;
+    private static final int ZX_SNA_OFF_IFF2 = 0x13;
+    private static final int ZX_SNA_OFF_SP = 0x17;
+    private static final int ZX_SNA_OFF_INT_MODE = 0x19;
+    private static final int ZX_SNA_OFF_BORDER = 0x1a;
+    private static final int ZX_SNA_HEADER_LEN = 0x1b;
 
-    public static final int ZX_SNA_ROM_PAGED_SPEC = 0x71;
-    public static final int ZX_SNA_ROM_PAGED_INT1 = 0xc9;
+    private static final int ZX_SNA_ROM_PAGED_SPEC = 0x71;
+    private static final int ZX_SNA_ROM_PAGED_INT1 = 0xc9;
 
-    public static final int ZX_SNA_RAM_START = 0x4000; // 16384
-    public static final int ZX_SNA_DISPLAY_START = ZX_SNA_RAM_START;
-    public static final int ZX_SNA_DISPLAY_SIZE = 32 * 192;
-    public static final int ZX_SNA_ATTR_START = ZX_SNA_DISPLAY_START + ZX_SNA_DISPLAY_SIZE;
-    public static final int ZX_SNA_ATTR_SIZE = 32 * 24;
-    public static final int ZX_SNA_RAM_END = 0x10000;
+    private static final int ZX_SNA_RAM_START = 0x4000; // 16384
+    private static final int ZX_SNA_DISPLAY_START = ZX_SNA_RAM_START;
+    private static final int ZX_SNA_DISPLAY_SIZE = 32 * 192;
+    private static final int ZX_SNA_ATTR_START = ZX_SNA_DISPLAY_START + ZX_SNA_DISPLAY_SIZE;
+    private static final int ZX_SNA_ATTR_SIZE = 32 * 24;
+    private static final int ZX_SNA_RAM_END = 0x10000;
 
     @Override
     public String getName() {

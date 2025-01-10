@@ -45,13 +45,13 @@ import ghidra.util.task.TaskMonitor;
  */
 public class QlLoader extends AbstractProgramWrapperLoader {
 
-    public static final String QDOS_NAME = "Sinclair QL QDOS";
-    public static final int QDOS_OFF_SIG = 6;
-    public static final int QDOS_OFF_FILENAME = 8;
-    public static final int QDOS_HEADER_LEN = 64;
-    public static final int QDOS_SIG = 0x4afb;
-    public static final int QDOS_FILENAME_LEN = 36;
-    public static final int QDOS_PREFERRED_LOAD_ADDR = 0x30000;
+    private static final String QDOS_NAME = "Sinclair QL QDOS";
+    private static final int QDOS_OFF_SIG = 6;
+    private static final int QDOS_OFF_FILENAME = 8;
+    private static final int QDOS_HEADER_LEN = 64;
+    private static final int QDOS_SIG = 0x4afb;
+    private static final int QDOS_FILENAME_LEN = 36;
+    private static final int QDOS_PREFERRED_LOAD_ADDR = 0x30000;
 
     @Override
     public String getName() {

@@ -40,8 +40,8 @@ import ghidra.util.task.TaskMonitor;
  */
 public class C64CrtLoader extends AbstractProgramWrapperLoader {
 
-    public static final String CRT_NAME = "Commodore 64 Cartridge (CRT)";
-    public static final String CRT_MAGIC = "C64 CARTRIDGE   ";
+    private static final String CRT_NAME = "Commodore 64 Cartridge (CRT)";
+    private static final String CRT_MAGIC = "C64 CARTRIDGE   ";
     public final int[] CRT_C64_MAGIC = { 0xC3, 0xC2, 0xCD, '8', '0' }; // PETSCII 'CBM80'
 
     @Override

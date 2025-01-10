@@ -31,10 +31,10 @@ import ghidra.util.task.TaskMonitor;
 
 public class Apple2Dos3DskFileSystemFactory implements GFileSystemFactoryByteProvider<Apple2Dos3DskFileSystem>, GFileSystemProbeByteProvider {
 
-    public static final int TRACKS = 35;
-    public static final int SECTORS_PER_TRACK = 16;
-    public static final int SECTOR_SIZE = 256;
-    public static final int DISK_IMAGE_SIZE = TRACKS * SECTORS_PER_TRACK * SECTOR_SIZE;
+    private static final int TRACKS = 35;
+    private static final int SECTORS_PER_TRACK = 16;
+    private static final int SECTOR_SIZE = 256;
+    private static final int DISK_IMAGE_SIZE = TRACKS * SECTORS_PER_TRACK * SECTOR_SIZE;
 
     private boolean isDos3Order;
 

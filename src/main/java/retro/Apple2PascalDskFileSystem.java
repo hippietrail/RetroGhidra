@@ -67,18 +67,18 @@ public class Apple2PascalDskFileSystem extends AbstractFileSystem<PascalEntry> {
 
     public static final String FS_TYPE = "apple2pascal"; // ([a-z0-9]+ only)
 
-    public static final int SECTORS_PER_TRACK = 16;
-    public static final int SECTOR_SIZE = 256;
-    public static final int FT_UNTYPED = 0;
-    public static final int FT_XDSK = 1;
-    public static final int FT_CODE = 2;
-    public static final int FT_TEXT = 3;
-    public static final int FT_INFO = 4;
-    public static final int FT_DATA = 5;
-    public static final int FT_GRAF = 6;
-    public static final int FT_FOTO = 7;
-    public static final int FT_SECUREDIR = 8;
-    public static final Map<Integer, String> FILE_TYPES = Map.of(
+    private static final int SECTORS_PER_TRACK = 16;
+    private static final int SECTOR_SIZE = 256;
+    private static final int FT_UNTYPED = 0;
+    private static final int FT_XDSK = 1;
+    private static final int FT_CODE = 2;
+    private static final int FT_TEXT = 3;
+    private static final int FT_INFO = 4;
+    private static final int FT_DATA = 5;
+    private static final int FT_GRAF = 6;
+    private static final int FT_FOTO = 7;
+    private static final int FT_SECUREDIR = 8;
+    private static final Map<Integer, String> FILE_TYPES = Map.of(
         FT_UNTYPED, "UNTYPED",
         FT_XDSK, "XDSK",
         FT_CODE, "CODE",

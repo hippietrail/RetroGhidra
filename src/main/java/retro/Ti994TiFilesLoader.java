@@ -39,13 +39,13 @@ import retro.Ti994LoaderHelper.HeaderField;
  */
 public class Ti994TiFilesLoader extends AbstractProgramWrapperLoader {
 
-    public static final String TIF_NAME = "TI-99/4A TIFILES";
-    public static final int TIF_OFF_FILE_STATUS_FLAGS = 0x0a;
-    public static final int TIF_HEADER_LEN = 128;
+    private static final String TIF_NAME = "TI-99/4A TIFILES";
+    private static final int TIF_OFF_FILE_STATUS_FLAGS = 0x0a;
+    private static final int TIF_HEADER_LEN = 128;
 
-    public static final String TIF_MAGIC = "\07TIFILES";
+    private static final String TIF_MAGIC = "\07TIFILES";
 
-    public static final int TIF_LOAD_ADDR = 0x6000;
+    private static final int TIF_LOAD_ADDR = 0x6000;
 
     @Override
     public String getName() {

@@ -40,10 +40,10 @@ import ghidra.util.task.TaskMonitor;
  */
 public class CommodorePrgLoader extends AbstractProgramWrapperLoader {
 
-    public static final String PRG_NAME = "Commodore 8-bit program (PRG)";
-    public static final String PRG_EXTENSION = ".prg";
-    public static final int PRG_VIC20_OFF_MAGIC = 2 + 4; // load address, warm start vector, another vector?
-    public static final int[] PRG_VIC20_MAGIC = { 0x41, 0x30, 0xC3, 0xC2, 0xCD };
+    private static final String PRG_NAME = "Commodore 8-bit program (PRG)";
+    private static final String PRG_EXTENSION = ".prg";
+    private static final int PRG_VIC20_OFF_MAGIC = 2 + 4; // load address, warm start vector, another vector?
+    private static final int[] PRG_VIC20_MAGIC = { 0x41, 0x30, 0xC3, 0xC2, 0xCD };
 
     public int load;
     public Optional<Integer> maybeWarmStart = Optional.empty();

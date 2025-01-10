@@ -42,20 +42,20 @@ import ghidra.util.task.TaskMonitor;
  */
 public class Trs80Loader extends AbstractProgramWrapperLoader {
 
-    public static final String TRS_NAME = "TRS-80 /CMD";
-    public static final int TRS_TYPE_OBJECT_CODE = 0x01;    // "object code" (load block) - aka "data"
-    public static final int TRS_TYPE_TRANSFER = 0x02;       // "transfer address" - aka "jump address"
-    public static final int TRS_TYPE_END = 0x04;            // "end of partitioned data set member"
-    public static final int TRS_TYPE_HEADER = 0x05;         // "load module header" - aka "header"
-    public static final int TRS_TYPE_MEMBER = 0x06;         // "partitioned data set member"
-    public static final int TRS_TYPE_PATCH = 0x07;          // "patch name header" (LDOS)
-    public static final int TRS_TYPE_ISAM = 0x08;           // "ISAM directory entry"
-    public static final int TRS_TYPE_END_ISAM = 0x0a;       // "end of ISAM directory"
-    public static final int TRS_TYPE_PDS = 0x0c;            // "PDS directory entry"
-    public static final int TRS_TYPE_END_PDS = 0x0e;        // "end of PDS directory"
-    public static final int TRS_TYPE_YANK = 0x10;           // "yanked load block"
-    public static final int TRS_TYPE_COPYRIGHT = 0x1f;      // "copyright block" (LDOS and DOSPLUS)
-    public static final int[] TRS_TYPE_CODES = {
+    private static final String TRS_NAME = "TRS-80 /CMD";
+    private static final int TRS_TYPE_OBJECT_CODE = 0x01;    // "object code" (load block) - aka "data"
+    private static final int TRS_TYPE_TRANSFER = 0x02;       // "transfer address" - aka "jump address"
+    private static final int TRS_TYPE_END = 0x04;            // "end of partitioned data set member"
+    private static final int TRS_TYPE_HEADER = 0x05;         // "load module header" - aka "header"
+    private static final int TRS_TYPE_MEMBER = 0x06;         // "partitioned data set member"
+    private static final int TRS_TYPE_PATCH = 0x07;          // "patch name header" (LDOS)
+    private static final int TRS_TYPE_ISAM = 0x08;           // "ISAM directory entry"
+    private static final int TRS_TYPE_END_ISAM = 0x0a;       // "end of ISAM directory"
+    private static final int TRS_TYPE_PDS = 0x0c;            // "PDS directory entry"
+    private static final int TRS_TYPE_END_PDS = 0x0e;        // "end of PDS directory"
+    private static final int TRS_TYPE_YANK = 0x10;           // "yanked load block"
+    private static final int TRS_TYPE_COPYRIGHT = 0x1f;      // "copyright block" (LDOS and DOSPLUS)
+    private static final int[] TRS_TYPE_CODES = {
         TRS_TYPE_OBJECT_CODE, TRS_TYPE_TRANSFER, TRS_TYPE_END, TRS_TYPE_HEADER, TRS_TYPE_MEMBER,
         TRS_TYPE_PATCH, TRS_TYPE_ISAM, TRS_TYPE_END_ISAM, TRS_TYPE_PDS, TRS_TYPE_END_PDS, 
         TRS_TYPE_YANK, TRS_TYPE_COPYRIGHT,

@@ -57,14 +57,14 @@ public class Apple2Binary2FileSystem extends AbstractFileSystem<BnyEntry> {
 
     public static final String FS_TYPE = "bny"; // ([a-z0-9]+ only)
 
-    public static final int BNY_OFF_FILETYPE_CODE = 4;
-    public static final int BNY_OFF_AUX_TYPE_CODE = 5; // 16-bit
-    public static final int BNY_OFF_EOF_POSITION = 20; // 24-bit
-    public static final int BNY_OFF_FILENAME_LEN = 23; // (or partial pathname)
-    public static final int BNY_OFF_FILENAME = 24; // 64 bytes (or partial pathname)
-    public static final int BNY_HEADER_LEN = 128;
+    private static final int BNY_OFF_FILETYPE_CODE = 4;
+    private static final int BNY_OFF_AUX_TYPE_CODE = 5; // 16-bit
+    private static final int BNY_OFF_EOF_POSITION = 20; // 24-bit
+    private static final int BNY_OFF_FILENAME_LEN = 23; // (or partial pathname)
+    private static final int BNY_OFF_FILENAME = 24; // 64 bytes (or partial pathname)
+    private static final int BNY_HEADER_LEN = 128;
 
-    public static final int BNY_MAX_FILENAME_LEN = 64;
+    private static final int BNY_MAX_FILENAME_LEN = 64;
 
     private ByteProvider provider;
 

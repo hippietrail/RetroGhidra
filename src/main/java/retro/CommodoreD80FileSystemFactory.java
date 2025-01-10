@@ -31,8 +31,8 @@ import ghidra.util.task.TaskMonitor;
 
 public class CommodoreD80FileSystemFactory implements GFileSystemFactoryByteProvider<CommodoreD80FileSystem>, GFileSystemProbeByteProvider {
 
-    public static final int D80_FILE_SIZE = 533248;
-    public static final int D80_TRACK_39_OFFSET = 0x44E00;
+    private static final int D80_FILE_SIZE = 533248;
+    private static final int D80_TRACK_39_OFFSET = 0x44E00;
 
     @Override
     public boolean probe(ByteProvider byteProvider, FileSystemService fsService,
