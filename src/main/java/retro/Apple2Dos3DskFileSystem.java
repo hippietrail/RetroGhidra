@@ -232,6 +232,8 @@ public class Apple2Dos3DskFileSystem extends AbstractFileSystem<Dos3Entry> {
         int tslt = metadata.firstTslsTrack; // T=0/255 are special
         int tsls = metadata.firstTslsSector;
 
+        int sectorCount = metadata.lenInSectors;
+
         // the outer loop is like a linked list terminated by tslt == 0
         while (tslt != 0) {
             if (!isDos3Order && tsls != 0 && tsls != 15) tsls = 15 - tsls;
@@ -248,14 +250,18 @@ public class Apple2Dos3DskFileSystem extends AbstractFileSystem<Dos3Entry> {
 
             // the inner loop is like an array of 122 entries
             // one track/sector list sector can have up to 122 entries after the 12-byte header
-            // TODO so we could break out of the loop when we get to > 122 or the offset is > 254 (0xfe)
             for (int i = 0; i < 122; i++) {
                 int t = r.readNextUnsignedByte();
                 int s = r.readNextUnsignedByte();
-                // if (t == 0) break; // TODO T=0 indicates "sparse" sector!!
-                if (!isDos3Order && s != 0 && s != 15) s = 15 - s;
-                long dataOff = ((t << SECTORS_PER_TRACK_SHIFT) + s) << SECTOR_SIZE_SHIFT;
-                rmbp.addRange(dataOff, SECTOR_SIZE);
+                if (t == 0) {
+                    rmbp.addSparseRange(SECTOR_SIZE);
+                } else {
+                    if (!isDos3Order && s != 0 && s != 15) s = 15 - s;
+                    long dataOff = ((t << SECTORS_PER_TRACK_SHIFT) + s) << SECTOR_SIZE_SHIFT;
+                    rmbp.addRange(dataOff, SECTOR_SIZE);
+                }
+                sectorCount--;
+                if (sectorCount == 0) return rmbp;
             }
 
             tslt = nextTslTrack;
@@ -278,7 +284,7 @@ public class Apple2Dos3DskFileSystem extends AbstractFileSystem<Dos3Entry> {
             result.add(FileAttributeType.NAME_ATTR, metadata.name);
             result.add(FileAttributeType.SIZE_ATTR, metadata.size);
             // file attributes
-            result.add("Filetype", filetypeToString(metadata));
+            result.add("Filetype", filetypeToString(metadata.fileType));
             result.add("Locked", metadata.isLocked);
             result.add("Length in sectors", metadata.lenInSectors);
             result.add("Entry Track/Sector/Number", metadata.entryTrack + "/" + metadata.entrySector + "/" + metadata.entryNumber);
@@ -289,9 +295,9 @@ public class Apple2Dos3DskFileSystem extends AbstractFileSystem<Dos3Entry> {
         return result;
     }
 
-    private String filetypeToString(Dos3Entry metadata) {
-        int index = metadata.fileType == 0 ? 0 : Integer.numberOfTrailingZeros(metadata.fileType) + 1;
-        String result = String.format("0x%02x", metadata.fileType);
+    public static String filetypeToString(int fileType) {
+        int index = fileType == 0 ? 0 : Integer.numberOfTrailingZeros(fileType) + 1;
+        String result = String.format("0x%02x", fileType);
         if (index < FILE_TYPES.length && FILE_TYPES[index] != null) {
             result += " (" + FILE_TYPES[index] + ")";
         }

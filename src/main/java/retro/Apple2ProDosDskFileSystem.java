@@ -316,7 +316,7 @@ public class Apple2ProDosDskFileSystem extends AbstractFileSystem<ProDosEntry> {
             RangeMappedByteProvider sapling = new RangeMappedByteProvider(provider, file.getFSRL());
             long indexBlockSectors[] = blockNumberToOffsets(metadata.keyPointer);
 
-            for (int i = 1; i < metadata.blocksUsed; i++) {
+            for (int i = 0; i < metadata.blocksUsed; i++) {
                 int b = (provider.readByte(indexBlockSectors[1] + i) & 0xff) << 8;
                 b |= (provider.readByte(indexBlockSectors[0] + i) & 0xff);
                 if (b == 0) {
@@ -387,10 +387,14 @@ public class Apple2ProDosDskFileSystem extends AbstractFileSystem<ProDosEntry> {
         return result;
     }
 
-    private String typeToString(Map<Integer, String> map, int type) {
+    private static String typeToString(Map<Integer, String> map, int type) {
         String result = String.format("0x%02x", type);
         if (map.containsKey(type)) result += " (" + map.get(type) + ")";
         return result;
+    }
+
+    public static String fileTypeToString(int fileType) {
+        return typeToString(FILE_TYPES, fileType);
     }
 
 }

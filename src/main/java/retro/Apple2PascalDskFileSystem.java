@@ -250,11 +250,9 @@ public class Apple2PascalDskFileSystem extends AbstractFileSystem<PascalEntry> {
         return result;
     }
 
-    private String filetypeToString(int fileType) {
+    public static String filetypeToString(int fileType) {
         String result = String.format("0x%02x", fileType);
-        if (FILE_TYPES.containsKey(fileType)) {
-            result += " (" + FILE_TYPES.get(fileType) + ")";
-        }
+        if (FILE_TYPES.containsKey(fileType)) result += " (" + FILE_TYPES.get(fileType) + ")";
         return result;
     }
 

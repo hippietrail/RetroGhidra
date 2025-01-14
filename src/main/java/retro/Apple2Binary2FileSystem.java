@@ -16,6 +16,7 @@
 package retro;
 
 import java.io.IOException;
+import java.util.Map;
 
 import ghidra.app.util.bin.BinaryReader;
 import ghidra.app.util.bin.ByteProvider;
@@ -29,20 +30,27 @@ import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 
 class BnyEntry {
-    public final String name;
-    public final long offset;
-    public final long size;
-    public final int filetypeCode;
-    public final int auxTypeCode;
+    // standard attributes
+    String name;
+    long offset;
+    long size;
+    // file attributes
+    int filetypeCode;
+    int auxTypeCode;
+    // more file attributes
+    int osType;
 
     BnyEntry(String name, long offset, long size,
-            int filetypeCode, int auxTypeCode) {
+            int filetypeCode, int auxTypeCode,
+            int osType) {
         this.name = name;
         this.offset = offset;
         this.size = size;
 
         this.filetypeCode = filetypeCode;
         this.auxTypeCode = auxTypeCode;
+
+        this.osType = osType;
     }
 }
 
@@ -57,14 +65,64 @@ public class Apple2Binary2FileSystem extends AbstractFileSystem<BnyEntry> {
 
     public static final String FS_TYPE = "bny"; // ([a-z0-9]+ only)
 
+    // Offset  Length                  Contents
+    // ------  ------   ---------------------------------------
+    // +0       3      ID bytes: always $0A $47 $4C
+    // +3       1      access code
+    // +4       1      file type code
+    // +5       2      auxiliary type code
+    // +7       1      storage type code
+    // +8       2      size of file in 512-byte blocks
+    // +10      2      date of modification
+    // +12      2      time of modification
+    // +14      2      date of creation
+    // +16      2      time of creation
+    // +18      1      ID byte: always $02
+    // +19      1      [reserved]
+    // +20      3      end-of-file (EOF) position
+    // +23      1      length of filename/partial pathname
+    // +24      64     ASCII filename or partial pathname
+    // +88      23     [reserved, must be zero]
+    // +111     1      ProDOS 16 access code (high)
+    // +112     1      ProDOS 16 file type code (high)
+    // +113     1      ProDOS 16 storage type code (high)
+    // +114     2      ProDOS 16 size of file in blocks (high)
+    // +116     1      ProDOS 16 end-of-file position (high)
+    // +117     4      disk space needed
+    // +121     1      operating system type
+    // +122     2      native file type code
+    // +124     1      phantom file flag
+    // +125     1      data flags
+    // +126     1      Binary II version number
+    // +127     1      number of files to follow
+
+    // ID, access code
     private static final int BNY_OFF_FILETYPE_CODE = 4;
     private static final int BNY_OFF_AUX_TYPE_CODE = 5; // 16-bit
+    // storage type code, size in blocks, mod date, mod time, create date, create time, (id), (reserved)
     private static final int BNY_OFF_EOF_POSITION = 20; // 24-bit
     private static final int BNY_OFF_FILENAME_LEN = 23; // (or partial pathname)
     private static final int BNY_OFF_FILENAME = 24; // 64 bytes (or partial pathname)
+    // reserved
+    // prodos 16: access code hi, filetype code hi, storage type code hi, size in blocks hi, eof position hi
+    // disk space needed, os type, , native file type code, phantom file flag, data flags, binary ii version, num files to follow
+    private static final int BNY_OFF_OS_TYPE = 121;
     private static final int BNY_HEADER_LEN = 128;
 
     private static final int BNY_MAX_FILENAME_LEN = 64;
+
+    private static final int OS_PRODOS = 0;
+    private static final int OS_DOS3 = 1;
+    private static final int OS_PASCAL = 2;
+    private static final int OS_CPM = 3;
+    private static final int OS_MS_DOS = 4;
+    private static final Map<Integer, String> OS_TYPES = Map.of(
+        OS_PRODOS, "ProDOS",
+        OS_DOS3, "DOS 3",
+        OS_PASCAL, "Pascal",
+        OS_CPM, "CP/M",
+        OS_MS_DOS, "MS-DOS"
+    );
 
     private ByteProvider provider;
 
@@ -101,6 +159,8 @@ public class Apple2Binary2FileSystem extends AbstractFileSystem<BnyEntry> {
             final int filenameLen = reader.readUnsignedByte(off + BNY_OFF_FILENAME_LEN);
             final String filename = reader.readAsciiString(off + BNY_OFF_FILENAME, filenameLen);
 
+            final int osType = reader.readUnsignedByte(off + BNY_OFF_OS_TYPE);
+
             long dataBlocks = eofPos / 128;
             if (eofPos % 128 != 0) dataBlocks++;
             long endOffset = off + BNY_HEADER_LEN + dataBlocks * 128;
@@ -109,25 +169,28 @@ public class Apple2Binary2FileSystem extends AbstractFileSystem<BnyEntry> {
             // NOTE that in BNY the magic word exists in every entry
             // NOTE there are only entry headers, there is no overall header
             // NOTE so an archive is simply a concatenation of files with entry headers
-            String filetype = (filetypeCode == 4) ? "text" : (filetypeCode == 6) ? "binary" : "0x" + Integer.toHexString(filetypeCode);
-            Msg.info(this, i + ": " + filename + " ; type:" + filetype + " ; offset:0x" + Long.toHexString(off) + " ; aux:0x" + Integer.toHexString(auxTypeCode));
+            // String filetype = (filetypeCode == 4) ? "text" : (filetypeCode == 6) ? "binary" : "0x" + Integer.toHexString(filetypeCode);
+            // Msg.info(this, i + ": " + filename + " ; type:" + filetype + " ; offset:0x" + Long.toHexString(off) + " ; aux:0x" + Integer.toHexString(auxTypeCode));
 
             fsIndex.storeFile(
-                    filename,                   // path
-                    i++,                        // file index
-                    false,                      // is directory
-                    eofPos,                     // length
+                filename,                   // path
+                i++,                        // file index
+                false,                      // is directory
+                eofPos,                     // length
 
-                    new BnyEntry(
-                        filename,               // name
-                        off + BNY_HEADER_LEN,   // offset
-                        eofPos,                 // name is confusing, it's just the size
-                        filetypeCode,           // filetype code
-                        auxTypeCode             // aux type code
-                    )
+                new BnyEntry(
+                    filename,               // name
+                    off + BNY_HEADER_LEN,   // offset
+                    eofPos,                 // name is confusing, it's just the size
+
+                    filetypeCode,           // filetype code
+                    auxTypeCode,            // aux type code
+
+                    osType
+                )
             );
 
-            if (filetypeCode == 6) {
+            /*if (filetypeCode == 6) {
                 // a NAPS suffix is '#' followed by 6 hex digits, the first two are the filetype, the other four are the aux
                 // e.g. '#069e00' means filetype 6, aux 0x9e00
                 String napsSuffix = String.format("#06%04x", auxTypeCode);
@@ -143,11 +206,14 @@ public class Apple2Binary2FileSystem extends AbstractFileSystem<BnyEntry> {
                         filename + napsSuffix,  // name
                         off + BNY_HEADER_LEN,   // offset
                         eofPos,                 // length, as above
+
                         filetypeCode,           // filetype code
-                        auxTypeCode             // aux type code
+                        auxTypeCode,            // aux type code
+
+                        osType
                     )
                 );
-            }
+            }*/
 
             off = endOffset;
             // i++;
@@ -190,11 +256,24 @@ public class Apple2Binary2FileSystem extends AbstractFileSystem<BnyEntry> {
         if (metadata != null) {
             result.add(FileAttributeType.NAME_ATTR, metadata.name);
             result.add(FileAttributeType.SIZE_ATTR, metadata.size);
-            String filetypeString = (metadata.filetypeCode == 4) ? "text" : (metadata.filetypeCode == 6) ? "binary" : "0x" + Integer.toHexString(metadata.filetypeCode);
+            String filetypeString = filetypeToString(metadata.filetypeCode);
             String auxTypeString = (metadata.filetypeCode == 6) ? String.format("0x%04x", metadata.auxTypeCode) : Integer.toString(metadata.auxTypeCode);
             result.add("Filetype", filetypeString);
-            result.add("Aux Type", auxTypeString);
+            result.add("OS Type", osTypeToString(metadata.osType));
         }
+        return result;
+    }
+
+    public static String filetypeToString(int filetypeCode) {
+        String result = String.format("0x%02x", filetypeCode);
+        if (filetypeCode == 4) result = "text";
+        else if (filetypeCode == 6) result = "binary";
+        return result;
+    }
+
+    public static String osTypeToString(int osType) {
+        String result = String.format("0x%02x", osType);
+        if (OS_TYPES.containsKey(osType)) result = OS_TYPES.get(osType);
         return result;
     }
 
