@@ -96,7 +96,7 @@
 - BeOS (Ghidra natively supports PEF)
 - Camputers Lynx
 - Coleco Adam
-- Commodore PET
+- Commodore PET and SuperPET
 - CP/M .REL file loader
 - CP/M .SPR file loader
 - CP/M Plus and MP/M .PRL relocatable binary file loader
