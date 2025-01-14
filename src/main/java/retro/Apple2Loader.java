@@ -16,9 +16,6 @@
 package retro;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.nio.file.FileSystem;
 import java.util.*;
 
@@ -28,8 +25,6 @@ import ghidra.app.util.bin.ByteProvider;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.app.util.opinion.AbstractProgramWrapperLoader;
 import ghidra.app.util.opinion.LoadSpec;
-import ghidra.formats.gfilesystem.FSRL;
-import ghidra.formats.gfilesystem.FSRLRoot;
 import ghidra.formats.gfilesystem.FileSystemService;
 import ghidra.formats.gfilesystem.GFile;
 import ghidra.formats.gfilesystem.GFileSystem;
@@ -40,13 +35,8 @@ import ghidra.program.model.lang.LanguageCompilerSpecPair;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.symbol.SourceType;
 import ghidra.program.model.symbol.SymbolTable;
-import ghidra.util.Msg;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
-import retro.Apple2Binary2FileSystem;
-import retro.Apple2Dos3DskFileSystem;
-import retro.Apple2PascalDskFileSystem;
-import retro.Apple2ProDosDskFileSystem;
 
 /**
 * A {@link Loader} for loading Apple II files from RetroGhidra {@link FileSystem}s.

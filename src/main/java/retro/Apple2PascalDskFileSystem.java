@@ -16,6 +16,7 @@
 package retro;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.Map;
 
 import ghidra.app.util.bin.BinaryReader;
@@ -240,12 +241,15 @@ public class Apple2PascalDskFileSystem extends AbstractFileSystem<PascalEntry> {
             // standard attributes
             result.add(FileAttributeType.NAME_ATTR, metadata.name);
             result.add(FileAttributeType.SIZE_ATTR, metadata.size);
-
+            int year = metadata.modDate >> 9;
+            year = year < 40 ? 2000 + year : 1900 + year;
+            final int day = (metadata.modDate >> 4) & 0x1f;
+            final int month = metadata.modDate & 0x0f;
+            Date date = new Date(year - 1900, month - 1, day);
+            result.add(FileAttributeType.MODIFIED_DATE_ATTR, date);
             // file attributes
             result.add("File Type", filetypeToString(metadata.fileType));
             result.add("Last Block Byte Count", metadata.lastBlockByteCount);
-            int y = metadata.modDate >> 9;
-            result.add("Date Modified", (y < 40 ? 2000 + y : 1900 + y) + "-" + ((metadata.modDate >> 4) & 0x1f) + "-" + (metadata.modDate & 0x0f));
         }
         return result;
     }

@@ -17,6 +17,7 @@ package retro;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Map;
 
 import ghidra.app.util.bin.BinaryReader;
@@ -43,14 +44,21 @@ class ProDosEntry {
     int keyPointer;
     int blocksUsed;
     long eof;
+    int creationDate;
+    int creationTime;
     int auxType;
+    int modDate;
+    int modTime;
     // disk image / filesystem attributes
     String fileSystem;
     boolean isProDosOrder;
 
     ProDosEntry(String name, long size,
             int entryBlock, int entryNumber,
-            int storageType, int fileType, int keyPointer, int blocksUsed, long eof, int auxType,
+            int storageType, int fileType, int keyPointer, int blocksUsed, long eof,
+            int creationDate, int creationTime,
+            int auxType,
+            int modDate, int modTime,
             String fileSystem, boolean isProDosOrder) {
         // standard attributes
         this.name = name;
@@ -63,7 +71,11 @@ class ProDosEntry {
         this.keyPointer = keyPointer;
         this.blocksUsed = blocksUsed;
         this.eof = eof;
+        this.creationDate = creationDate;
+        this.creationTime = creationTime;
         this.auxType = auxType;
+        this.modDate = modDate;
+        this.modTime = modTime;
         // disk image / filesystem attributes
         this.fileSystem = fileSystem;
         this.isProDosOrder = isProDosOrder;
@@ -184,7 +196,11 @@ public class Apple2ProDosDskFileSystem extends AbstractFileSystem<ProDosEntry> {
             int keyPointer = blockReader.readUnsignedShort(offset + 0x11);
             int blocksUsed = blockReader.readUnsignedShort(offset + 0x13);
             long eof = blockReader.readUnsignedValue(offset + 0x15, 3);
+            int creationDate = blockReader.readUnsignedShort(offset + 0x18);
+            int creationTime = blockReader.readUnsignedShort(offset + 0x1a);
             int auxType = blockReader.readUnsignedShort(offset + 0x1f);
+            int modDate = blockReader.readUnsignedShort(offset + 0x21);
+            int modTime = blockReader.readUnsignedShort(offset + 0x23);
 
             String[] newPath = Arrays.copyOf(currentPath, currentPath.length + 1);
             newPath[currentPath.length] = name;
@@ -204,7 +220,10 @@ public class Apple2ProDosDskFileSystem extends AbstractFileSystem<ProDosEntry> {
                     name, size,
                     // file attributes
                     blockNumber, e,
-                    storageType, fileType, keyPointer, blocksUsed, eof, auxType,
+                    storageType, fileType, keyPointer, blocksUsed, eof,
+                    creationDate, creationTime,
+                    auxType,
+                    modDate, modTime,
                     // disk image / filesystem attributes
                     "ProDOS", isProDosOrder
                 )
@@ -373,6 +392,23 @@ public class Apple2ProDosDskFileSystem extends AbstractFileSystem<ProDosEntry> {
             // standard attributes
             result.add(FileAttributeType.NAME_ATTR, metadata.name);
             result.add(FileAttributeType.SIZE_ATTR, metadata.size);
+            // Date and time (two 16-bit values):
+            // YYYYYYY MMMM DDDDD
+            // 000 HHHHH 00 MMMMMM
+            int y = metadata.modDate >> 9;
+            y = y < 40 ? 2000 + y : 1900 + y;
+            int mon = (metadata.modDate >> 5) & 0x0f;
+            int d = metadata.modDate & 0x1f;
+            int h = metadata.modTime >> 8;
+            int min = metadata.modTime & 0x3f;
+            result.add(FileAttributeType.MODIFIED_DATE_ATTR, new Date(y - 1900, mon, d, h, min));
+            y = metadata.creationDate >> 9;
+            y = y < 40 ? 2000 + y : 1900 + y;
+            mon = (metadata.creationDate >> 5) & 0x0f;
+            d = metadata.creationDate & 0x1f;
+            h = metadata.creationTime >> 8;
+            min = metadata.creationTime & 0x3f;
+            result.add(FileAttributeType.CREATE_DATE_ATTR, new Date(y - 1900, mon, d, h, min));
             // file attributes
             result.add("Entry Block/Number", metadata.entryBlock + "/" + metadata.entryNumber);
             result.add("Storage Type", typeToString(STORAGE_TYPES, metadata.storageType));
