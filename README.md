@@ -32,7 +32,7 @@
 
 ## FileSystems
 - Apple II Binary II file system
-- Apple II DOS 3.3 disk images in .do or .po sector order (no sparse files yet)
+- Apple II DOS 3.3 disk images in .do or .po sector order
 - Apple II Pascal disk images in .do sector order (no .po order yet)
 - Apple II ProDOS disk images in .do or .po sector order
 - Commodore D80 disk image file system
