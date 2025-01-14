@@ -6,6 +6,7 @@
 
 # Done
 ## Loaders
+- Apple II file loader that works with Binary II, DOS 3, ProDOS FileSystems
 - Apple II NAPS (NuLib2 Attribute Preservation String) loader
 - Apple Lisa object file loader
 - Atari 2600 .a26/.bin cartridge file loader - only 2K and 4K are possible
