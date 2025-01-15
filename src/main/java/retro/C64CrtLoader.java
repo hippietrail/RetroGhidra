@@ -124,7 +124,7 @@ public class C64CrtLoader extends AbstractProgramWrapperLoader {
                 MemoryBlockUtils.createFileBytes(program, provider, monitor),   // filebytes
                 offset,                                                         // offset
                 romSizeInBytes,                                                 // size
-                false                                                           // isCode
+                false                                                           // overlay
             );
 
             SymbolTable st = program.getSymbolTable();

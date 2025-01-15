@@ -110,42 +110,42 @@ public class Apple2Loader extends AbstractProgramWrapperLoader {
 
             // Get the info needed for loading the file
 
-            Info entry = switch (metadata) {
+            Info info = switch (metadata) {
                 case BnyEntry bny -> new Info(
-                        // might need to do different things for different os type / file type combos
-                        Apple2Binary2FileSystem.filetypeToString(bny.filetypeCode),
-                        0,
-                        bny.auxTypeCode,
-                        bny.size
-                    );
+                    // might need to do different things for different os type / file type combos
+                    Apple2Binary2FileSystem.filetypeToString(bny.filetypeCode),
+                    0,
+                    bny.auxTypeCode,
+                    bny.size
+                );
                 case Dos3Entry dos3 -> new Info(
-                        Apple2Dos3DskFileSystem.filetypeToString(dos3.fileType),
-                        2 * 2, // skip the address and size
-                        (provider.readByte(0) & 0xFF) | ((provider.readByte(1) & 0xFF) << 8),
-                        (provider.readByte(2) & 0xFF) | ((provider.readByte(3) & 0xFF) << 8)
-                    );
+                    Apple2Dos3DskFileSystem.filetypeToString(dos3.fileType),
+                    2 * 2, // skip the address and size
+                    (provider.readByte(0) & 0xFF) | ((provider.readByte(1) & 0xFF) << 8),
+                    (provider.readByte(2) & 0xFF) | ((provider.readByte(3) & 0xFF) << 8)
+                );
                 case ProDosEntry pro -> new Info(
-                        Apple2ProDosDskFileSystem.fileTypeToString(pro.fileType),
-                        0,
-                        pro.auxType,
-                        pro.size
-                    );
+                    Apple2ProDosDskFileSystem.fileTypeToString(pro.fileType),
+                    0,
+                    pro.auxType,
+                    pro.size
+                );
                 default -> null;
             };
 
-            if (entry == null) return;
+            if (info == null) return;
 
             // set up the memory, symbols, and entry point
 
             AddressSpace adsp = program.getAddressFactory().getDefaultAddressSpace();
-            Address loadAndStart = adsp.getAddress(entry.address);
+            Address loadAndStart = adsp.getAddress(info.address);
 
             program.getMemory().createInitializedBlock(
                 "CODE",
                 loadAndStart,
                 MemoryBlockUtils.createFileBytes(program, provider, monitor),
-                entry.offset,
-                entry.size,
+                info.offset,
+                info.size,
                 false
             );
 
