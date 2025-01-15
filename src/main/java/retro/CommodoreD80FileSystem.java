@@ -84,11 +84,11 @@ public class CommodoreD80FileSystem extends AbstractFileSystem<D80Entry> {
     private static final int D80_DIR_ENTRY_SIZE = 32;
 
     private static final String[] D80_FILETYPES = {"DEL", "SEQ", "PRG", "USR", "REL"};
-    //private static final int D80_FILETYPE_DEL = 0;
-    //private static final int D80_FILETYPE_SEQ = 1;
-    //private static final int D80_FILETYPE_PRG = 2;
-    //private static final int D80_FILETYPE_USR = 3;
-    //private static final int D80_FILETYPE_REL = 4;
+    //public static final int D80_FILETYPE_DEL = 0;
+    //public static final int D80_FILETYPE_SEQ = 1;
+    public static final int D80_FILETYPE_PRG = 2;
+    //public static final int D80_FILETYPE_USR = 3;
+    //public static final int D80_FILETYPE_REL = 4;
 
     private ByteProvider d80ImageProvider;
 
@@ -162,16 +162,6 @@ public class CommodoreD80FileSystem extends AbstractFileSystem<D80Entry> {
 
                 String cleanFilename = sanitizeFilename(originalFilename);
 
-                Msg.info(this, String.format("0x%x: 39/%d [%d] (%s) %s 0x%x (%d)",
-                    entryOffset, s, e,
-                    fileTypeString,
-                    originalFilename.equals(cleanFilename)
-                        ? String.format("'%s'", originalFilename)
-                        : String.format("'%s' <%s>", originalFilename, cleanFilename),
-                    diskImageOffsetOfFile,
-                    fileSizeInSectors
-                ));
-
                 //String str = "";
                 int track = firstFileTrack;
                 int sector = firstFileSector;
@@ -189,18 +179,17 @@ public class CommodoreD80FileSystem extends AbstractFileSystem<D80Entry> {
                     }
                     size += D80_SECTOR_SIZE - 2;
                 }
-                //Msg.info(this, str);
 
                 fsIndex.storeFile(
                     //cleanFilename,    // filename
-                    cleanFilename + " (" + D80_FILETYPES[fileTypeByte & 0x0F] + ")",
-                    fsi++,                // unique index
-                    false,              // PET disks don't have directories (other D80s might?)
-                    size,                // length
+                    cleanFilename + " (" + D80_FILETYPES[fileType & 0x0F] + ")",
+                    fsi++,                      // unique index
+                    false,                      // PET disks don't have directories (other D80s might?)
+                    size,                       // length
                     new D80Entry(
                         originalFilename,
                         size,
-                        fileTypeByte,
+                        fileType,               // not fileTypeByte, which would include the flag!
                         firstFileTrack,
                         firstFileSector,
                         diskImageOffsetOfFile

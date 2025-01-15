@@ -14,6 +14,7 @@
 - Atari ST executable file loader
 - Classic 680x0 Mac application loader
 - Commodore 64 .CRT cartridge loader - loads straightforward cartridges
+- Commodore Disk File loader - understands .PRG files from .D80 disk images
 - Commodore VIC-20 .PRG cartridge loader - not other types of .PRG
 - Exidy Sorcerer .SNP snapshot loader
 - KC 85 .kcc file loader
