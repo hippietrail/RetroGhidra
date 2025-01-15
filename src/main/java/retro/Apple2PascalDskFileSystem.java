@@ -250,6 +250,9 @@ public class Apple2PascalDskFileSystem extends AbstractFileSystem<PascalEntry> {
             // file attributes
             result.add("File Type", filetypeToString(metadata.fileType));
             result.add("Last Block Byte Count", metadata.lastBlockByteCount);
+
+            // TODO PR 7062 not yet available as of Ghidra 11.2.1
+            // result.add(FileAttributeType.FILENAME_EXT_OVERRIDE, "exe");
         }
         return result;
     }

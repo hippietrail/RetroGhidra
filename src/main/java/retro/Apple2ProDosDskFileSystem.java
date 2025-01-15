@@ -416,6 +416,10 @@ public class Apple2ProDosDskFileSystem extends AbstractFileSystem<ProDosEntry> {
             result.add("Key Pointer", metadata.keyPointer);
             result.add("Blocks Used", metadata.blocksUsed);
             result.add("Aux Type", String.format("0x%04x", metadata.auxType));
+
+            // TODO PR 7062 not yet available as of Ghidra 11.2.1
+            // result.add(FileAttributeType.FILENAME_EXT_OVERRIDE, "exe");
+
             // disk image / filesystem attributes
             result.add("Filesystem", metadata.fileSystem);
             result.add("Ordering", metadata.isProDosOrder ? "ProDOS" : "DOS 3");

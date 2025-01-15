@@ -291,6 +291,9 @@ public class Apple2Dos3DskFileSystem extends AbstractFileSystem<Dos3Entry> {
             // disk image / filesystem attributes
             result.add("Filesystem", metadata.fileSystem);
             result.add("Ordering", metadata.isDos3Order ? "DOS 3" : "ProDOS");
+
+            // TODO PR 7062 not yet available as of Ghidra 11.2.1
+            // result.add(FileAttributeType.FILENAME_EXT_OVERRIDE, "exe");
         }
         return result;
     }

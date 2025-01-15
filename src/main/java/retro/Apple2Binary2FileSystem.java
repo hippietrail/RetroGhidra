@@ -270,6 +270,9 @@ public class Apple2Binary2FileSystem extends AbstractFileSystem<BnyEntry> {
             String auxTypeString = (metadata.filetypeCode == 6) ? String.format("0x%04x", metadata.auxTypeCode) : Integer.toString(metadata.auxTypeCode);
             result.add("Filetype", filetypeString);
             result.add("OS Type", osTypeToString(metadata.osType));
+
+            // TODO PR 7062 not yet available as of Ghidra 11.2.1
+            // result.add(FileAttributeType.FILENAME_EXT_OVERRIDE, "exe");
         }
         return result;
     }
