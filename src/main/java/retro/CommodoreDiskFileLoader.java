@@ -138,7 +138,7 @@ public class CommodoreDiskFileLoader extends AbstractProgramWrapperLoader {
                 st.createLabel(loadAddress, "entry", SourceType.ANALYSIS);
                 st.addExternalEntryPoint(loadAddress);
             }
-    
+
         } catch (Exception e) {
             log.appendException(e);
         }

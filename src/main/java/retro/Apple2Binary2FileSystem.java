@@ -252,27 +252,15 @@ public class Apple2Binary2FileSystem extends AbstractFileSystem<BnyEntry> {
         if (metadata != null) {
             result.add(FileAttributeType.NAME_ATTR, metadata.name);
             result.add(FileAttributeType.SIZE_ATTR, metadata.size);
-            int y = metadata.modDate >> 9;
-            y = y < 40 ? 2000 + y : 1900 + y;
-            int mon = (metadata.modDate >> 5) & 0x0f;
-            int d = metadata.modDate & 0x1f;
-            int h = metadata.modTime >> 8;
-            int min = metadata.modTime & 0x3f;
-            result.add(FileAttributeType.MODIFIED_DATE_ATTR, new Date(y - 1900, mon, d, h, min));
-            y = metadata.createDate >> 9;
-            y = y < 40 ? 2000 + y : 1900 + y;
-            mon = (metadata.createDate >> 5) & 0x0f;
-            d = metadata.createDate & 0x1f;
-            h = metadata.createTime >> 8;
-            min = metadata.createTime & 0x3f;
-            result.add(FileAttributeType.CREATE_DATE_ATTR, new Date(y - 1900, mon, d, h, min));
+            result.add(FileAttributeType.MODIFIED_DATE_ATTR, makeDate(metadata.modDate, metadata.modTime));
+            result.add(FileAttributeType.CREATE_DATE_ATTR, makeDate(metadata.createDate, metadata.createTime));
             String filetypeString = filetypeToString(metadata.filetypeCode);
-            String auxTypeString = (metadata.filetypeCode == 6) ? String.format("0x%04x", metadata.auxTypeCode) : Integer.toString(metadata.auxTypeCode);
+            // String auxTypeString = (metadata.filetypeCode == 6) ? String.format("0x%04x", metadata.auxTypeCode) : Integer.toString(metadata.auxTypeCode);
             result.add("Filetype", filetypeString);
             result.add("OS Type", osTypeToString(metadata.osType));
 
             // TODO PR 7062 not yet available as of Ghidra 11.2.1
-            // result.add(FileAttributeType.FILENAME_EXT_OVERRIDE, "exe");
+            // result.add(FileAttributeType.FILENAME_EXT_OVERRIDE, "exe"); // for PRG
         }
         return result;
     }
@@ -290,4 +278,13 @@ public class Apple2Binary2FileSystem extends AbstractFileSystem<BnyEntry> {
         return result;
     }
 
+    public static Date makeDate(int dateInt, int timeInt) {
+        int year = dateInt >> 9;
+        year = year + (year < 40 ? 2000 : 1900);
+        int month = (dateInt >> 5) & 0x0f;
+        int day = dateInt & 0x1f;
+        int hour = timeInt >> 8;
+        int minute = timeInt & 0x3f;
+        return new Date(year - 1900, month - 1, day, hour, minute);
+    }
 }
