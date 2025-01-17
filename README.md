@@ -58,6 +58,7 @@
 
 ## Filesystems
 - Apple II CP/M disk images in .do sector order
+- BinHex 4.0
 - CP/M (just as KC 85 et al use it for now)
 - Teledisk disk image format (just as KC 85 et al use it for now)
 
