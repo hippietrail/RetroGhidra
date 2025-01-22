@@ -5,7 +5,7 @@
 	<classpathentry kind="src" path="src/main/resources"/>
 	<classpathentry kind="src" path="src/test/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.launching.macosx.MacOSXType/Java SE 23 [23]"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-21"/>
 	<classpathentry kind="lib" path="/Users/hippietrail/Downloads/ghidra_11.2.1_PUBLIC/Ghidra/Processors/68000/lib/68000.jar" sourcepath="/Users/hippietrail/Downloads/ghidra_11.2.1_PUBLIC/Ghidra/Processors/68000/lib/68000-src.zip">
 		<attributes>
 			<attribute name="javadoc_location" value="jar:file:/Users/hippietrail/Downloads/ghidra_11.2.1_PUBLIC/docs/GhidraAPI_javadoc.zip!/api/"/>

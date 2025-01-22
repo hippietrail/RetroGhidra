@@ -30,9 +30,8 @@ import ghidra.util.task.TaskMonitor;
 
 public class BinHex4FileSystemFactory implements GFileSystemFactoryByteProvider<BinHex4FileSystem>, GFileSystemProbeBytesOnly {
 
-    private static final int BH_START_BYTES_REQUIRED = 43;
-
     private static final String BH_MAGIC = "(This file must be converted with BinHex 4.0)";
+    public static final int BH_START_BYTES_REQUIRED = BH_MAGIC.length();// + 43; // TODO share with BinHex4FileSystem.java somehow
 
     @Override
     public int getBytesRequired() {
