@@ -3,8 +3,8 @@
 ## Commodore 8-bit
 
 - `.PRG` is used for BASIC and machine code. The first two bytes are the load address. For BASIC programs, this address varies by system:
-  - PET: `$0401` but varies if memory is expanded
-  - VIC-20: `$0401`
+  - PET: `$0401`
+  - VIC-20: `$0401` but varies if memory is expanded
   - Commodore 64: `$0801`
   - Commodore 128: `$1C01`
 
