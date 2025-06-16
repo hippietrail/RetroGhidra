@@ -5,7 +5,6 @@
 	<classpathentry kind="src" path="src/main/resources"/>
 	<classpathentry kind="src" path="src/test/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-21"/>
 	<classpathentry kind="lib" path="/Users/hippietrail/Downloads/ghidra_11.2.1_PUBLIC/Ghidra/Processors/68000/lib/68000.jar" sourcepath="/Users/hippietrail/Downloads/ghidra_11.2.1_PUBLIC/Ghidra/Processors/68000/lib/68000-src.zip">
 		<attributes>
 			<attribute name="javadoc_location" value="jar:file:/Users/hippietrail/Downloads/ghidra_11.2.1_PUBLIC/docs/GhidraAPI_javadoc.zip!/api/"/>
@@ -759,6 +758,837 @@
 	<classpathentry kind="lib" path="/Users/hippietrail/Downloads/ghidra_11.2.1_PUBLIC/Ghidra/Processors/x86/lib/x86.jar" sourcepath="/Users/hippietrail/Downloads/ghidra_11.2.1_PUBLIC/Ghidra/Processors/x86/lib/x86-src.zip">
 		<attributes>
 			<attribute name="javadoc_location" value="jar:file:/Users/hippietrail/Downloads/ghidra_11.2.1_PUBLIC/docs/GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk-21.0.7.6-hotspot"/>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Processors/68000/lib/68000.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Processors/68000/lib/68000-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Processors/8051/lib/8051.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Processors/AARCH64/lib/AARCH64.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Processors/AARCH64/lib/AARCH64-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Processors/ARM/lib/ARM.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Processors/ARM/lib/ARM-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Debug/AnnotationValidator/lib/AnnotationValidator.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Debug/AnnotationValidator/lib/AnnotationValidator-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Processors/Atmel/lib/Atmel.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Processors/Atmel/lib/Atmel-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/BSim/lib/BSim.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Features/BSim/lib/BSim-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/BSim/lib/commons-dbcp2-2.9.0.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/BSim/lib/commons-logging-1.2.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/BSim/lib/commons-pool2-2.11.1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/BSim/lib/h2-2.2.220.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/BSim/lib/json-simple-1.1.1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/BSim/lib/postgresql-42.6.2.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/BSim/lib/postgresql-42.7.3.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/BSimFeatureVisualizer/lib/BSimFeatureVisualizer.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Features/BSimFeatureVisualizer/lib/BSimFeatureVisualizer-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/Base/lib/Base.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Features/Base/lib/Base-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/Base/lib/biz.aQute.bnd.util-7.0.0.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/Base/lib/biz.aQute.bndlib-7.0.0.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/Base/lib/org.osgi.util.promise-1.3.0.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/Base/lib/phidias-0.3.7.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/Base/lib/slf4j-api-1.7.25.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/Base/lib/slf4j-nop-1.7.25.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/BytePatterns/lib/BytePatterns.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Features/BytePatterns/lib/BytePatterns-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/ByteViewer/lib/ByteViewer.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Features/ByteViewer/lib/ByteViewer-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/CodeCompare/lib/CodeCompare.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Features/CodeCompare/lib/CodeCompare-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Processors/DATA/lib/DATA.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Processors/DATA/lib/DATA-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/DB/lib/DB.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Framework/DB/lib/DB-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Processors/Dalvik/lib/Dalvik.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Processors/Dalvik/lib/Dalvik-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/DebugUtils/lib/DebugUtils.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Features/DebugUtils/lib/DebugUtils-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Debug/Debugger/lib/Debugger.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Debug/Debugger/lib/Debugger-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Debug/Debugger-agent-dbgeng/lib/Debugger-agent-dbgeng.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Debug/Debugger-agent-dbgeng/lib/Debugger-agent-dbgeng-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Debug/Debugger-agent-dbgmodel/lib/Debugger-agent-dbgmodel.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Debug/Debugger-agent-dbgmodel/lib/Debugger-agent-dbgmodel-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Debug/Debugger-agent-dbgmodel-traceloader/lib/Debugger-agent-dbgmodel-traceloader.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Debug/Debugger-agent-frida/lib/Debugger-agent-frida.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Debug/Debugger-agent-frida/lib/Debugger-agent-frida-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Debug/Debugger-agent-gdb/lib/Debugger-agent-gdb.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Debug/Debugger-agent-gdb/lib/Debugger-agent-gdb-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Debug/Debugger-agent-lldb/lib/Debugger-agent-lldb.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Debug/Debugger-agent-lldb/lib/Debugger-agent-lldb-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Debug/Debugger-api/lib/Debugger-api.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Debug/Debugger-api/lib/Debugger-api-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Debug/Debugger-gadp/lib/Debugger-gadp.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Debug/Debugger-gadp/lib/Debugger-gadp-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Debug/Debugger-isf/lib/Debugger-isf.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Debug/Debugger-isf/lib/Debugger-isf-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Debug/Debugger-jpda/lib/Debugger-jpda.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Debug/Debugger-jpda/lib/Debugger-jpda-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Debug/Debugger-rmi-trace/lib/Debugger-rmi-trace.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Debug/Debugger-rmi-trace/lib/Debugger-rmi-trace-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Debug/Debugger-swig-lldb/lib/Debugger-swig-lldb.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Debug/Debugger-swig-lldb/lib/Debugger-swig-lldb-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/Decompiler/lib/Decompiler.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Features/Decompiler/lib/Decompiler-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/DecompilerDependent/lib/DecompilerDependent.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Features/DecompilerDependent/lib/DecompilerDependent-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Docking/lib/Docking.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Docking/lib/Docking-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Emulation/lib/asm-9.7.1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Emulation/lib/asm-analysis-9.7.1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Emulation/lib/asm-commons-9.7.1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Emulation/lib/asm-tree-9.7.1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Emulation/lib/asm-util-9.7.1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Emulation/lib/Emulation.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Emulation/lib/Emulation-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/FileFormats/lib/asm-debug-all-5.0.3.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/FileFormats/lib/AXMLPrinter2.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/FileFormats/lib/baksmali-2.5.2.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/FileFormats/lib/dex-ir-2.1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/FileFormats/lib/dex-ir-2.4.24.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/FileFormats/lib/dex-reader-2.1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/FileFormats/lib/dex-reader-2.4.24.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/FileFormats/lib/dex-reader-api-2.1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/FileFormats/lib/dex-reader-api-2.4.24.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/FileFormats/lib/dex-translator-2.1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/FileFormats/lib/dex-translator-2.4.24.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/FileFormats/lib/dexlib2-2.5.2.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/FileFormats/lib/FileFormats.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Features/FileFormats/lib/FileFormats-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/FileFormats/lib/sevenzipjbinding-16.02-2.01.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/FileFormats/lib/sevenzipjbinding-all-platforms-16.02-2.01.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/FileFormats/lib/util-2.5.2.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/FileSystem/lib/FileSystem.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Framework/FileSystem/lib/FileSystem-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Debug/Framework-AsyncComm/lib/Framework-AsyncComm.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Debug/Framework-AsyncComm/lib/Framework-AsyncComm-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Debug/Framework-AsyncComm/lib/protobuf-java-3.21.8.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Debug/Framework-Debugging/lib/Framework-Debugging.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Debug/Framework-Debugging/lib/Framework-Debugging-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Debug/Framework-Debugging/lib/jna-5.14.0.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Debug/Framework-Debugging/lib/jna-platform-5.14.0.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Debug/Framework-TraceModeling/lib/Framework-TraceModeling.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Debug/Framework-TraceModeling/lib/Framework-TraceModeling-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/FunctionGraph/lib/FunctionGraph.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Features/FunctionGraph/lib/FunctionGraph-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/FunctionGraphDecompilerExtension/lib/FunctionGraphDecompilerExtension.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Features/FunctionGraphDecompilerExtension/lib/FunctionGraphDecompilerExtension-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/FunctionID/lib/FunctionID.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Features/FunctionID/lib/FunctionID-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Generic/lib/bcpkix-jdk15on-1.69.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Generic/lib/bcprov-jdk15on-1.69.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Generic/lib/bcutil-jdk15on-1.69.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Generic/lib/commons-collections4-4.1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Generic/lib/commons-compress-1.21.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Generic/lib/commons-io-2.11.0.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Generic/lib/commons-lang3-3.12.0.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Generic/lib/commons-text-1.10.0.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Generic/lib/failureaccess-1.0.1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Generic/lib/Generic.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Generic/lib/Generic-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Generic/lib/gson-2.9.0.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Generic/lib/guava-32.1.3-jre.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Generic/lib/jdom-legacy-1.1.3.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Generic/lib/log4j-api-2.17.1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Generic/lib/log4j-core-2.17.1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/GhidraGo/lib/GhidraGo.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Features/GhidraGo/lib/GhidraGo-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/GhidraServer/lib/GhidraServer.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Features/GhidraServer/lib/GhidraServer-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/GnuDemangler/lib/GnuDemangler.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Features/GnuDemangler/lib/GnuDemangler-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Graph/lib/Graph.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Graph/lib/Graph-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Graph/lib/jgrapht-core-1.5.1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Graph/lib/jgrapht-io-1.5.1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Graph/lib/jung-algorithms-2.1.1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Graph/lib/jung-api-2.1.1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Graph/lib/jung-graph-impl-2.1.1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Graph/lib/jung-visualization-2.1.1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/GraphFunctionCalls/lib/GraphFunctionCalls.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Features/GraphFunctionCalls/lib/GraphFunctionCalls-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/GraphServices/lib/GraphServices.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Features/GraphServices/lib/GraphServices-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/GraphServices/lib/jgrapht-core-1.5.1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/GraphServices/lib/jgrapht-io-1.5.1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/GraphServices/lib/jheaps-0.13.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/GraphServices/lib/jungrapht-layout-1.4.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/GraphServices/lib/jungrapht-visualization-1.4.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Gui/lib/flatlaf-3.2.1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Gui/lib/flatlaf-3.5.4.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Gui/lib/Gui.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Gui/lib/Gui-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Processors/HCS12/lib/HCS12.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Processors/HCS12/lib/HCS12-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Help/lib/Help.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Help/lib/Help-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Help/lib/javahelp-2.0.05.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Help/lib/timingframework-1.0.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Processors/JVM/lib/JVM.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Processors/JVM/lib/JVM-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/Jython/lib/jython-standalone-2.7.3.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/Jython/lib/jython-standalone-2.7.4.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/Jython/lib/Jython.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Features/Jython/lib/Jython-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Processors/Loongarch/lib/Loongarch.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Processors/Loongarch/lib/Loongarch-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Processors/MIPS/lib/MIPS.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Processors/MIPS/lib/MIPS-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/MicrosoftCodeAnalyzer/lib/MicrosoftCodeAnalyzer.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Features/MicrosoftCodeAnalyzer/lib/MicrosoftCodeAnalyzer-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/MicrosoftDemangler/lib/MicrosoftDemangler.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Features/MicrosoftDemangler/lib/MicrosoftDemangler-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/MicrosoftDmang/lib/MicrosoftDmang.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Features/MicrosoftDmang/lib/MicrosoftDmang-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/PDB/lib/PDB.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Features/PDB/lib/PDB-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Processors/PIC/lib/PIC.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Processors/PIC/lib/PIC-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Processors/PowerPC/lib/PowerPC.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Processors/PowerPC/lib/PowerPC-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/ProgramDiff/lib/ProgramDiff.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Features/ProgramDiff/lib/ProgramDiff-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/ProgramGraph/lib/ProgramGraph.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Features/ProgramGraph/lib/ProgramGraph-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Project/lib/Project.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Project/lib/Project-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Project/lib/xz-1.9.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Debug/ProposedUtils/lib/ProposedUtils.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Debug/ProposedUtils/lib/ProposedUtils-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Pty/lib/jna-5.14.0.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Pty/lib/jna-platform-5.14.0.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Pty/lib/jsch-0.1.55.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Pty/lib/Pty.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Pty/lib/Pty-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Configurations/Public_Release/lib/Public_Release.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/PyGhidra/lib/PyGhidra.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Features/PyGhidra/lib/PyGhidra-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Processors/RISCV/lib/RISCV.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Processors/RISCV/lib/RISCV-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/Recognizers/lib/Recognizers.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Features/Recognizers/lib/Recognizers-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/Sarif/lib/java-sarif-2.1-modified.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/Sarif/lib/Sarif.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Features/Sarif/lib/Sarif-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/SoftwareModeling/lib/antlr-runtime-3.5.2.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/SoftwareModeling/lib/isorelax-20050913.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/SoftwareModeling/lib/msv-20050913.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/SoftwareModeling/lib/relaxngDatatype-20050913.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/SoftwareModeling/lib/SoftwareModeling.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Framework/SoftwareModeling/lib/SoftwareModeling-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/SoftwareModeling/lib/xsdlib-20050913.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/SourceCodeLookup/lib/SourceCodeLookup.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Features/SourceCodeLookup/lib/SourceCodeLookup-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Processors/Sparc/lib/Sparc.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Processors/Sparc/lib/Sparc-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Processors/SuperH4/lib/SuperH4.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Processors/SuperH4/lib/SuperH4-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/SwiftDemangler/lib/SwiftDemangler.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Features/SwiftDemangler/lib/SwiftDemangler-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/SystemEmulation/lib/SystemEmulation.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Features/SystemEmulation/lib/SystemEmulation-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Processors/TI_MSP430/lib/TI_MSP430.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Processors/TI_MSP430/lib/TI_MSP430-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Debug/TaintAnalysis/lib/TaintAnalysis.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Debug/TaintAnalysis/lib/TaintAnalysis-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Utility/lib/Utility.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Framework/Utility/lib/Utility-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Processors/V850/lib/V850.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/VersionTracking/lib/VersionTracking.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Features/VersionTracking/lib/VersionTracking-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/VersionTrackingBSim/lib/VersionTrackingBSim.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Features/VersionTrackingBSim/lib/VersionTrackingBSim-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Features/WildcardAssembler/lib/WildcardAssembler.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Features/WildcardAssembler/lib/WildcardAssembler-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Processors/Xtensa/lib/Xtensa.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Processors/Xtensa/lib/Xtensa-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Processors/eBPF/lib/eBPF.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Processors/eBPF/lib/eBPF-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Processors/tricore/lib/tricore.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Processors/tricore/lib/tricore-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Stuff/Utilities/ghidra/Ghidra/Processors/x86/lib/x86.jar" sourcepath="E:/Stuff/Utilities/ghidra/Ghidra/Processors/x86/lib/x86-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:\Stuff\Utilities\ghidra\docs\GhidraAPI_javadoc.zip!/api/"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="output" path="bin"/>

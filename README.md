@@ -41,6 +41,7 @@
 
 # In progress
 ## Loaders
+- Acorn UEF (Unified Emulator Format) for BBC Micro and Electron - imports snapshots, but not tape or disk yet 
 - Agon Light MOS .bin loader - identifies but does not load yet
 - Amstrad CPC .SNA snapshot format loader - some 64K snapshots might be usable
 - Commodore 64 X00 format (P00, R00, S00, U00, etc)
@@ -87,7 +88,6 @@
 - TI-99/4A: .ark Archiver format
 
 # To investigate
-- Acorn: UEF (Unified Emulator Format) for BBC Micro and Electron
 - Apple II Pascal P-code disassembler
 - Apple IIgs
 - Apple Newton
